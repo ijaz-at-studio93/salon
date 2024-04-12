@@ -63,7 +63,7 @@ class DioClient {
             return handler.next(resp);
           }
           return handler.next(resp);
-        }, onError: (DioError error, ErrorInterceptorHandler handler) async {
+        }, onError: (DioException error, ErrorInterceptorHandler handler) async {
           return handler.next(error);
         }),
       );

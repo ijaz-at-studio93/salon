@@ -52,9 +52,7 @@ class _SplashPageState extends State<SplashPage> {
     Navigator.pushAndRemoveUntil(
         context,
         PageTransition(
-            child: const LoginPage(
-              splashPage: true,
-            ),
+            child: const LoginPage(),
             alignment: Alignment.center,
             duration: const Duration(milliseconds: 800),
             // type: PageTransitionType.rightToLeftWithFade

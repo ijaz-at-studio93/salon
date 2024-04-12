@@ -1,16 +1,197 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:salon/api/dio_client.dart';
+import 'package:salon/page/auth/forgot_password_page.dart';
+import 'package:salon/page/auth/register_page.dart';
+import 'package:salon/page/review_rating/review_and_rating_page.dart';
+import 'package:salon/page/setting/my_details_page.dart';
+import 'package:salon/page/stylist/stylist_page.dart';
+import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/password_text_field.dart';
+import 'package:salon/project_specific/simple_text_field.dart';
+import 'package:salon/project_specific/text_theme.dart';
+
+import '../../constant/color_constant.dart';
+import '../bank_account/add_bank_account_page.dart';
+import '../bank_account/booking_history_page.dart';
 
 class LoginPage extends StatefulWidget {
-  final  bool splashPage;
-  const LoginPage({super.key,this.splashPage =  false});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _userNameTextEditingController = TextEditingController();
+  final _passwordTextEditingController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      backgroundColor: ColorConstant.whiteColor,
+      body: Column(
+        children: [
+          _headerWidget(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _stylistAndSalon(),
+                  const SizedBox(height: 20),
+                  SimpleTextFieldWidget(
+                      textEditingController: _userNameTextEditingController,
+                      hintText: "For Eg. SOUR7980",
+                      textInputType: TextInputType.text,
+                      textInputAction: TextInputAction.next,
+                      title: "Enter Your Username"),
+                  const SizedBox(height: 15),
+                  PasswordTextFieldWidget(
+                      textEditingController: _passwordTextEditingController,
+                      hintText: "**********",
+                      textInputType: TextInputType.text,
+                      textInputAction: TextInputAction.done,
+                      title: "Enter Password"),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      right: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Get.to(() => const ForGotPasswordPage());
+                          },
+                          child: Text(
+                            "Forgot Password?",
+                            style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.redColor, fontSize: 13),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Register with us-",
+                        style: AppTextTheme.medium.copyWith(
+                            fontSize: 13, color: ColorConstant.grayTextColor),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Get.to(() => const RegisterPage());
+                        },
+                        child: Text(
+                          "Register Now",
+                          style: AppTextTheme.medium.copyWith(
+                              fontSize: 16, color: ColorConstant.primaryColor),
+                        ),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 15),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ButtonWidget(
+                        buttonTitleText: "Continue",
+                        onPress: () {
+                          _doLogin();
+                        }),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*---------- header widget ---------*/
+  _headerWidget() {
+    return Container(
+      width: Get.width,
+      padding: const EdgeInsets.only(top: 50, left: 21, right: 21, bottom: 35),
+      decoration: const BoxDecoration(color: ColorConstant.primaryColor),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 35),
+          Text(
+            "Login to \nyour Scout Account",
+            style: AppTextTheme.bold
+                .copyWith(color: ColorConstant.whiteColor, fontSize: 23),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /*----------- Tab Bar variable  ----------- */
+  String? selectedStylistOrSalon = "0";
+
+  /*----------- Switch Tab Stylist & Salon -------------------*/
+  _stylistAndSalon() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+          color: ColorConstant.whiteColor,
+          border: Border.all(color: ColorConstant.primaryColor, width: 2),
+          borderRadius: BorderRadius.circular(10)),
+      width: Get.width,
+      padding: const EdgeInsets.all(2),
+      child: CupertinoSlidingSegmentedControl(
+          groupValue: selectedStylistOrSalon,
+          thumbColor: ColorConstant.primaryColor,
+          children: {
+            "0": SizedBox(
+              width: Get.width,
+              height: Get.height * 0.06,
+              child: Center(
+                child: Text(
+                  "Stylist",
+                  style: AppTextTheme.medium.copyWith(
+                      fontSize: 16,
+                      color: selectedStylistOrSalon == "0"
+                          ? ColorConstant.whiteColor
+                          : ColorConstant.grayTextColor),
+                ),
+              ),
+            ),
+            "1": Text(
+              "Saloon",
+              style: AppTextTheme.medium.copyWith(
+                  fontSize: 16,
+                  color: selectedStylistOrSalon == "1"
+                      ? ColorConstant.whiteColor
+                      : ColorConstant.grayTextColor),
+            ),
+          },
+          onValueChanged: (dynamic value) {
+            setState(() {
+              selectedStylistOrSalon = value;
+            });
+          }),
+    );
+  }
+
+  /*-------------  doLogin -------------*/
+  _doLogin() {
+    if (_userNameTextEditingController.text.isEmpty) {
+      showMessage("Please enter user-name");
+    } else if (_passwordTextEditingController.text.isEmpty) {
+      showMessage("Please enter password");
+    } else {
+      /*Get.to(()=>const AddBankAccountPage());*/
+      /*Get.to(()=>const ReviewAndRatingPage());*/
+      Get.to(() => const MyDetailsPage());
+      /*   Get.to(()=>const StylistPage());*/
+      /*   Get.to(()=>const BookingHistoryPage());*/
+    }
   }
 }

@@ -18,4 +18,8 @@ class AppTextTheme {
       fontWeight: FontWeight.w400,
       color: ColorConstant.whiteColor,
       fontSize: 16);
+  static TextStyle italic = const TextStyle(
+      fontWeight: FontWeight.w500,
+      color: ColorConstant.whiteColor,
+      fontSize: 16);
 }

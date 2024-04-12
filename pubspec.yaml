@@ -42,6 +42,14 @@ dependencies:
   connectivity_plus: ^4.0.1
   image_picker: ^1.0.7
   page_transition: ^2.1.0
+  dropdown_button2: ^2.3.9
+  flutter_dash: ^1.0.0
+  flutter_rating_bar: ^4.0.1
+  dotted_border: ^2.1.0
+  readmore: ^3.0.0
+
+
+
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +77,7 @@ flutter:
     - assets/font/
     - assets/icon/
     - assets/images/
+    - assets/profile/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -97,6 +106,8 @@ flutter:
           weight: 500
         - asset: assets/font/Satoshi-Regular.otf
           weight: 400
+        - asset: assets/font/Satoshi-Italic.otf
+          weight: 500
   # fonts:
   #   - family: Schyler
   #     fonts:
