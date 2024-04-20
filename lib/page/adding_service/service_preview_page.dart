@@ -1,15 +1,10 @@
-import 'dart:ui';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
 import 'package:salon/page/adding_service/widget/service_product_list_title_widget.dart';
-import 'package:salon/page/auth/login_page.dart';
 
-import '../../project_specific/button_widget.dart';
+
 import '../../project_specific/text_theme.dart';
 
 class ServicePreviewPage extends StatefulWidget {
@@ -130,7 +125,9 @@ class _ServicePreviewPageState extends State<ServicePreviewPage> {
             },
             add: () {
               Get.back();
-              Get.offAll(() => const LoginPage());
+              Get.back();
+              Get.back();
+              Get.back();
             },
           ),
         ],

@@ -120,19 +120,22 @@ class BookingHistoryWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              Container(
-                height: 34,
-                width: 61,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(28),
-                  color: ColorConstant.bgViewColor,
-                  border: Border.all(color: ColorConstant.borderRedColor),
-                ),
-                child: Center(
-                  child: Text(
-                    "View",
-                    style: AppTextTheme.regular
-                        .copyWith(color: ColorConstant.redColor, fontSize: 13),
+              InkWell(
+                onTap: onPress,
+                child: Container(
+                  height: 34,
+                  width: 61,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(28),
+                    color: ColorConstant.bgViewColor,
+                    border: Border.all(color: ColorConstant.borderRedColor),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "View",
+                      style: AppTextTheme.regular
+                          .copyWith(color: ColorConstant.redColor, fontSize: 13),
+                    ),
                   ),
                 ),
               )

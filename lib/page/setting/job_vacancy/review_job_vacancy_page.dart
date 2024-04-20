@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -6,7 +5,7 @@ import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 
 import '../../../project_specific/text_theme.dart';
-import '../my_details_page.dart';
+
 
 class ReviewJobVacancyPage extends StatefulWidget {
   const ReviewJobVacancyPage({super.key});
@@ -96,7 +95,8 @@ class _ReviewJobVacancyPageState extends State<ReviewJobVacancyPage> {
               Get.back();
             },
             add: () {
-              Get.offAll(() => const MyDetailsPage());
+             Get.back();
+             Get.back();
             },
           )
         ],

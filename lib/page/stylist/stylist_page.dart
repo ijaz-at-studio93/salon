@@ -1,5 +1,5 @@
 import 'package:dotted_border/dotted_border.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
@@ -10,7 +10,7 @@ import 'package:salon/page/stylist/widget/stylist_list_tile_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-import '../adding_service/add_service_page.dart';
+import 'add_stylist/add_stylist_page.dart';
 
 class StylistPage extends StatefulWidget {
   const StylistPage({super.key});
@@ -64,13 +64,13 @@ class _StylistPageState extends State<StylistPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Suggested Service:",
+                  "35 Stylist Found:",
                   style: AppTextTheme.regular.copyWith(
                       color: ColorConstant.grayTextColor, fontSize: 15),
                 ),
                 GestureDetector(
                   onTap: (){
-                    Get.to(()=> const AddServicePage());
+                    Get.to(()=> const AddStylistPage());
                   },
                   child: DottedBorder(
                     borderType: BorderType.RRect,

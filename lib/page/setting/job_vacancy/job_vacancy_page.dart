@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
@@ -205,27 +205,6 @@ class _JobVacancyPageState extends State<JobVacancyPage> {
                       GestureDetector(
                         onTap: () {
                           setState(() {
-                            year++;
-                          });
-                        },
-                        child: Container(
-                          height: 26,
-                          width: 26,
-                          decoration: const BoxDecoration(
-                              color: ColorConstant.experienceColor,
-                              shape: BoxShape.circle),
-                          child: const Center(
-                            child: Icon(
-                              Icons.add,
-                              color: ColorConstant.whiteColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
                             if (year != 1) {
                               year--;
                             }
@@ -240,6 +219,27 @@ class _JobVacancyPageState extends State<JobVacancyPage> {
                           child: const Center(
                             child: Icon(
                               Icons.remove,
+                              color: ColorConstant.whiteColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            year++;
+                          });
+                        },
+                        child: Container(
+                          height: 26,
+                          width: 26,
+                          decoration: const BoxDecoration(
+                              color: ColorConstant.experienceColor,
+                              shape: BoxShape.circle),
+                          child: const Center(
+                            child: Icon(
+                              Icons.add,
                               color: ColorConstant.whiteColor,
                             ),
                           ),

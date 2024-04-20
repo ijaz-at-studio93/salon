@@ -47,6 +47,10 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   dotted_border: ^2.1.0
   readmore: ^3.0.0
+  vertical_barchart: ^2.0.0+2
+  qr_scanner_with_effect: ^1.0.5
+
+
 
 
 

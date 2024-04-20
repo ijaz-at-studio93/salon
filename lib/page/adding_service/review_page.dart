@@ -1,10 +1,10 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/page/adding_service/service_preview_page.dart';
 import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
 import 'package:salon/page/adding_service/widget/service_product_list_title_widget.dart';
-import 'package:salon/page/stylist/widget/service_offered_list_tile_widget.dart';
+
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../constant/color_constant.dart';

@@ -7,6 +7,7 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/bank_account/widget/booking_history_widget.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import '../../project_specific/project_appbar.dart';
+import 'booking_history_view_page.dart';
 
 class BookingHistoryPage extends StatefulWidget {
   const BookingHistoryPage({super.key});
@@ -22,7 +23,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
         nameOfScreen: "Booking History",
-        isBackIcon: true,
+        isBackIcon: false,
       ),
       body: Column(
         children: [
@@ -50,7 +51,9 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: BookingHistoryWidget(
-                        onPress: () {},
+                        onPress: () {
+                          Get.to(()=> const BookingHistoryViewpage());
+                        },
                       ),
                     );
                   })),
@@ -73,6 +76,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
+        height:50,
         width: Get.width * 0.4,
         child: DropdownButtonFormField2<String>(
           isExpanded: true,
@@ -113,7 +117,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
           iconStyleData: const IconStyleData(
             icon: Icon(
               Icons.arrow_drop_down,
-              color: Colors.black45,
+              color: Colors.black,
             ),
             iconSize: 24,
           ),
@@ -136,14 +140,15 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-          color: ColorConstant.whiteColor,
-          border: Border.all(color: ColorConstant.dividerColor, width: 2),
-          borderRadius: BorderRadius.circular(15)),
+      height: 81,
+      color: ColorConstant.whiteColor,
       width: Get.width,
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+
+
       child: CupertinoSlidingSegmentedControl(
+          backgroundColor: ColorConstant.gray,
+          padding: const EdgeInsets.all(6),
           groupValue: overall,
           thumbColor: ColorConstant.whiteColor,
           children: {

@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/page/flow_pages/home_page_2/edit_profile.dart';
 import 'package:salon/page/setting/categoty_page.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -25,64 +27,69 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
         nameOfScreen: "My Details",
-        isBackIcon: true,
+        isBackIcon: false
       ),
-      body: Column(
-        children: [
-          _imageRowWidget(),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Availablity",
-              image: AssetsConstant.eye,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Categories",
-              image: AssetsConstant.categories,
-              onTap: () {
-                Get.to(() => const CategoryPage());
-              }),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Product",
-              image: AssetsConstant.product,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Service List",
-              image: AssetsConstant.serviceList,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Job",
-              image: AssetsConstant.job,
-              onTap: () {
-                Get.to(() => const JobVacancyPage());
-              }),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Account Details",
-              image: AssetsConstant.accountDetails,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Review & Ratings",
-              image: AssetsConstant.reviewRatings,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "FAQ’s & Support",
-              image: AssetsConstant.faq,
-              onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "About Us", image: AssetsConstant.info, onTap: () {}),
-          _dividerCustom(),
-          _customRowWidget(
-              titleName: "Sign Out",
-              image: AssetsConstant.logout,
-              onTap: () {}),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _imageRowWidget(),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Availablity",
+                image: AssetsConstant.eye,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Categories",
+                image: AssetsConstant.categories,
+                onTap: () {
+                  Get.to(() => const CategoryPage());
+                }),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Product",
+                image: AssetsConstant.product,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Service List",
+                image: AssetsConstant.serviceList,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Job",
+                image: AssetsConstant.job,
+                onTap: () {
+                  Get.to(() => const JobVacancyPage());
+                }),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Account Details",
+                image: AssetsConstant.accountDetails,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Review & Ratings",
+                image: AssetsConstant.reviewRatings,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "FAQ’s & Support",
+                image: AssetsConstant.faq,
+                onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "About Us", image: AssetsConstant.info, onTap: () {}),
+            _dividerCustom(),
+            _customRowWidget(
+                titleName: "Sign Out",
+                image: AssetsConstant.logout,
+                onTap: () {}),
+
+            const SizedBox(height: 20),
+
+          ],
+        ),
       ),
     );
   }
@@ -129,27 +136,32 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                     .copyWith(color: ColorConstant.blackColor, fontSize: 20),
               ),
               const SizedBox(height: 5),
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(68),
-                  border:
-                      Border.all(color: ColorConstant.primaryColor, width: 1),
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      AssetsConstant.editIcon,
-                      width: 14,
-                      height: 14,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      "Edit Details",
-                      style: AppTextTheme.regular.copyWith(
-                          color: ColorConstant.primaryColor, fontSize: 13),
-                    )
-                  ],
+              GestureDetector(
+                onTap: (){
+                  Get.to(()=> const EditProfile());
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(68),
+                    border:
+                        Border.all(color: ColorConstant.primaryColor, width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      Image.asset(
+                        AssetsConstant.editIcon,
+                        width: 14,
+                        height: 14,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Edit Details",
+                        style: AppTextTheme.regular.copyWith(
+                            color: ColorConstant.primaryColor, fontSize: 13),
+                      )
+                    ],
+                  ),
                 ),
               )
             ],

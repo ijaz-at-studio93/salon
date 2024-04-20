@@ -12,13 +12,12 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final bool? fontSize;
 
   const AppBarWidget(
-      {Key? key,
+      {super.key,
       required this.nameOfScreen,
       this.callback,
       this.isBackIcon = true,
       this.actions,
-      this.fontSize = true})
-      : super(key: key);
+      this.fontSize = true});
 
   @override
   Widget build(BuildContext context) {

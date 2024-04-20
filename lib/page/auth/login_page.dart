@@ -4,17 +4,16 @@ import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/page/auth/forgot_password_page.dart';
 import 'package:salon/page/auth/register_page.dart';
-import 'package:salon/page/review_rating/review_and_rating_page.dart';
-import 'package:salon/page/setting/my_details_page.dart';
-import 'package:salon/page/stylist/stylist_page.dart';
+import 'package:salon/page/bottom_bar_page.dart';
+
+
+
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/password_text_field.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../constant/color_constant.dart';
-import '../bank_account/add_bank_account_page.dart';
-import '../bank_account/booking_history_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -189,7 +188,8 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       /*Get.to(()=>const AddBankAccountPage());*/
       /*Get.to(()=>const ReviewAndRatingPage());*/
-      Get.to(() => const MyDetailsPage());
+      /*   Get.to(() => const MyDetailsPage());*/
+      Get.to(() => const BottomBarPage());
       /*   Get.to(()=>const StylistPage());*/
       /*   Get.to(()=>const BookingHistoryPage());*/
     }

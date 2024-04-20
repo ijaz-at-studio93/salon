@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../../../constant/color_constant.dart';

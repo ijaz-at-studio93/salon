@@ -1,8 +1,6 @@
-
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class ProgressContainerView extends StatelessWidget {
   final Widget? child;
@@ -12,13 +10,12 @@ class ProgressContainerView extends StatelessWidget {
   final double progressWidgetOpacity;
 
   const ProgressContainerView(
-      {@required this.child,
-      @required this.isProgressRunning,
+      {required this.child,
+      required this.isProgressRunning,
       this.progressText = "Please Wait",
       this.progressWidgetOpacity = 0.1,
       this.progressWidget,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +26,7 @@ class ProgressContainerView extends StatelessWidget {
           child: Visibility(
               visible: isProgressRunning ?? false,
               child: Container(
-                width: Get.width,
+                  width: Get.width,
                   color: Colors.black.withOpacity(progressWidgetOpacity),
                   child: progressWidget ??
                       const Center(

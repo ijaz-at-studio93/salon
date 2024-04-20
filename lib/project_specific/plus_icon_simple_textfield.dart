@@ -68,7 +68,7 @@ class _PlusIconSimpleTextFieldState extends State<PlusIconSimpleTextField> {
                               color: ColorConstant.grayColor, fontSize: 13)),
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.add,
                     color: ColorConstant.idColor,
                   )

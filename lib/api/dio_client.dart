@@ -6,11 +6,11 @@ import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 import '../constant/api_constant.dart';
-import '../util/SharedPrefs.dart';
+import '../util/shared_prefs.dart';
 import 'dio_connectivity_request_retrier.dart';
 import 'dio_interceptors.dart';
 
-export 'package:salon/util/Extensions.dart' show DioResponseExtension;
+export 'package:salon/util/extensions.dart' show DioResponseExtension;
 
 class DioClient {
   static CancelToken? cancelToken;
