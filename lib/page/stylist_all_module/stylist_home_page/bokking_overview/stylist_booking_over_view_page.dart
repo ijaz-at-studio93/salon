@@ -3,9 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/accepted_booking_overview_widget.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
 import 'package:salon/page/stylist_all_module/widget/service_count_row_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/status_bar_color_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/NoItemsWidget.dart';
+import 'package:salon/util/reject_service_dialog.dart';
 import 'package:vertical_barchart/vertical-barchart.dart';
 import 'package:vertical_barchart/vertical-barchartmodel.dart';
 import 'booking_overview_widget.dart';
@@ -20,6 +27,16 @@ class StylistBookingOverViewPage extends StatefulWidget {
 
 class _StylistBookingOverViewPageState
     extends State<StylistBookingOverViewPage> {
+  final _stylistController = Get.find<StylistController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _stylistController.doPendingAppointmentsListModel();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,75 +47,187 @@ class _StylistBookingOverViewPageState
           _headerWidget(),
           Container(height: 1, color: ColorConstant.bgColor),
           /*---------------- Booking Overview --------------*/
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: ServiceCountRowWidget(
-                            image: AssetsConstant.topRatedDoneIcon,
-                            title: "Average Rating",
-                            titleValue: "4.1",
+          Obx(
+            () => Expanded(
+              child: _stylistController.showProgress
+                  ? const ProgressBarView()
+                  : SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 10),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: ServiceCountRowWidget(
+                                    image: AssetsConstant.topRatedDoneIcon,
+                                    title: "Average Rating",
+                                    titleValue: "4.1",
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Expanded(
+                                  child: ServiceCountRowWidget(
+                                    image: AssetsConstant.receiveDoneIcon,
+                                    title: "Top Rated ",
+                                    titleValue: "12",
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        SizedBox(width: 10),
-                        Expanded(
-                          child: ServiceCountRowWidget(
-                            image: AssetsConstant.receiveDoneIcon,
-                            title: "Top Rated ",
-                            titleValue: "12",
+                          _reportAnalytics(),
+                          const SizedBox(height: 15),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Text(
+                              "Bookings Overview",
+                              textScaler: const TextScaler.linear(0.85),
+                              style: AppTextTheme.medium.copyWith(
+                                  color: ColorConstant.grayTextColor,
+                                  fontSize: 23),
+                            ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 15),
+                          _bookingOverView(),
+                          bookingOverView == "0"
+                              ? _stylistController
+                                          .getPendingAppointmentsListModel
+                                          .data
+                                          ?.isEmpty ??
+                                      false
+                                  ? const NoItemsWidget(
+                                      text: "No Any Upcoming Booking",
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: _stylistController
+                                              .getPendingAppointmentsListModel
+                                              .data
+                                              ?.length ??
+                                          0,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 5),
+                                          child: BookingOverviewWidget(
+                                            price: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .price ??
+                                                0,
+                                            startTime: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .startsAt ??
+                                                "",
+                                            endTime: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .endsAt ??
+                                                "",
+                                            tapReject: () {
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return RejectServiceDiaLog(
+                                                        tapNo: () {
+                                                      Get.back();
+                                                    }, tapYes: () {
+                                                      _stylistController
+                                                          .doBookingApprove(
+                                                              appointmentId: _stylistController
+                                                                      .getPendingAppointmentsListModel
+                                                                      .data?[
+                                                                          index]
+                                                                      .appointmentId ??
+                                                                  "",
+                                                              status:
+                                                                  "salon_artist_rejected",
+                                                              callback: () {
+                                                                Get.back();
+                                                                _stylistController
+                                                                    .doPendingAppointmentsListModel();
+                                                              });
+                                                    });
+                                                  });
+                                            },
+                                            tapViewAndAccept: () {
+                                              Get.to(() => ViewAcceptPage(
+                                                    appointmentId: _stylistController
+                                                            .getPendingAppointmentsListModel
+                                                            .data?[index]
+                                                            .appointmentId ??
+                                                        "",
+                                                    callback: () {
+                                                      _stylistController
+                                                          .doPendingAppointmentsListModel();
+                                                    },
+                                                  ));
+                                            },
+                                          ),
+                                        );
+                                      })
+                              : _stylistController
+                                          .getAcceptAppointmentsListModel
+                                          .data
+                                          ?.isEmpty ??
+                                      false
+                                  ? const NoItemsWidget(
+                                      text: "No Any Accepted Booking",
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: _stylistController
+                                              .getAcceptAppointmentsListModel
+                                              .data
+                                              ?.length ??
+                                          0,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 5),
+                                          child: AcceptBookingOverViewWidget(
+                                            onPress: () {
+                                              Get.to(() => BookingOverviewPage(
+                                                    appointmentId: _stylistController
+                                                            .getAcceptAppointmentsListModel
+                                                            .data?[index]
+                                                            .appointmentId ??
+                                                        "",
+                                                    callback: () {},
+                                                  ));
+                                            },
+                                            endTime: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .endsAt ??
+                                                "",
+                                            price: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .price ??
+                                                0,
+                                            startTime: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .startsAt ??
+                                                "",
+                                          ),
+                                        );
+                                      }),
+                        ],
+                      ),
                     ),
-                  ),
-                  _reportAnalytics(),
-                  const SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      "Bookings Overview",
-                      textScaler: const TextScaler.linear(0.85),
-                      style: AppTextTheme.medium.copyWith(
-                          color: ColorConstant.grayTextColor, fontSize: 23),
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  _bookingOverView(),
-                  bookingOverView == "0"
-                      ? ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: 5,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 5),
-                              child: BookingOverviewWidget(isAccepted: false),
-                            );
-                          })
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: 5,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            return const Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 5),
-                              child: BookingOverviewWidget(isAccepted: true),
-                            );
-                          }),
-                ],
-              ),
             ),
-          ),
-          bookingOverView == "1"
+          ), /*bookingOverView == "1"
               ? Container(
                   margin: const EdgeInsets.symmetric(horizontal: 10),
                   padding: const EdgeInsets.all(14),
@@ -185,7 +314,7 @@ class _StylistBookingOverViewPageState
                     ],
                   ),
                 )
-              : const SizedBox(),
+              : const SizedBox(),*/
         ],
       ),
     );
@@ -310,12 +439,15 @@ class _StylistBookingOverViewPageState
           onValueChanged: (dynamic value) {
             setState(() {
               bookingOverView = value;
+              if (bookingOverView == "1") {
+                _stylistController.doAcceptAppointment();
+              } else {
+                _stylistController.doPendingAppointmentsListModel();
+              }
             });
           }),
     );
   }
-
-
 
   /*----------------- Report Analytics --------------*/
   _reportAnalytics() {

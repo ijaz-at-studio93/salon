@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/stylist_all_module/profile/widget/served_filter_widgtet.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/accepted_booking_overview_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/booking_overview_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -24,7 +25,7 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
       body: Column(
         children: [
           _bookingOverview(),
-          Expanded(
+       /*   Expanded(
             child: Container(
               color: ColorConstant.whiteColor,
               child: ListView.builder(
@@ -32,14 +33,15 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
                   itemCount: 10,
                   itemBuilder: (context, index) {
                     return const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16,vertical:10),
-                      child: BookingOverviewWidget(
-                        isAccepted: true,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      child: AcceptBookingOverViewWidget(
+
                       ),
                     );
                   }),
             ),
-          ),
+          ),*/
         ],
       ),
     );

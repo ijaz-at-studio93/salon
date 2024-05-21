@@ -3,29 +3,28 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/model/stylist/pending_appointment.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
 
 import 'package:salon/project_specific/text_theme.dart';
 
-import 'view_accept_page.dart';
-
-class BookingOverviewWidget extends StatelessWidget {
+class AcceptBookingOverViewWidget extends StatefulWidget {
   final String startTime;
   final String endTime;
   final int price;
-  final VoidCallback tapReject;
-  final VoidCallback tapViewAndAccept;
+  final VoidCallback onPress;
+  const AcceptBookingOverViewWidget(
+      {super.key,
+      required this.onPress,
+      required this.startTime,
+      required this.endTime,
+      required this.price});
 
-  const BookingOverviewWidget({
-    super.key,
-    required this.startTime,
-    required this.endTime,
-    required this.price,
-    required this.tapReject,
-    required this.tapViewAndAccept,
-  });
+  @override
+  State<AcceptBookingOverViewWidget> createState() =>
+      _AcceptBookingOverViewWidgetState();
+}
 
+class _AcceptBookingOverViewWidgetState
+    extends State<AcceptBookingOverViewWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -52,7 +51,7 @@ class BookingOverviewWidget extends StatelessWidget {
                 ],
               ),
               Text(
-                "${convertDate(date: startTime)}- ${convertDate(date: endTime)}",
+                "${convertDate(date: widget.startTime)}- ${convertDate(date: widget.endTime)}",
                 style: AppTextTheme.regular
                     .copyWith(fontSize: 13, color: ColorConstant.grayTextColor),
               )
@@ -79,7 +78,7 @@ class BookingOverviewWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "₹$price/-",
+                    "₹${widget.price}/-",
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),
@@ -95,7 +94,7 @@ class BookingOverviewWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "1",
+                    "5",
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),
@@ -129,53 +128,24 @@ class BookingOverviewWidget extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: tapReject,
-                  child: Container(
-                    height: 50,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: ColorConstant.redColor,
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Reject",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.redColor, fontSize: 14),
-                      ),
-                    ),
-                  ),
+          GestureDetector(
+            onTap: widget.onPress,
+            child: Container(
+              height: 50,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xffEAEAEA),
+              ),
+              child: Center(
+                child: Text(
+                  "View",
+                  style: AppTextTheme.regular
+                      .copyWith(color: ColorConstant.blackColor, fontSize: 14),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: tapViewAndAccept,
-                  child: Container(
-                    height: 50,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: ColorConstant.primaryColor,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "View & Accept",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.whiteColor, fontSize: 14),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          )
         ],
       ),
     );

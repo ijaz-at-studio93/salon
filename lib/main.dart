@@ -8,6 +8,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:platform_device_id/platform_device_id.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/splash_page.dart';
 import 'package:salon/util/NotificationUtils.dart';
 import 'package:salon/util/notification_service.dart';
@@ -21,6 +22,7 @@ void main() async {
   await Firebase.initializeApp();
   Get.put(AuthController());
   Get.put(HomeController());
+  Get.put(StylistController());
   await GetStorage.init();
   await Get.find<AuthController>().initUserData();
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
