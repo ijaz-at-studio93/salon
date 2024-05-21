@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -8,7 +7,6 @@ import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/phone_field_widget.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import '../../api/dio_client.dart';
 
 class ForGotPasswordPage extends StatefulWidget {
@@ -23,11 +21,17 @@ class _ForGotPasswordPageState extends State<ForGotPasswordPage> {
   final _otpTextEditingController = TextEditingController();
   int _start = 60;
   bool isResendOTp = false;
-
+  late Timer timer;
   @override
   void initState() {
     startTimer();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    timer.cancel();
   }
 
   @override
@@ -153,7 +157,7 @@ class _ForGotPasswordPageState extends State<ForGotPasswordPage> {
 
   /*--------------  Start Timer --------------*/
   startTimer() {
-    Timer.periodic(const Duration(seconds: 1), (timer) {
+    timer =  Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         setState(() {
           isResendOTp = true;

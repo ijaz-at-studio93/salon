@@ -3,7 +3,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
-import 'package:salon/page/bank_account/add_new_fresh_account_page.dart';
+
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -211,7 +211,8 @@ class _AddBankAccountPageState extends State<AddBankAccountPage> {
     } else if (_accountNumber.text.isEmpty) {
       showMessage("Please enter account number");
     } else {
-      Get.to(()=> const AddNewFreshAccountPage());
+      Get.back();
+      Get.back();
     }
   }
 

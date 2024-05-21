@@ -1,10 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class PlusIconSimpleTextField extends StatefulWidget {
-  final TextEditingController textEditingController;
+  final TextEditingController? textEditingController;
   final String hintText;
   final String title;
   final TextInputType textInputType;

@@ -1,24 +1,59 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
-import 'package:salon/page/stylist/add_stylist/add_stylist_review_page.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/stylist/add_stylist/widget/select_service_widget.dart';
-
+import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
-
 import 'add_service_bottom_seet.dart';
 
 class SelectServicePage extends StatefulWidget {
-  const SelectServicePage({super.key});
+  final String name;
+  final String phone;
+  final String email;
+  final String experience;
+  final String address;
+  final String whatsappNo;
+  final String panNo;
+  final String password;
+  final bool isHomeService;
+  final String gender;
+
+  final String birthdate;
+  final File image;
+  const SelectServicePage(
+      {super.key,
+      required this.name,
+      required this.phone,
+      required this.email,
+      required this.experience,
+      required this.address,
+      required this.whatsappNo,
+      required this.panNo,
+      required this.password,
+      required this.isHomeService,
+      required this.gender,
+      required this.birthdate,
+      required this.image});
 
   @override
   State<SelectServicePage> createState() => _SelectServicePageState();
 }
 
 class _SelectServicePageState extends State<SelectServicePage> {
+  final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    _homeController.gender.clear();
+    _homeController.serviceId.clear();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,14 +69,43 @@ class _SelectServicePageState extends State<SelectServicePage> {
             onTap: () {
               showModalBottomSheet(
                   isScrollControlled: true,
+                  enableDrag: false,
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(32),
-                        topRight: Radius.circular(32),
-                      )),
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  )),
                   context: context,
                   builder: (context) {
-                    return const AddServicesForStylistPage();
+                    return AddServicesForStylistPage(
+                      callback: () {
+                        _homeController.gender.clear();
+                        _homeController.serviceId.clear();
+                        for (int i = 0;
+                            i <
+                                _homeController
+                                    .getSalonServiceList.data!.length;
+                            i++) {
+                          if (_homeController.getSalonServiceList.data![i]
+                                  .isSelectService ??
+                              false) {
+                            _homeController.serviceId.add(_homeController
+                                .getSalonServiceList.data![i].id);
+                            _homeController.gender.add(_homeController
+                                        .getSalonServiceList
+                                        .data![i]
+                                        .selectGender ==
+                                    1
+                                ? "male"
+                                : _homeController.getSalonServiceList.data![i]
+                                            .selectGender ==
+                                        2
+                                    ? "female"
+                                    : "unisex");
+                          }
+                        }
+                      },
+                    );
                   });
             },
           ),
@@ -58,29 +122,72 @@ class _SelectServicePageState extends State<SelectServicePage> {
                   .copyWith(color: ColorConstant.primaryColor, fontSize: 13),
             ),
           ),
-          Expanded(
-            child: ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    color: ColorConstant.dividerColor,
-                    indent: 21,
-                    endIndent: 19,
-                  );
-                },
-                itemCount: 15,
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  return const SelectServiceWidget();
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 10),
+                      separatorBuilder: (context, index) {
+                        return const Divider(
+                          color: ColorConstant.dividerColor,
+                          indent: 21,
+                          endIndent: 19,
+                        );
+                      },
+                      itemCount: 15,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        return const SelectServiceWidget();
+                      }),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: ButtonWidget(
+                buttonTitleText: "ADD",
+                onPress: () {
+                  if (_homeController.serviceId.isEmpty &&
+                      _homeController.gender.isEmpty) {
+                    showMessage("Please Select Service");
+                  } else {
+                    List<String> storeServiceId = [];
+                    List<String> genderStore = [];
+
+                    for (int i = 0; i < _homeController.serviceId.length; i++) {
+                      storeServiceId.add(_homeController.serviceId[i]);
+                    }
+
+                    for (int i = 0; i < _homeController.gender.length; i++) {
+                      genderStore.add(_homeController.gender[i]);
+                    }
+
+                    _homeController.doAddArtiest(
+                        name: widget.name,
+                        mobile: widget.phone,
+                        countryCode: "91",
+                        email: widget.email,
+                        experience: widget.experience,
+                        address: widget.address,
+                        whatsapp: widget.whatsappNo,
+                        panCard: widget.panNo,
+                        homeService: widget.isHomeService.toString(),
+                        password: widget.password,
+                        gender: widget.gender,
+                        dob: widget.birthdate,
+                        image: widget.image,
+                        storeId: storeServiceId,
+                        genderDataList: genderStore,
+                        callback: () {
+                          Get.back();
+                          Get.back();
+                          Get.back();
+                        });
+                  }
+
+                  /* Get.to(() => const AddStylistReviewPage());*/
                 }),
           ),
-          ResetAndAddRowWidget(
-            reset: () {
-            },
-            add: () {
-               Get.to(()=> const AddStylistReviewPage());
-            },
-          )
         ],
       ),
     );

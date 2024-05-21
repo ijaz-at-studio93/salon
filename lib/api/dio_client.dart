@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:salon/constant/assetsconstant.dart';
+import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/text_theme.dart';
 
 import '../constant/api_constant.dart';
 import '../util/shared_prefs.dart';
@@ -49,21 +54,24 @@ class DioClient {
           debugPrint("Bearer $token");
           debugPrint('DioClientPrint');
           if (token.isNotEmpty) {
-            req.headers['Authorization'] = 'Bearer $token';
+            req.headers['x-access-token'] = token;
           }
           return handler.next(req);
         }, onResponse:
             (Response<dynamic> resp, ResponseInterceptorHandler handler) async {
           try {
-            if (resp.statusCode == 401 || resp.statusCode == 400) {
-              /*Get.find<AuthController>().resetApp();*/
+            if (resp.statusCode == 403 || resp.statusCode == 401) {
+              Get.find<AuthController>().resetApp();
             }
-            if (resp.statusCode == 500) {}
+            if (resp.statusCode == 500) {
+              showMessage("Please wait server under maintenance");
+            }
           } catch (e) {
             return handler.next(resp);
           }
           return handler.next(resp);
-        }, onError: (DioException error, ErrorInterceptorHandler handler) async {
+        }, onError:
+            (DioException error, ErrorInterceptorHandler handler) async {
           return handler.next(error);
         }),
       );
@@ -112,15 +120,18 @@ Future<void> showError(error) async {
   }
 }
 
-Future<void> showMessage(String message, {int duration = 3}) async {
+Future<void> showMessage(String message, {int duration = 2}) async {
   if (Get.context != null) {
     Get.showSnackbar(GetSnackBar(
-      message: message.isEmpty ? "Error" : message,
+      messageText: Text(
+        message.isEmpty ? "Error" : message,
+        style: AppTextTheme.medium
+            .copyWith(fontSize: 15, color: ColorConstant.whiteColor),
+      ),
       snackPosition: SnackPosition.BOTTOM,
       margin: const EdgeInsets.all(12),
       duration: Duration(seconds: duration),
       borderRadius: 16,
-      backgroundColor: Colors.black87,
     ));
   }
 }

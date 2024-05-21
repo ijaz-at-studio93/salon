@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:salon/model/service_model/category_list_model.dart';
 
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../../../constant/color_constant.dart';
 
 class AddCategoryListTileWidget extends StatefulWidget {
-  const AddCategoryListTileWidget({super.key});
+  final VoidCallback callback;
+  final CategoryDataList categoryDataList;
+  const AddCategoryListTileWidget(
+      {super.key, required this.callback, required this.categoryDataList});
 
   @override
   State<AddCategoryListTileWidget> createState() =>
@@ -15,46 +20,27 @@ class AddCategoryListTileWidget extends StatefulWidget {
 class _AddCategoryListTileWidgetState extends State<AddCategoryListTileWidget> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "Underarm shaving",
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.blackColor, fontSize: 16),
-          ),
-
-          /* Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: ColorConstant.lightColor,
-              borderRadius: BorderRadius.circular(30),
+    return InkWell(
+      onTap: widget.callback,
+      child: SizedBox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              widget.categoryDataList.name ?? "",
+              style: AppTextTheme.medium
+                  .copyWith(color: ColorConstant.blackColor, fontSize: 16),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                const Icon(
-                  Icons.add,
-                  color: ColorConstant.primaryColor,
-                   size: 18,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "Add Category",
-                  style: AppTextTheme.regular.copyWith(
-                      color: ColorConstant.primaryColor, fontSize: 14),
-                )
-              ],
-            ),
-          ),*/
-          const Icon(
-            CupertinoIcons.check_mark,
-            color: ColorConstant.primaryColor,
-            size: 18,
-          ),
-        ],
+            if (widget.categoryDataList.isSelect ?? false)
+              const Icon(
+                CupertinoIcons.check_mark,
+                color: ColorConstant.primaryColor,
+                size: 18,
+              )
+            else
+              const SizedBox(),
+          ],
+        ),
       ),
     );
   }

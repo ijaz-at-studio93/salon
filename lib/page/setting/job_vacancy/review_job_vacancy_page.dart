@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
+import 'package:salon/page/setting/adding_service/widget/reset_and_add_row_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 
 import '../../../project_specific/text_theme.dart';

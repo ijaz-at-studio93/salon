@@ -35,4 +35,6 @@ class ColorConstant {
   static const Color viewDetailsColor = Color(0xffECECEC);
   static const Color callColor = Color(0xffDBD0F8);
   static const Color topRatedColor = Color(0xff696A6B);
+  static const Color skyBlueColor = Color(0xff2178FC);
+
 }

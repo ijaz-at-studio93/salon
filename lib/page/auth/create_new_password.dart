@@ -37,7 +37,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
                       title: "Create a New Password"),
                   const SizedBox(height: 15),
                   PasswordTextFieldWidget(
-                      textEditingController: _newPasswordTextEditingController,
+                      textEditingController: _confirmPasswordTextEditingController,
                       hintText: "**********",
                       textInputType: TextInputType.text,
                       textInputAction: TextInputAction.done,

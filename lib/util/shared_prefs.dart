@@ -29,17 +29,13 @@ class SharedPrefs {
 
 class PrefConstants {
   static const String token = "token";
-
   // static const String accessToken = "accessToken";
   static const String fcmToken = 'FCMToken';
   static const String isUserLogin = "isLogin";
   static const String userModel = "userModel";
+  static const String stylistModel = "userModel";
   static const String isFirstTime = 'isFirstTime';
-  static const String isSocialLogin = 'socialLogin';
-  static const String themeMode = 'themeMode';
-  static const String lightMode = 'lightMode';
-  static const String darkMode = 'darkMode';
-  static const String autoMode = 'autoMode';
-  static const String userId = "userId";
-  static const String isRemember = "isRemember";
+  static const String isStylist = 'isStylist';
+  static const String isSalon = 'isSalon';
+  static const String deviceId = 'DeviceId';
 }

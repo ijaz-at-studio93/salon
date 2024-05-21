@@ -1,4 +1,15 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:salon/api/auth_api.dart';
+import 'package:salon/api/dio_client.dart';
+import 'package:salon/model/artist_model/artist_login_model.dart';
+import 'package:salon/model/auth/otp_verify_model.dart';
+import 'package:salon/model/auth/salon_auth_model.dart';
+import 'package:salon/page/auth/login_page.dart';
+
+import '../util/shared_prefs.dart';
 
 class AuthController extends GetxController {
   final Rx<bool> _showProgress = false.obs;
@@ -21,28 +32,85 @@ class AuthController extends GetxController {
   bool get isInsightsFav => _isInsightsFav.value;
   set isInsightsFavSelect(val) => _isInsightsFav.value = val;
 
-/*------ Store Map ------*/
-/*  final Rx<ModelName> _userResponseModel = ModelName().obs;
-  UserResponseModel get userResponseModel => _userResponseModel.value;
-  set setUser(usr) => _userResponseModel.value = usr;*/
+/*--------------  Get Set Salon Address --------------*/
+  final Rx<String> _salonCurrentAddress = "".obs;
+  String get salonCurrentAddress => _salonCurrentAddress.value;
+  set salonCurrentAddress(location) => _salonCurrentAddress.value = location;
 
-/*------ Store List ------*/
-/*final RxList<ModelName> _getCategoryList =
-      <ModelName>[].obs;
-  List<ModelName> get categoryList => _getCategoryList;*/
+  /*---------------------  Get Set Lat and Lng -----------------*/
+  final Rx<double> _salonAddressLat = 0.0.obs;
+  double get salonAddressLat => _salonAddressLat.value;
+  set salonAddressLat(location) => _salonAddressLat.value = location;
 
-/*Login API Calling and store user data SharedPrefs*/
-/* login(
-      {required String email,
-      required String password,
-      required VoidCallback callback}) async {
+  final Rx<double> _salonAddLan = 0.0.obs;
+  double get salonAddressLan => _salonAddLan.value;
+  set salonAddressLan(location) => _salonAddLan.value = location;
+
+  /*------ Store OTP Model Data ------*/
+  final Rx<OtpVerifyModel> _otpVerifyModelResponseModel = OtpVerifyModel().obs;
+  OtpVerifyModel get otpVerifyModelResponseModel =>
+      _otpVerifyModelResponseModel.value;
+  set setOtpVerifyModelResponseModel(val) =>
+      _otpVerifyModelResponseModel.value = val;
+
+  /*------------------- Salon Auth Model --------------*/
+  final Rx<SalonResponseModel> _salonResponseModel = SalonResponseModel().obs;
+  SalonResponseModel get salonResponseModel => _salonResponseModel.value;
+  set salonResponseModel(val) => _salonResponseModel.value = val;
+
+  /*--------------------  Artiest Auth Model ------------------*/
+
+  final Rx<SalonArtistResponseModel> _salonArtistResponseModel =
+      SalonArtistResponseModel().obs;
+  SalonArtistResponseModel get getSalonArtistResponseModel =>
+      _salonArtistResponseModel.value;
+  set setSalonArtistResponseModel(val) => _salonResponseModel.value = val;
+
+  /*======================  Do  Register ===============*/
+  doRegister({
+    required String name,
+    required String describe,
+    required String email,
+    required String countryCode,
+    required String mobile,
+    required String address,
+    required String ownerName,
+    required String ownerEmail,
+    required String ownerCountryCode,
+    required String ownerMobile,
+    required String password,
+    required String verificationCode,
+    required String serviceOfferSlab,
+    required String employeeSlab,
+    required File? image,
+    required String geolocationLat,
+    required String geolocationLng,
+    required String description,
+    required VoidCallback callback,
+  }) async {
     try {
       _showProgress.value = true;
-      _userResponseModel.value = await AuthAPI.doLogin(email, password);
-      await userDataStoreToSharedPrefs(_userResponseModel.value);
-      await getCategoryList();
-      */ /*Route Here*/ /*
-      if (_userResponseModel.value.emailAddress != "") {
+      _salonResponseModel.value = await AuthAPI.doRegister(
+          name: name,
+          describe: describe,
+          email: email,
+          countryCode: countryCode,
+          mobile: mobile,
+          address: address,
+          ownerName: ownerName,
+          ownerEmail: ownerEmail,
+          ownerCountryCode: ownerCountryCode,
+          ownerMobile: ownerMobile,
+          password: password,
+          verificationCode: verificationCode,
+          serviceOfferSlab: serviceOfferSlab,
+          employeeSlab: employeeSlab,
+          image: image,
+          geolocationLat: geolocationLat,
+          geolocationLng: geolocationLng,
+          description: description);
+      if (_salonResponseModel.value.data?.id != null) {
+        userDataStoreToSharedPrefs(_salonResponseModel.value);
         callback.call();
       }
     } catch (e) {
@@ -50,49 +118,155 @@ class AuthController extends GetxController {
     } finally {
       _showProgress.value = false;
     }
-  }*/
+  }
 
-/*Store userDataStoreToSharedPrefs Data*/
-/*Future<void> userDataStoreToSharedPrefs(UserResponseModel model) async {
-    _userResponseModel.value = model;
-    debugPrint(model.toString());
-    if (model.token != null) {
-      debugPrint("AccessTOKEN1:${model.token ?? ''}");
-
-      await SharedPrefs.writeValue(PrefConstants.token, model.token);
-    }
-    await SharedPrefs.writeValue(PrefConstants.userModel, model.toJson());
-    await SharedPrefs.writeValue(PrefConstants.userId, model.id.toString());
-    await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
-  }*/
-
-/*------------------ init User Data ------------------ */
-/*initUserData() async {
+  /*-------------------  do Login --------------------*/
+  doLogin(
+      {required String mobileNo,
+      required String cc,
+      required String password,
+      required VoidCallback callback}) async {
     try {
-      _socialLoginProgress.value = true;
-      if (SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
-        */ /*user Profile Model*/ /*
-        _userResponseModel.value = await AuthAPI.getProfile();
-        userDataStoreToSharedPrefs(_userResponseModel.value);
-        await getCategoryList();
-        */ /*without Profile  api*/ /*
-        // debugPrint(_userResponseModel.value.token);
-        // _userResponseModel.value = UserResponseModel.fromJson(SharedPrefs.read(PrefConstants.userModel));
-        // userDataStoreToSharedPrefs(_userResponseModel.value);
+      _showProgress.value = true;
+      _salonResponseModel.value = await AuthAPI.loginSalon(
+          mobileNo: mobileNo, cc: cc, password: password);
+      if (_salonResponseModel.value.data?.id != null) {
+        userDataStoreToSharedPrefs(_salonResponseModel.value);
+        callback.call();
+      } else {
+        showMessage(_salonResponseModel.value.message ?? "");
       }
     } catch (e) {
-      debugPrint(e.toString());
+      showError(e);
     } finally {
-      _socialLoginProgress.value = false;
+      _showProgress.value = false;
     }
-  }*/
+  }
+
+  /*------------------ User Data Store pref --------------*/
+  Future<void> userDataStoreToSharedPrefs(SalonResponseModel model) async {
+    _salonResponseModel.value = model;
+    debugPrint(model.toString());
+    if (model.data?.accessToken != null) {
+      debugPrint("AccessTOKEN1:${model.data?.accessToken ?? ''}");
+      await SharedPrefs.writeValue(
+          PrefConstants.token, model.data?.accessToken);
+    }
+    await SharedPrefs.writeValue(PrefConstants.userModel, model.toJson());
+    await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
+  }
+
+  /*---------------  init User Data -----------*/
+  initUserData() async {
+    if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
+      try {
+        _showProgress.value = true;
+        if (SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
+          _salonResponseModel.value = SalonResponseModel.fromJson(
+              SharedPrefs.read(PrefConstants.userModel));
+          userDataStoreToSharedPrefs(_salonResponseModel.value);
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      } finally {
+        _showProgress.value = false;
+      }
+    } else {
+      try {
+        _showProgress.value = true;
+        if (SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
+          _salonArtistResponseModel.value = SalonArtistResponseModel.fromJson(
+              SharedPrefs.read(PrefConstants.stylistModel));
+          userDataStoreToSharedPrefs(_salonResponseModel.value);
+        }
+      } catch (e) {
+        debugPrint(e.toString());
+      } finally {
+        _showProgress.value = false;
+      }
+    }
+  }
+
+  /*================ Send OTP  Code ===============*/
+  doSendOTP({required String mobileNo, required String cc}) async {
+    try {
+      _showProgress.value = true;
+      bool result =
+          await AuthAPI.sendVerificationCode(mobileNo: mobileNo, cc: cc);
+      if (!result) {
+        showMessage("Verification Code Send Success");
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*==========================  Verification Code =================*/
+  doVerifyOtp(
+      {required String mobileNO,
+      required String cc,
+      required String verificationCode}) async {
+    try {
+      _showProgress.value = true;
+      _otpVerifyModelResponseModel.value = await AuthAPI.otpVerify(
+          mobileNo: mobileNO, cc: cc, verificationCode: verificationCode);
+      if (_otpVerifyModelResponseModel.value.data?.isVerificationCodeValid ??
+          false) {
+        showMessage(_otpVerifyModelResponseModel.value.message ?? "");
+      } else {
+        showMessage(_otpVerifyModelResponseModel.value.message ?? "");
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------- Artiest  --------------------- */
+  doLoginArtiest(
+      {required String mobileNo,
+      required String cc,
+      required String password,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      _salonArtistResponseModel.value = await AuthAPI.loginArtist(
+          mobileNo: mobileNo, cc: cc, password: password);
+      if (_salonArtistResponseModel.value.data?.id != null) {
+        userArtiestDataStoreToSharedPrefs(_salonArtistResponseModel.value);
+        callback.call();
+      } else {
+        showMessage(_salonArtistResponseModel.value.message ?? "");
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  Future<void> userArtiestDataStoreToSharedPrefs(
+      SalonArtistResponseModel model) async {
+    _salonArtistResponseModel.value = model;
+    debugPrint(model.toString());
+    if (model.data?.accessToken != null) {
+      debugPrint("AccessTOKEN1:${model.data?.accessToken ?? ''}");
+      await SharedPrefs.writeValue(
+          PrefConstants.token, model.data?.accessToken);
+    }
+    await SharedPrefs.writeValue(PrefConstants.stylistModel, model.toJson());
+    await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
+  }
 
 /*------------------- RestAPP --------------*/
-/* resetApp() async {
+  resetApp() async {
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, false);
-    await SharedPrefs.writeValue(PrefConstants.isSocialLogin, false);
     await SharedPrefs.writeValue(PrefConstants.isFirstTime, true);
-    await SharedPrefs.writeValue(PrefConstants.isRemember, false);
+    SharedPrefs.writeValue(PrefConstants.isSalon, false);
+    SharedPrefs.writeValue(PrefConstants.isStylist, false);
     Get.offAll(() => const LoginPage());
-  }*/
+  }
 }

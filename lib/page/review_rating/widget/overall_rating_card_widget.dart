@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dash/flutter_dash.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
@@ -59,51 +57,39 @@ class OverAllRatingCardWidget extends StatelessWidget {
             color: ColorConstant.reviewCardColor,
           ),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
                 style: AppTextTheme.italic
                     .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+              ),
+              const SizedBox(height: 10),
+              RatingBar.builder(
+                initialRating: 3.5,
+                minRating: 1,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemSize: 25.0,
+                ignoreGestures: true,
+                itemBuilder: (context, _) => const Icon(
+                  Icons.star,
+                  color: ColorConstant.primaryColor,
+                  size: 25,
+                ),
+                onRatingUpdate: (rating) {},
+              ),
+              const SizedBox(height: 10),
+              Text(
+                "Aditya Mishra • Posted on 24 March 2024",
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
               )
             ],
           ),
         ),
-        const SizedBox(height: 10),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Dash(
-            direction: Axis.horizontal,
-            length: Get.width * 0.88,
-            dashLength: 2,
-            dashColor: const Color(0xffCFCFCF),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: RatingBar.builder(
-            initialRating: 3.5,
-            minRating: 1,
-            direction: Axis.horizontal,
-            allowHalfRating: true,
-            itemCount: 5,
-            itemSize: 25.0,
-            ignoreGestures: true,
-            itemBuilder: (context, _) => const Icon(
-              Icons.star,
-              color: ColorConstant.primaryColor,
-              size: 25,
-            ),
-            onRatingUpdate: (rating) {},
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            "Aditya Mishra • Posted on 24 March 2024",
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
-          ),
-        )
+
       ],
     );
   }

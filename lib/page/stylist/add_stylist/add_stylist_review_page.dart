@@ -1,14 +1,10 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/stylist/add_stylist/widget/stylist_product_list_widget.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import 'package:salon/util/pick_image.dart';
 
 class AddStylistReviewPage extends StatefulWidget {
   const AddStylistReviewPage({super.key});
@@ -186,65 +182,14 @@ class _AddStylistReviewPageState extends State<AddStylistReviewPage> {
   }
 
   /*----------- Profile Photo -------------*/
-  File imagePath = File("");
+
   _stylistProfilePhoto() {
-    return GestureDetector(
-      onTap: () {
-        FileUtils.openPlatformImagePicker(onSelectImage: (file) {
-          setState(() {
-            imagePath = file;
-          });
-        });
-      },
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.center,
-        children: [
-          imagePath.path == ""
-              ? Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: ColorConstant.grayTextColor.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                )
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.file(
-                    imagePath,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-          Positioned(
-            bottom: 10,
-            left: 70,
-            right: 0,
-            child: Container(
-              width: 38,
-              height: 38,
-              padding: const EdgeInsets.all(5),
-              decoration: const BoxDecoration(
-                  color: ColorConstant.whiteColor, shape: BoxShape.circle),
-              child: Container(
-                width: 36,
-                height: 36,
-                decoration: const BoxDecoration(
-                    color: ColorConstant.editButtonColor,
-                    shape: BoxShape.circle),
-                child: Center(
-                  child: Image.asset(
-                    AssetsConstant.editIcon,
-                    width: 12,
-                    height: 12,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
+    return Container(
+      height: 100,
+      width: 100,
+      decoration: BoxDecoration(
+        color: ColorConstant.grayTextColor.withOpacity(0.3),
+        shape: BoxShape.circle,
       ),
     );
   }

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 import 'widget/add_service_row_widget.dart';
 
 class AddServicesForStylistPage extends StatefulWidget {
-  const AddServicesForStylistPage({super.key});
+  final VoidCallback callback;
+  const AddServicesForStylistPage({super.key, required this.callback});
 
   @override
   State<AddServicesForStylistPage> createState() =>
@@ -17,6 +19,15 @@ class AddServicesForStylistPage extends StatefulWidget {
 
 class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
   final _serviceTextEditingController = TextEditingController();
+
+  final _homeController = Get.find<HomeController>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetSalonServiceList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,8 +74,17 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
                   style: AppTextTheme.bold
                       .copyWith(color: ColorConstant.whiteColor, fontSize: 19),
                 ),
-                const SizedBox(),
-                const SizedBox()
+                TextButton(
+                    onPressed: () {
+                      widget.callback();
+                      Get.back();
+                    },
+                    child: Text(
+                      "Done",
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.regular.copyWith(
+                          color: ColorConstant.whiteColor, fontSize: 19),
+                    )),
               ],
             ),
           ),
@@ -78,32 +98,34 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
                   .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
             ),
           ),
-          Expanded(
-            child: ListView.separated(
-                padding: EdgeInsets.zero,
-                separatorBuilder: (context, index) {
-                  return const Divider(
-                    color: ColorConstant.dividerColor,
-                    endIndent: 20,
-                    height: 0,
-                    indent: 20,
-                  );
-                },
-                shrinkWrap: true,
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: AddServiceRowWidget(),
-                  );
-                }),
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : ListView.separated(
+                      padding: EdgeInsets.zero,
+                      separatorBuilder: (context, index) {
+                        return const Divider(
+                          color: ColorConstant.dividerColor,
+                          endIndent: 20,
+                          height: 0,
+                          indent: 20,
+                        );
+                      },
+                      shrinkWrap: true,
+                      itemCount:
+                          _homeController.getSalonServiceList.data?.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: AddServiceRowWidget(
+                            salonService: _homeController
+                                .getSalonServiceList.data![index],
+                          ),
+                        );
+                      }),
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-            child: ButtonWidget(buttonTitleText: "Save", onPress: () {
-              Get.back();
-            },),
-          )
         ],
       ),
     );

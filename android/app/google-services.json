@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "891312168844",
+    "project_id": "stylistsalon-7acb7",
+    "storage_bucket": "stylistsalon-7acb7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891312168844:android:fc8e99e9ca9edc5799c0a9",
+        "android_client_info": {
+          "package_name": "com.ananta.saloon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB4l28qUI9rWAcN1KQfipf57MrEj0P5fXQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

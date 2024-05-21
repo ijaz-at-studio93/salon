@@ -20,7 +20,7 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
-        nameOfScreen: "Complete Profile",
+        nameOfScreen: "Review & Ratings",
         isBackIcon: true,
       ),
       body: Column(

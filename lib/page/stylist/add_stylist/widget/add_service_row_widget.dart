@@ -1,40 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class AddServiceRowWidget extends StatefulWidget {
-  const AddServiceRowWidget({super.key});
+  final SalonService salonService;
+  const AddServiceRowWidget({super.key, required this.salonService});
 
   @override
   State<AddServiceRowWidget> createState() => _AddServiceRowWidgetState();
 }
 
 class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
-  bool isAdd = false;
-  int _selectedGender = 1;
+
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Underarm shaving",
+                widget.salonService.name ?? "",
                 style: AppTextTheme.medium.copyWith(
                   color: ColorConstant.blackColor,
                   fontSize: 16,
                 ),
               ),
               Checkbox(
-                  value: isAdd,
+                  value: widget.salonService.isSelectService ?? false,
                   activeColor: ColorConstant.primaryColor,
                   onChanged: (val) {
                     setState(() {
-                      isAdd = val ?? false;
+                      widget.salonService.isSelectService = val ?? false;
                     });
                   })
             ],
@@ -44,13 +45,13 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedGender = 1;
+                    widget.salonService.selectGender = 1;
                   });
                 },
                 child: Row(
                   children: [
                     Text(
-                      "Men",
+                      "male",
                       style: AppTextTheme.medium.copyWith(
                           color: ColorConstant.blackColor, fontSize: 13),
                     ),
@@ -62,7 +63,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _selectedGender == 1
+                          color: widget.salonService.selectGender == 1
                               ? ColorConstant.primaryColor
                               : ColorConstant.blackColor,
                         ),
@@ -72,7 +73,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                         height: 10,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _selectedGender == 1
+                          color: widget.salonService.selectGender == 1
                               ? ColorConstant.primaryColor
                               : Colors.transparent,
                         ),
@@ -85,13 +86,13 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedGender = 2;
+                    widget.salonService.selectGender = 2;
                   });
                 },
                 child: Row(
                   children: [
                     Text(
-                      "Women",
+                      "female",
                       style: AppTextTheme.medium.copyWith(
                           color: ColorConstant.blackColor, fontSize: 13),
                     ),
@@ -103,7 +104,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _selectedGender == 2
+                          color: widget.salonService.selectGender == 2
                               ? ColorConstant.primaryColor
                               : ColorConstant.blackColor,
                         ),
@@ -113,7 +114,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                         height: 10,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _selectedGender == 2
+                          color: widget.salonService.selectGender == 2
                               ? ColorConstant.primaryColor
                               : Colors.transparent,
                         ),
@@ -126,13 +127,13 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    _selectedGender = 3;
+                    widget.salonService.selectGender = 3;
                   });
                 },
                 child: Row(
                   children: [
                     Text(
-                      "Both",
+                      "unisex",
                       style: AppTextTheme.medium.copyWith(
                           color: ColorConstant.blackColor, fontSize: 13),
                     ),
@@ -144,7 +145,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: _selectedGender == 3
+                          color: widget.salonService.selectGender == 3
                               ? ColorConstant.primaryColor
                               : ColorConstant.blackColor,
                         ),
@@ -154,7 +155,7 @@ class _AddServiceRowWidgetState extends State<AddServiceRowWidget> {
                         height: 10,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _selectedGender == 3
+                          color: widget.salonService.selectGender == 3
                               ? ColorConstant.primaryColor
                               : Colors.transparent,
                         ),

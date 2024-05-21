@@ -1,4 +1,4 @@
-package com.example.salon
+package com.ananta.saloon
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -20,6 +20,7 @@ class CategoryPage extends StatefulWidget {
 class _CategoryPageState extends State<CategoryPage> {
   final _categoryTextEditingController = TextEditingController();
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +46,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 ),
                 GestureDetector(
                   onTap: (){
-                    Get.to(()=> const AddNewServicePage());
+
                   },
                   child: DottedBorder(
                     borderType: BorderType.RRect,
@@ -148,3 +149,5 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 }
+
+

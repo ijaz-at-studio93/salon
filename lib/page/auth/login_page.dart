@@ -2,16 +2,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/page/auth/forgot_password_page.dart';
 import 'package:salon/page/auth/register_page.dart';
 import 'package:salon/page/bottom_bar_page.dart';
-
-
+import 'package:salon/page/stylist_all_module/stylist_bottom_bar_page.dart';
 
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/password_text_field.dart';
-import 'package:salon/project_specific/simple_text_field.dart';
+import 'package:salon/project_specific/phone_field_widget.dart';
+import 'package:salon/project_specific/progress_container_view.dart';
+
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/shared_prefs.dart';
 
 import '../../constant/color_constant.dart';
 
@@ -23,9 +26,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _userNameTextEditingController = TextEditingController();
+  final _mobileTextEditingController = TextEditingController();
   final _passwordTextEditingController = TextEditingController();
-
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,76 +36,86 @@ class _LoginPageState extends State<LoginPage> {
       body: Column(
         children: [
           _headerWidget(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _stylistAndSalon(),
-                  const SizedBox(height: 20),
-                  SimpleTextFieldWidget(
-                      textEditingController: _userNameTextEditingController,
-                      hintText: "For Eg. SOUR7980",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                      title: "Enter Your Username"),
-                  const SizedBox(height: 15),
-                  PasswordTextFieldWidget(
-                      textEditingController: _passwordTextEditingController,
-                      hintText: "**********",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      title: "Enter Password"),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                      right: 20,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        TextButton(
-                          onPressed: () {
-                            Get.to(() => const ForGotPasswordPage());
-                          },
-                          child: Text(
-                            "Forgot Password?",
-                            style: AppTextTheme.medium.copyWith(
-                                color: ColorConstant.redColor, fontSize: 13),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          Obx(
+            () => Expanded(
+              child: ProgressContainerView(
+                isProgressRunning: _authController.showProgress,
+                child: SingleChildScrollView(
+                  child: Column(
                     children: [
-                      Text(
-                        "Register with us-",
-                        style: AppTextTheme.medium.copyWith(
-                            fontSize: 13, color: ColorConstant.grayTextColor),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Get.to(() => const RegisterPage());
-                        },
-                        child: Text(
-                          "Register Now",
-                          style: AppTextTheme.medium.copyWith(
-                              fontSize: 16, color: ColorConstant.primaryColor),
+                      _stylistAndSalon(),
+                      const SizedBox(height: 20),
+                      PhoneFieldWidget(
+                          textEditingController: _mobileTextEditingController,
+                          hintText: "Enter here",
+                          title: "Mobile Number",
+                          textInputType: TextInputType.phone,
+                          textInputAction: TextInputAction.next),
+                      const SizedBox(height: 15),
+                      PasswordTextFieldWidget(
+                          textEditingController: _passwordTextEditingController,
+                          hintText: "**********",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          title: "Enter Password"),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          right: 20,
                         ),
-                      )
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                Get.to(() => const ForGotPasswordPage());
+                              },
+                              child: Text(
+                                "Forgot Password?",
+                                style: AppTextTheme.medium.copyWith(
+                                    color: ColorConstant.redColor,
+                                    fontSize: 13),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      selectedStylistOrSalon == "1"
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Register with us-",
+                                  style: AppTextTheme.medium.copyWith(
+                                      fontSize: 13,
+                                      color: ColorConstant.grayTextColor),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Get.to(() => const RegisterPage());
+                                  },
+                                  child: Text(
+                                    "Register Now",
+                                    style: AppTextTheme.medium.copyWith(
+                                        fontSize: 16,
+                                        color: ColorConstant.primaryColor),
+                                  ),
+                                )
+                              ],
+                            )
+                          : const SizedBox(),
+                      const SizedBox(height: 15),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ButtonWidget(
+                            buttonTitleText: "Continue",
+                            onPress: () {
+                              _doLogin();
+                            }),
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ButtonWidget(
-                        buttonTitleText: "Continue",
-                        onPress: () {
-                          _doLogin();
-                        }),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -181,17 +194,34 @@ class _LoginPageState extends State<LoginPage> {
 
   /*-------------  doLogin -------------*/
   _doLogin() {
-    if (_userNameTextEditingController.text.isEmpty) {
-      showMessage("Please enter user-name");
+    if (_mobileTextEditingController.text.isEmpty) {
+      showMessage("Please enter MobileNo");
+    } else if (_mobileTextEditingController.text.length != 10) {
+      showMessage("Please enter 10 digit  MobileNo");
     } else if (_passwordTextEditingController.text.isEmpty) {
       showMessage("Please enter password");
     } else {
-      /*Get.to(()=>const AddBankAccountPage());*/
-      /*Get.to(()=>const ReviewAndRatingPage());*/
-      /*   Get.to(() => const MyDetailsPage());*/
-      Get.to(() => const BottomBarPage());
-      /*   Get.to(()=>const StylistPage());*/
-      /*   Get.to(()=>const BookingHistoryPage());*/
+      if (selectedStylistOrSalon == "0") {
+        SharedPrefs.writeValue(PrefConstants.isSalon, false);
+        SharedPrefs.writeValue(PrefConstants.isStylist, true);
+        _authController.doLoginArtiest(
+            mobileNo: _mobileTextEditingController.text,
+            cc: "91",
+            password: _passwordTextEditingController.text,
+            callback: () {
+              Get.off(() => const StylistBottomBarPage());
+            });
+      } else {
+        SharedPrefs.writeValue(PrefConstants.isStylist, false);
+        SharedPrefs.writeValue(PrefConstants.isSalon, true);
+        _authController.doLogin(
+            mobileNo: _mobileTextEditingController.text,
+            cc: "91",
+            password: _passwordTextEditingController.text,
+            callback: () {
+              Get.off(() => const BottomBarPage());
+            });
+      }
     }
   }
 }

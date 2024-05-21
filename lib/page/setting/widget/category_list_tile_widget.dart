@@ -20,7 +20,7 @@ class CategoryListTileWidget extends StatelessWidget {
           style: AppTextTheme.medium
               .copyWith(fontSize: 14, color: ColorConstant.blackColor),
         ),
-        GestureDetector(
+        /*GestureDetector(
           onTap: onPress,
           child: Container(
             width: Get.width * 0.2,
@@ -48,7 +48,7 @@ class CategoryListTileWidget extends StatelessWidget {
               ],
             ),
           ),
-        )
+        )*/
       ],
     );
   }

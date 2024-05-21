@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/flow_pages/home_page_2/home_page_2.dart';
-import 'package:salon/page/flow_pages/service_count_page.dart';
-
-
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/widget/booking_widget.dart';
+import 'package:salon/page/profile/document_submitted_page.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:vertical_barchart/vertical-barchart.dart';
 import 'package:vertical_barchart/vertical-barchartmodel.dart';
@@ -21,92 +20,111 @@ class Homepage extends StatefulWidget {
 }
 
 class _HomepageState extends State<Homepage> {
+  final _homeController = Get.find<HomeController>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doCheckEligibility();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: ColorConstant.bgColor,
-      child: Column(
-        children: [
-          _headerWidget(),
-          Expanded(
-            child: SingleChildScrollView(
+    return Obx(
+      () => _homeController.eligibility
+          ? Container(
+              color: ColorConstant.bgColor,
               child: Column(
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: EarningWidget(
-                            color: ColorConstant.primaryColor,
-                            title: "Total Earning",
-                            subTitle: "+17.09% than yesterday",
-                            amount: "₹4000,000",
-                            callback: () {
-                             /* Get.to(()=> const ServiceCountPage());*/
-                              Get.to(()=> const HomePage2());
-                            },
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: EarningWidget(
-                            callback: () {},
-                            color: ColorConstant.orangeDotColor,
-                            title: "Rating",
-                            subTitle: "983 Reviews",
-                            amount: "4.3",
-                          ),
-                        ),
-                      ],
+                  _headerWidget(),
+                    Expanded(
+                      child: _homeController.showProgress
+                          ? const ProgressBarView()
+                          : SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 16),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: EarningWidget(
+                                            color: ColorConstant.primaryColor,
+                                            title: "Total Earning",
+                                            subTitle: "+17.09% than yesterday",
+                                            amount: "₹4000,000",
+                                            callback: () {},
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: EarningWidget(
+                                            callback: () {},
+                                            color: ColorConstant.orangeDotColor,
+                                            title: "Rating",
+                                            subTitle: "983 Reviews",
+                                            amount: "4.3",
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  _dashBoardTabBar(),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 16),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: BookingWidget(
+                                            callback: () {},
+                                            color: ColorConstant.grayTextColor
+                                                .withOpacity(0.1),
+                                            amount: "40",
+                                            title: "Total bookings",
+                                            imageUrl: AssetsConstant
+                                                .totalBookingsIcon,
+                                            imageColor:
+                                                ColorConstant.orangeContainer,
+                                            total: "+25",
+                                            valueColor:
+                                                ColorConstant.totalContainer,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: BookingWidget(
+                                            callback: () {},
+                                            color: ColorConstant.grayTextColor
+                                                .withOpacity(0.1),
+                                            amount: "40",
+                                            title: "Total Revenue",
+                                            imageUrl:
+                                                AssetsConstant.totalRevenueIcon,
+                                            imageColor: ColorConstant
+                                                .totalRevenueContainer,
+                                            total: "+25",
+                                            valueColor:
+                                                ColorConstant.totalContainer,
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  _reportAnalytics(),
+                                  const SizedBox(height: 25),
+                                ],
+                              ),
+                            ),
                     ),
-                  ),
-                  _dashBoardTabBar(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: BookingWidget(
-                            callback: () {
 
-                            },
-                            color: ColorConstant.grayTextColor.withOpacity(0.1),
-                            amount: "40",
-                            title: "Total bookings",
-                            imageUrl: AssetsConstant.totalBookingsIcon,
-                            imageColor: ColorConstant.orangeContainer,
-                            total: "+25",
-                            valueColor: ColorConstant.totalContainer,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: BookingWidget(
-                            callback: () {},
-                            color: ColorConstant.grayTextColor.withOpacity(0.1),
-                            amount: "40",
-                            title: "Total Revenue",
-                            imageUrl: AssetsConstant.totalRevenueIcon,
-                            imageColor: ColorConstant.totalRevenueContainer,
-                            total: "+25",
-                            valueColor: ColorConstant.totalContainer,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  _reportAnalytics(),
-                  const SizedBox(height: 25),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
+            )
+          : const DocumentSubmittedPage(),
     );
   }
 

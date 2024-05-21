@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import '../constant/color_constant.dart';
 
 class SimpleTextFieldWidget extends StatefulWidget {
@@ -10,13 +9,14 @@ class SimpleTextFieldWidget extends StatefulWidget {
   final String title;
   final TextInputType textInputType;
   final TextInputAction textInputAction;
+  final ValueChanged<String>? onChanged;
   const SimpleTextFieldWidget(
       {super.key,
       required this.textEditingController,
       required this.hintText,
       required this.textInputType,
       required this.textInputAction,
-      required this.title});
+      required this.title, this.onChanged});
 
   @override
   State<SimpleTextFieldWidget> createState() => _SimpleTextFieldWidgetState();
@@ -46,6 +46,7 @@ class _SimpleTextFieldWidgetState extends State<SimpleTextFieldWidget> {
                 ),
               ),
               child: TextField(
+                onChanged: widget.onChanged,
                 controller: widget.textEditingController,
                 keyboardType: widget.textInputType,
                 textInputAction: widget.textInputAction,

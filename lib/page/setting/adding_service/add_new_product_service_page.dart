@@ -1,13 +1,18 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/page/setting/adding_service/add_product_sheet_page.dart';
 import 'package:salon/page/setting/adding_service/widget/add_product_check_box_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class AddNewProductServicePage extends StatefulWidget {
-  const AddNewProductServicePage({super.key});
+  final VoidCallback callback;
+  const AddNewProductServicePage({super.key, required this.callback});
 
   @override
   State<AddNewProductServicePage> createState() =>
@@ -15,7 +20,17 @@ class AddNewProductServicePage extends StatefulWidget {
 }
 
 class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
-  final  _serviceTextEditingController =  TextEditingController();
+  final _serviceTextEditingController = TextEditingController();
+
+  final _homeController = Get.find<HomeController>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetProductListData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -47,6 +62,7 @@ class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
               children: [
                 TextButton(
                     onPressed: () {
+                        _homeController.productId.clear();
                       Get.back();
                     },
                     child: Text(
@@ -61,51 +77,49 @@ class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
                   style: AppTextTheme.bold
                       .copyWith(color: ColorConstant.whiteColor, fontSize: 19),
                 ),
-                const SizedBox(),
-                const SizedBox()
+                TextButton(
+                    onPressed: () {
+                      Get.back();
+                      widget.callback();
+                    },
+                    child: Text(
+                      "Done",
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.regular.copyWith(
+                          color: ColorConstant.whiteColor, fontSize: 19),
+                    )),
               ],
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            "Select Your Desired Product For The",
-            textScaler: const TextScaler.linear(0.85),
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.grayTextColor, fontSize: 19),
-          ),
-          Text(
-            "Hair Cut",
-            textScaler: const TextScaler.linear(0.85),
-            style: AppTextTheme.bold
-                .copyWith(fontSize: 19, color: ColorConstant.blackColor),
           ),
           const SizedBox(height: 10),
           _searchAndService(),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Row(
-                  children: [
-                    Text(
-                      "Suggested Service : ",
-                      textScaler: const TextScaler.linear(0.85),
-                      style: AppTextTheme.regular.copyWith(
-                          color: ColorConstant.grayTextColor, fontSize: 15),
-                    ),
-                    Text(
-                      "1 Selected",
-                      textScaler: const TextScaler.linear(0.85),
-                      style: AppTextTheme.bold.copyWith(
-                          color: ColorConstant.blackColor, fontSize: 15),
-                    ),
-
-                  ],
-                ),
                 GestureDetector(
                   onTap: () {
-
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        )),
+                        context: context,
+                        builder: (context) {
+                          return Padding(
+                            padding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom),
+                            child: ProductDetailsPage(
+                              callback: () {
+                                _homeController.doGetProductListData();
+                              },
+                            ),
+                          );
+                        });
                   },
                   child: DottedBorder(
                     borderType: BorderType.RRect,
@@ -141,36 +155,70 @@ class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
               ],
             ),
           ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          endIndent: 20,
-                          indent: 20,
-                          color: ColorConstant.dividerColor,
-                        );
-                      },
-                      itemCount: 15,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return const Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: AddProductCheckBoxWidget(),
-                        );
-                      }),
-                ],
-              ),
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          _homeController.getProductListModel.productList
+                                      ?.isEmpty ??
+                                  false
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: Get.height * 0.15),
+                                    Text(
+                                      "No Any Product Found",
+                                      style: AppTextTheme.bold.copyWith(
+                                          color: ColorConstant.blackColor,
+                                          fontSize: 18),
+                                    ),
+                                    Text(
+                                      "Please Tap to  + Add new Button",
+                                      style: AppTextTheme.bold.copyWith(
+                                          color: ColorConstant.blackColor,
+                                          fontSize: 18),
+                                    ),
+                                  ],
+                                )
+                              : ListView.separated(
+                                  separatorBuilder: (context, index) {
+                                    return const Divider(
+                                      endIndent: 20,
+                                      indent: 20,
+                                      color: ColorConstant.dividerColor,
+                                    );
+                                  },
+                                  itemCount: _homeController.getProductListModel
+                                          .productList?.length ??
+                                      0,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 10),
+                                      child: AddProductCheckBoxWidget(
+                                        homeController: _homeController,
+
+                                        product: _homeController
+                                            .getProductListModel
+                                            .productList![index],
+                                      ),
+                                    );
+                                  }),
+                        ],
+                      ),
+                    ),
             ),
           ),
         ],
       ),
     );
   }
+
   /*------------------ Search and Service ---------------*/
   _searchAndService() {
     return Container(
@@ -206,5 +254,4 @@ class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
       ),
     );
   }
-
 }

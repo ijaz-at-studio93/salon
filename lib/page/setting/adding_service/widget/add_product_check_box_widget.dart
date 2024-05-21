@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class AddProductCheckBoxWidget extends StatefulWidget {
-  const AddProductCheckBoxWidget({super.key});
+  final Product product;
+
+  final HomeController homeController;
+  const AddProductCheckBoxWidget(
+      {super.key,
+      required this.product,
+
+      required this.homeController});
 
   @override
-  State<AddProductCheckBoxWidget> createState() => _AddProductCheckBoxWidgetState();
+  State<AddProductCheckBoxWidget> createState() =>
+      _AddProductCheckBoxWidgetState();
 }
 
 class _AddProductCheckBoxWidgetState extends State<AddProductCheckBoxWidget> {
-  bool isCheckMark = false;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -19,16 +28,17 @@ class _AddProductCheckBoxWidgetState extends State<AddProductCheckBoxWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            "Underarm shaving",
+            widget.product.name ?? "",
             style: AppTextTheme.medium
                 .copyWith(color: ColorConstant.blackColor, fontSize: 16),
           ),
           Checkbox(
-              value: isCheckMark,
+              value: widget.product.isSelectedProduct ?? false,
               activeColor: ColorConstant.primaryColor,
               onChanged: (val) {
                 setState(() {
-                  isCheckMark = val ?? false;
+                  widget.product.isSelectedProduct = val ?? false;
+                  widget.homeController.productId.clear();
                 });
               })
         ],

@@ -18,7 +18,7 @@ class _DocumentSubmittedPageState extends State<DocumentSubmittedPage> {
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
         nameOfScreen: "Under Process",
-        isBackIcon: true,
+        isBackIcon: false,
       ),
       body: Column(
         children: [
@@ -62,7 +62,7 @@ class _DocumentSubmittedPageState extends State<DocumentSubmittedPage> {
               )
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
         ],
       ),
     );

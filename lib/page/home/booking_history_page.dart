@@ -2,7 +2,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/bank_account/widget/booking_history_widget.dart';
 import 'package:salon/project_specific/text_theme.dart';

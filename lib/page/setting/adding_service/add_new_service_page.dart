@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/setting/adding_service/create_new_service_page.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import '../widget/category_list_tile_widget.dart';
 
 class AddNewServicePage extends StatefulWidget {
@@ -18,6 +19,14 @@ class AddNewServicePage extends StatefulWidget {
 
 class _AddNewServicePageState extends State<AddNewServicePage> {
   final _serviceTextEditingController = TextEditingController();
+  final _homeController = Get.find<HomeController>();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetSalonServiceList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,13 +56,15 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
                         isScrollControlled: true,
                         shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.only(
-                              topLeft: Radius.circular(32),
-                              topRight: Radius.circular(32),
-                            )),
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        )),
                         context: context,
                         builder: (context) {
                           return Padding(
-                            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                            padding: EdgeInsets.only(
+                                bottom:
+                                    MediaQuery.of(context).viewInsets.bottom),
                             child: const CreateNewServicePage(),
                           );
                         });
@@ -93,33 +104,41 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
             ),
           ),
           const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.separated(
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          endIndent: 20,
-                          indent: 20,
-                          color: ColorConstant.grayTextColor,
-                        );
-                      },
-                      itemCount: 5,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          child: CategoryListTileWidget(
-                            title: 'Side fade Haircut',
-                            onPress: () {},
-                          ),
-                        );
-                      }),
-                ],
-              ),
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return const Divider(
+                                  endIndent: 20,
+                                  indent: 20,
+                                  color: ColorConstant.grayTextColor,
+                                );
+                              },
+                              itemCount: _homeController
+                                      .getSalonServiceList.data?.length ??
+                                  0,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: CategoryListTileWidget(
+                                    title: _homeController.getSalonServiceList
+                                            .data?[index].name ??
+                                        "",
+                                    onPress: () {},
+                                  ),
+                                );
+                              }),
+                        ],
+                      ),
+                    ),
             ),
           ),
         ],

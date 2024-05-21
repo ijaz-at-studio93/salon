@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import '../constant/assetsconstant.dart';
 import '../constant/color_constant.dart';
 
@@ -40,7 +39,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           width: 30,
           height: 30,
           margin: const EdgeInsets.all(7),
-          /*   decoration: const BoxDecoration(shape: BoxShape.circle, color: ColorConstant.primary),*/
+          /* decoration: const BoxDecoration(shape: BoxShape.circle, color: ColorConstant.primary) */
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Image.asset(

@@ -43,6 +43,9 @@ class AssetsConstant {
   static const String map = "assets/images/map.png";
   static const String scanner = "assets/images/scanner.png";
   static const String blogs = "assets/images/blogs.png";
+  static const String filter = "assets/images/filter.png";
+
+  static const String placeHolder = "assets/images/place_holder.jpg";
 
   /*---------------------- Profile -----------------*/
   static const String accountDetails = "assets/profile/accountdetails.png";
@@ -55,6 +58,8 @@ class AssetsConstant {
   static const String product = "assets/profile/Product.png";
   static const String reviewRatings = "assets/profile/reviewratings.png";
   static const String serviceList = "assets/profile/servicelist.png";
+
+  static const String noInterNet = "assets/images/nointernet_connection.png";
 
 
 

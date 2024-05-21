@@ -1,16 +1,20 @@
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/flow_pages/home_page_2/edit_profile.dart';
+import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/page/review_rating/review_and_rating_page.dart';
+import 'package:salon/page/setting/availability_setting_page.dart';
 import 'package:salon/page/setting/categoty_page.dart';
+import 'package:salon/page/setting/product_list_page.dart';
+import 'package:salon/page/setting/service_list_page.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import 'package:salon/util/pick_image.dart';
-
-import 'job_vacancy/job_vacancy_page.dart';
+import '../../project_specific/logout_dialog.dart';
+import '../bank_account/add_new_fresh_account_page.dart';
+import '../stylist_all_module/stylist_home_page/edit_profile.dart';
 
 class MyDetailsPage extends StatefulWidget {
   const MyDetailsPage({super.key});
@@ -20,24 +24,23 @@ class MyDetailsPage extends StatefulWidget {
 }
 
 class _MyDetailsPageState extends State<MyDetailsPage> {
-  File imagePath = File("");
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
-        nameOfScreen: "My Details",
-        isBackIcon: false
-      ),
+      appBar: const AppBarWidget(nameOfScreen: "My Details", isBackIcon: false),
       body: SingleChildScrollView(
         child: Column(
           children: [
             _imageRowWidget(),
             _dividerCustom(),
             _customRowWidget(
-                titleName: "Availablity",
+                titleName: "Availability",
                 image: AssetsConstant.eye,
-                onTap: () {}),
+                onTap: () {
+                  Get.to(() => const AvailabilitySettingPage());
+                }),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Categories",
@@ -49,29 +52,37 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
             _customRowWidget(
                 titleName: "Product",
                 image: AssetsConstant.product,
-                onTap: () {}),
+                onTap: () {
+                  Get.to(()=> const ProductListPage());
+                }),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Service List",
                 image: AssetsConstant.serviceList,
-                onTap: () {}),
-            _dividerCustom(),
+                onTap: () {
+                  Get.to(() => const ServiceListPage());
+                }),
+            /*  _dividerCustom(),
             _customRowWidget(
                 titleName: "Job",
                 image: AssetsConstant.job,
                 onTap: () {
                   Get.to(() => const JobVacancyPage());
-                }),
+                }),*/
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Account Details",
                 image: AssetsConstant.accountDetails,
-                onTap: () {}),
+                onTap: () {
+                  Get.to(() => const AddNewFreshAccountPage());
+                }),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Review & Ratings",
                 image: AssetsConstant.reviewRatings,
-                onTap: () {}),
+                onTap: () {
+                  Get.to(() => const ReviewAndRatingPage());
+                }),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "FAQ’s & Support",
@@ -79,15 +90,21 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                 onTap: () {}),
             _dividerCustom(),
             _customRowWidget(
-                titleName: "About Us", image: AssetsConstant.info, onTap: () {}),
+                titleName: "About Us",
+                image: AssetsConstant.info,
+                onTap: () {}),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Sign Out",
                 image: AssetsConstant.logout,
-                onTap: () {}),
-
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const LogOutDialogWidget();
+                      });
+                }),
             const SizedBox(height: 20),
-
           ],
         ),
       ),
@@ -100,45 +117,43 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Row(
         children: [
-          InkWell(
-            onTap: () async {
-              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
-                setState(() {
-                  imagePath = file;
-                });
-              });
-            },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(100),
-              child: imagePath.path == ""
-                  ? Image.network(
-                      "https://plus.unsplash.com/premium_photo-1708271598114-5e6e8892a2ad?q=80&w=1935&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                      width: 66,
-                      height: 66,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.file(
-                      imagePath,
-                      width: 66,
-                      height: 66,
-                      fit: BoxFit.cover,
-                    ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(100),
+            child: CachedNetworkImage(
+              width: 66,
+              height: 66,
+              fit: BoxFit.cover,
+              imageUrl:
+              "${APIConstants.image}${_authController.salonResponseModel.data?.salonData?.image ?? ""}",
+              placeholder: (context, url) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 66,
+                height: 66,
+                fit: BoxFit.cover,
+              ),
+              errorWidget: (context, url, error) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 66,
+                height: 66,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
+
           const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Jay Morjariya",
+                _authController.salonResponseModel.data?.salonData?.name ?? "",
                 textScaler: const TextScaler.linear(0.85),
                 style: AppTextTheme.bold
                     .copyWith(color: ColorConstant.blackColor, fontSize: 20),
               ),
               const SizedBox(height: 5),
               GestureDetector(
-                onTap: (){
-                  Get.to(()=> const EditProfile());
+                onTap: () {
+                  Get.to(() => const EditProfile());
                 },
                 child: Container(
                   padding: const EdgeInsets.all(10),

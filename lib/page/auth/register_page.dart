@@ -1,15 +1,22 @@
 import 'dart:async';
-
+import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/constant/assetsconstant.dart';
+import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/page/bottom_bar_page.dart';
+import 'package:salon/page/location_pick/location_pick.dart';
 import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/password_text_field.dart';
+import 'package:salon/project_specific/phone_field_widget.dart';
+import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
+import 'package:salon/util/pick_image.dart';
 import '../../constant/color_constant.dart';
-import '../profile/complete_profile_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,12 +26,22 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _yourNameTextEditingController = TextEditingController();
-  final _saloonNameTextEditingController = TextEditingController();
-  final _saloonAddressTextEditingController = TextEditingController();
-  final _emailTextEditingController = TextEditingController();
-  final _mobileTextEditingController = TextEditingController();
-  final _otpTextEditingController = TextEditingController();
+  final _yourName = TextEditingController();
+  final _describe = TextEditingController();
+  final _email = TextEditingController();
+  final _mobile = TextEditingController();
+  final _address = TextEditingController();
+  final _ownerName = TextEditingController();
+  final _ownerEmail = TextEditingController();
+  final _ownerMobile = TextEditingController();
+  final _password = TextEditingController();
+  final _verificationCode = TextEditingController();
+  final _description = TextEditingController();
+  String serviceOfferSlab = "";
+  String employeeSlab = "";
+  double geolocationLat = 0.0;
+  double geolocationLng = 0.0;
+  final _authController = Get.find<AuthController>();
   int _start = 60;
 
   bool isResendOTp = false;
@@ -35,105 +52,188 @@ class _RegisterPageState extends State<RegisterPage> {
       body: Column(
         children: [
           _headerWidget(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  SimpleTextFieldWidget(
-                      textEditingController: _yourNameTextEditingController,
-                      hintText: "Enter Here",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                      title: "Your Name"),
-                  const SizedBox(height: 20),
-                  SimpleTextFieldWidget(
-                      textEditingController: _saloonNameTextEditingController,
-                      hintText: "Enter Here",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.next,
-                      title: "Saloon Name"),
-                  const SizedBox(height: 20),
-                  _saloonAddress(
-                      textEditingController:
-                          _saloonAddressTextEditingController,
-                      hintText: "address",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.none,
-                      title: "Your Saloon Address"),
-                  const SizedBox(height: 20),
-                  _noOfServiceYouOffer(),
-                  const SizedBox(height: 20),
-                  _noOfEmploys(),
-                  const SizedBox(height: 20),
-                  SimpleTextFieldWidget(
-                      textEditingController: _emailTextEditingController,
-                      hintText: "example@gmail.com",
-                      textInputType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
-                      title: "Email Id"),
-                  const SizedBox(height: 20),
-                  _mobileNumberWidget(
-                      textEditingController: _mobileTextEditingController,
-                      hintText: "",
-                      textInputType: TextInputType.phone,
-                      textInputAction: TextInputAction.next,
-                      title: "Mobile Number"),
-                  const SizedBox(height: 20),
-                  isOTPField
-                      ? Column(
-                          children: [
-                            SimpleTextFieldWidget(
-                                textEditingController:
-                                    _otpTextEditingController,
-                                hintText: "",
-                                textInputType: TextInputType.number,
-                                textInputAction: TextInputAction.done,
-                                title: "Enter OTP"),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 20, top: 15),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  isResendOTp
-                                      ? TextButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              _start = 60;
-                                              isResendOTp = false;
-                                              startTimer();
-                                            });
-                                          },
-                                          child: Text(
-                                            "Resend",
-                                            style: AppTextTheme.bold.copyWith(
-                                                fontSize: 16,
-                                                color: ColorConstant.redColor),
-                                          ))
-                                      : Text(
-                                          "Retry in 00:${_start.toString()}",
-                                          style: AppTextTheme.bold.copyWith(
-                                              fontSize: 16,
-                                              color: ColorConstant.redColor),
-                                        ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        )
-                      : const SizedBox(),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ButtonWidget(
-                        buttonTitleText: "Done",
-                        onPress: () {
-                          _doRegister();
-                        }),
+          Obx(
+            () => Expanded(
+              child: ProgressContainerView(
+                isProgressRunning: _authController.showProgress,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 10),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        child: Text(
+                          "Saloon Detail",
+                          style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.blackColor, fontSize: 16),
+                        ),
+                      ),
+                      SimpleTextFieldWidget(
+                          textEditingController: _yourName,
+                          hintText: "Enter Here",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
+                          title: "Name"),
+                      const SizedBox(height: 20),
+                      _saloonAddress(
+                          onTap: () {},
+                          textEditingController: _describe,
+                          hintText: "describe",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.none,
+                          title: "Describe"),
+                      const SizedBox(height: 20),
+                      SimpleTextFieldWidget(
+                          textEditingController: _email,
+                          hintText: "example@gmail.com",
+                          textInputType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          title: "Email Id"),
+                      const SizedBox(height: 20),
+                      _mobileNumberWidget(
+                          textEditingController: _mobile,
+                          hintText: "Enter Here",
+                          textInputType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                          title: "Mobile No"),
+                      const SizedBox(height: 20),
+                      isOTPField
+                          ? Column(
+                              children: [
+                                SimpleTextFieldWidget(
+                                    onChanged: (val) {
+                                      if (val.length == 6) {
+                                        _authController.doVerifyOtp(
+                                            mobileNO: _mobile.text,
+                                            cc: "91",
+                                            verificationCode: val);
+                                      }
+                                    },
+                                    textEditingController: _verificationCode,
+                                    hintText: "",
+                                    textInputType: TextInputType.number,
+                                    textInputAction: TextInputAction.done,
+                                    title: "Enter OTP"),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.only(right: 20, top: 15),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      isResendOTp
+                                          ? TextButton(
+                                              onPressed: () {
+                                                setState(() {
+                                                  _start = 60;
+                                                  isResendOTp = false;
+                                                  startTimer();
+                                                  _authController.doSendOTP(
+                                                      mobileNo: _mobile.text,
+                                                      cc: "91");
+                                                  _verificationCode.clear();
+                                                });
+                                              },
+                                              child: Text(
+                                                "Resend",
+                                                style: AppTextTheme.bold
+                                                    .copyWith(
+                                                        fontSize: 16,
+                                                        color: ColorConstant
+                                                            .redColor),
+                                              ))
+                                          : Text(
+                                              "Retry in 00:${_start.toString()}",
+                                              style: AppTextTheme.bold.copyWith(
+                                                  fontSize: 16,
+                                                  color:
+                                                      ColorConstant.redColor),
+                                            ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            )
+                          : const SizedBox(),
+                      _saloonAddress(
+                          onTap: () {
+                            Get.to(() => LocationPickPage(
+                                  callback: () {
+                                    _address.text =
+                                        _authController.salonCurrentAddress;
+                                  },
+                                ));
+                          },
+                          textEditingController: _address,
+                          hintText: "address",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.none,
+                          title: "Address"),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 15, vertical: 10),
+                        child: Text(
+                          "Owner Detail",
+                          style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.blackColor, fontSize: 16),
+                        ),
+                      ),
+                      SimpleTextFieldWidget(
+                          textEditingController: _ownerName,
+                          hintText: "Enter Here",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
+                          title: "Owner Name"),
+                      const SizedBox(height: 20),
+                      SimpleTextFieldWidget(
+                          textEditingController: _ownerEmail,
+                          hintText: "example@gmail.com",
+                          textInputType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          title: "Owner Email-Id"),
+                      const SizedBox(height: 20),
+                      PhoneFieldWidget(
+                          textEditingController: _ownerMobile,
+                          hintText: "Enter Here",
+                          textInputType: TextInputType.phone,
+                          textInputAction: TextInputAction.next,
+                          title: "Owner Mobile Number"),
+                      const SizedBox(height: 20),
+                      PasswordTextFieldWidget(
+                          textEditingController: _password,
+                          hintText: "***********",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.next,
+                          title: "Password"),
+                      const SizedBox(height: 20),
+                      _noOfServiceYouOffer(),
+                      const SizedBox(height: 20),
+                      _noOfEmploys(),
+                      const SizedBox(height: 20),
+                      _salonImage(),
+                      const SizedBox(height: 20),
+                      _saloonAddress(
+                          onTap: () {},
+                          textEditingController: _description,
+                          hintText: "Enter Here",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.none,
+                          title: "Description"),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ButtonWidget(
+                            buttonTitleText: "Done",
+                            onPress: () {
+                              _doRegister();
+                            }),
+                      ),
+                      const SizedBox(height: 30),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                ],
+                ),
               ),
             ),
           ),
@@ -175,6 +275,7 @@ class _RegisterPageState extends State<RegisterPage> {
     required String title,
     required TextInputType textInputType,
     required TextInputAction textInputAction,
+    required VoidCallback onTap,
   }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -197,6 +298,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               child: TextField(
+                onTap: onTap,
                 controller: textEditingController,
                 maxLines: 8,
                 keyboardType: textInputType,
@@ -216,20 +318,24 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   /*--------------- Dummy Data ---------*/
+
+
+
   final List<String> noOfService = [
-    '<50',
-    '<60',
-    '<70',
-    '<80',
-    '<90',
+    'less than 10',
+    '10-20',
+    '20-30',
+    '30-40',
+    '40-50',
+    'more than 50'
   ];
 
   final List<String> noOfEmp = [
-    '<50',
-    '<60',
-    '<70',
-    '<80',
-    '<90',
+    'less than 5',
+    '5-10',
+    '10-15',
+    '15-20',
+    'more than 20',
   ];
 
   /*--------------------- No. Of Service You Offer ------------------*/
@@ -273,7 +379,7 @@ class _RegisterPageState extends State<RegisterPage> {
               return null;
             },
             onChanged: (value) {
-              //Do something when selected item is changed.
+              serviceOfferSlab = value!;
             },
             onSaved: (value) {
               /* selectedValue = value.toString();*/
@@ -343,6 +449,7 @@ class _RegisterPageState extends State<RegisterPage> {
               return null;
             },
             onChanged: (value) {
+              employeeSlab = value!;
               //Do something when selected item is changed.
             },
             onSaved: (value) {
@@ -423,7 +530,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         });
                       } else {
                         setState(() {
-                          _otpTextEditingController.clear();
+                          _verificationCode.clear();
                           isOTPButton = false;
                           isOTPField = false;
                         });
@@ -448,11 +555,12 @@ class _RegisterPageState extends State<RegisterPage> {
                     ? TextButton(
                         onPressed: () {
                           setState(() {
+                            _authController.doSendOTP(
+                                mobileNo: _mobile.text, cc: "91");
                             isOTPField = true;
                             _start = 60;
                             startTimer();
                           });
-
                         },
                         child: Text(
                           "Get OTP",
@@ -462,6 +570,59 @@ class _RegisterPageState extends State<RegisterPage> {
                       )
                     : const SizedBox(),
               ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /*----------------- Service Image --------------*/
+  File imagePath = File("");
+  _salonImage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Salon Image ",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () {
+              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
+                setState(() {
+                  imagePath = file;
+                });
+              });
+            },
+            child: Container(
+              height: 165,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: ColorConstant.borderColor,
+                ),
+              ),
+              child: imagePath.path.isEmpty
+                  ? Center(
+                      child: Image.asset(
+                        AssetsConstant.uploadIcon,
+                        height: 24,
+                        width: 24,
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.file(
+                        imagePath,
+                        fit: BoxFit.fitHeight,
+                      ),
+                    ),
             ),
           )
         ],
@@ -482,44 +643,99 @@ class _RegisterPageState extends State<RegisterPage> {
         });
       }
     });
-
   }
 
   /*--------------------  Do Register --------------*/
   _doRegister() {
-    if (_yourNameTextEditingController.text.isEmpty) {
+    if (_yourName.text.isEmpty) {
       showMessage("Please enter your name");
       return;
-    } else if (_saloonNameTextEditingController.text.isEmpty) {
-      showMessage("Please enter saloon name");
+    } else if (_describe.text.isEmpty) {
+      showMessage("Please describe field to fill");
       return;
-    } else if (_saloonAddressTextEditingController.text.isEmpty) {
-      showMessage("Please enter saloon address");
-      return;
-    } else if (_emailTextEditingController.text.isEmpty) {
-      showMessage("Please enter email address");
+    } else if (_email.text.isEmpty) {
+      showMessage("Please enter emil-id");
       return;
     } else {
       final bool emailValid = RegExp(
               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-          .hasMatch(_emailTextEditingController.text);
+          .hasMatch(_email.text);
       if (!emailValid) {
         showMessage("Please enter valid email address");
         return;
-      } else if (_mobileTextEditingController.text.isEmpty) {
+      } else if (_mobile.text.isEmpty) {
         showMessage("Please enter mobile no");
         return;
-      } else if (_mobileTextEditingController.text.length != 10) {
+      } else if (_mobile.text.length != 10) {
         showMessage("Please enter 10 digit mobile no");
         return;
-      } else if (_otpTextEditingController.text.isEmpty) {
+      } else if (_verificationCode.text.isEmpty) {
         showMessage("Please enter otp");
         return;
-      } else if (_otpTextEditingController.text.length != 6) {
+      } else if (_verificationCode.text.length != 6) {
         showMessage("Please enter 6 digit otp");
         return;
+      } else if (_address.text.isEmpty) {
+        showMessage("Please enter address");
+        return;
+      } else if (_ownerName.text.isEmpty) {
+        showMessage("Please enter owner-name");
+        return;
+      } else if (_ownerEmail.text.isEmpty) {
+        showMessage("Please enter owner-email id");
+        return;
       } else {
-        Get.to(()=> const CompleteProfilePage());
+        final bool emailValid = RegExp(
+                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+            .hasMatch(_ownerEmail.text);
+
+        if (!emailValid) {
+          showMessage("Please enter valid owner email address");
+          return;
+        } else if (_ownerMobile.text.isEmpty) {
+          showMessage("Please enter ownerMobile");
+          return;
+        } else if (_ownerMobile.text.length != 10) {
+          showMessage("Please enter 10 digit mobile no");
+          return;
+        } else if (serviceOfferSlab == "") {
+          showMessage("Please Select no ofService");
+          return;
+        } else if (employeeSlab == "") {
+          showMessage("Please Select no emp");
+          return;
+        } else if (imagePath.path == "") {
+          showMessage("Please upload saloon Image");
+          return;
+        } else if (_description.text.isEmpty) {
+          showMessage("Please enter Description");
+          return;
+        } else {
+          print(imagePath.path);
+          _authController.doRegister(
+            name: _yourName.text,
+            describe: _describe.text,
+            email: _email.text,
+            countryCode: "91",
+            mobile: _mobile.text,
+            address: _address.text,
+            ownerName: _ownerName.text,
+            ownerEmail: _ownerEmail.text,
+            ownerCountryCode: "91",
+            ownerMobile: _ownerMobile.text,
+            password: _password.text,
+            verificationCode: _verificationCode.text,
+            serviceOfferSlab: serviceOfferSlab,
+            employeeSlab: employeeSlab,
+            image: File(imagePath.path),
+            geolocationLat: _authController.salonAddressLat.toString(),
+            geolocationLng: _authController.salonAddressLan.toString(),
+            description: _description.text,
+            callback: () {
+              Get.to(() => const BottomBarPage());
+            },
+          );
+        }
       }
     }
   }

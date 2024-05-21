@@ -1,16 +1,23 @@
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/adding_service/widget/reset_and_add_row_widget.dart';
+import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/page/stylist/add_stylist/select_service_page.dart';
+import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/password_text_field.dart';
 import 'package:salon/project_specific/phone_field_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
+
+import '../../location_pick/location_pick.dart';
 
 class AddStylistPage extends StatefulWidget {
   const AddStylistPage({super.key});
@@ -20,14 +27,19 @@ class AddStylistPage extends StatefulWidget {
 }
 
 class _AddStylistPageState extends State<AddStylistPage> {
-  final _stylistName = TextEditingController();
-  final _phoneNumber = TextEditingController();
+  final _name = TextEditingController();
+  final _mobile = TextEditingController();
+  final _email = TextEditingController();
   final _experience = TextEditingController();
   final _address = TextEditingController();
-  final _email = TextEditingController();
   final _whatsappNumber = TextEditingController();
-  final _aadharNumber = TextEditingController();
   final _panNumber = TextEditingController();
+  final _password = TextEditingController();
+  String gender = "";
+  DateTime selectedDate = DateTime.now();
+  String birthDate = "";
+  File imagePath = File("");
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,34 +56,18 @@ class _AddStylistPageState extends State<AddStylistPage> {
               children: [
                 _stylistProfilePhoto(),
                 SimpleTextFieldWidget(
-                    textEditingController: _stylistName,
+                    textEditingController: _name,
                     hintText: "Tap To Enter",
                     textInputType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                     title: "Stylist Name"),
                 const SizedBox(height: 20),
                 PhoneFieldWidget(
-                    textEditingController: _phoneNumber,
+                    textEditingController: _mobile,
                     hintText: "Tap To Enter",
-                    textInputType: TextInputType.number,
+                    textInputType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     title: "Phone Number"),
-                const SizedBox(height: 20),
-                _minimumExperience(
-                    textEditingController: _experience,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    title: ""),
-                const SizedBox(height: 20),
-                _bestAt(),
-                const SizedBox(height: 20),
-                _addressField(
-                    textEditingController: _address,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    title: "Address"),
                 const SizedBox(height: 20),
                 SimpleTextFieldWidget(
                     textEditingController: _email,
@@ -80,40 +76,145 @@ class _AddStylistPageState extends State<AddStylistPage> {
                     textInputAction: TextInputAction.next,
                     title: "Email ID"),
                 const SizedBox(height: 20),
-                _dropDownButtonForFilter(),
+                _minimumExperience(
+                    textEditingController: _experience,
+                    hintText: "Tap To Enter",
+                    textInputType: TextInputType.number,
+                    textInputAction: TextInputAction.next,
+                    title: ""),
+                const SizedBox(height: 20),
+                _addressFiled(
+                    onTap: () {
+                      Get.to(() => LocationPickPage(
+                            callback: () {
+                              _address.text =
+                                  _authController.salonCurrentAddress;
+                            },
+                          ));
+                    },
+                    textEditingController: _address,
+                    hintText: "address",
+                    textInputType: TextInputType.text,
+                    textInputAction: TextInputAction.none,
+                    title: "Address"),
                 const SizedBox(height: 20),
                 PhoneFieldWidget(
                     textEditingController: _whatsappNumber,
                     hintText: "Tap To Enter",
-                    textInputType: TextInputType.number,
+                    textInputType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     title: "Whatsapp Number"),
                 const SizedBox(height: 20),
                 SimpleTextFieldWidget(
-                    textEditingController: _aadharNumber,
-                    hintText: "For eg. 6667 8327 8738",
-                    textInputType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    title: "Aadhar Number"),
-                const SizedBox(height: 20),
-                SimpleTextFieldWidget(
                     textEditingController: _panNumber,
-                    hintText: "For eg. IHDH872873",
-                    textInputType: TextInputType.number,
+                    hintText: "For eg. ABCDE1234F",
+                    textInputType: TextInputType.text,
                     textInputAction: TextInputAction.next,
                     title: "PAN Card"),
+                const SizedBox(height: 20),
+                PasswordTextFieldWidget(
+                    textEditingController: _password,
+                    hintText: "*************",
+                    textInputType: TextInputType.text,
+                    textInputAction: TextInputAction.next,
+                    title: "Password"),
+                const SizedBox(height: 20),
+                _homeService(),
+                const SizedBox(height: 20),
+                _selectGender(),
+                const SizedBox(height: 20),
+                _selectBirthDate(),
+                const SizedBox(height: 25),
               ],
             ),
           ),
-          ResetAndAddRowWidget(
-            reset: () {},
-            add: () {
-              Get.to(()=> const SelectServicePage());
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            child: ButtonWidget(
+                buttonTitleText: "Add",
+                onPress: () {
+                  _doAddStylist();
+                }),
           )
         ],
       ),
     );
+  }
+
+  /*------------------- doAdd Stylist Basic Detail ----------------------*/
+  _doAddStylist() {
+    if (_name.text.isEmpty) {
+      showMessage("Please enter stylist-name");
+      return;
+    } else if (_mobile.text.isEmpty) {
+      showMessage("Please enter phoneNumber");
+      return;
+    } else if (_mobile.text.length != 10) {
+      showMessage("Please enter 10 digit phoneNumber");
+      return;
+    } else if (_email.text.isEmpty) {
+      showMessage("Please enter email");
+      return;
+    } else {
+      final bool emailValid = RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(_email.text);
+      if (!emailValid) {
+        showMessage("Please enter valid email");
+        return;
+      } else if (_experience.text.isEmpty) {
+        showMessage("Please enter your experience");
+        return;
+      } else if (_address.text.isEmpty) {
+        showMessage("Please enter address");
+        return;
+      } else if (_whatsappNumber.text.isEmpty) {
+        showMessage("Please enter whatsapp-number");
+        return;
+      } else if (_panNumber.text.isEmpty) {
+        showMessage("Please enter panCardNumber");
+        return;
+      } else {
+        final bool panCard =
+            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panNumber.text);
+        if (!panCard) {
+          showMessage("Please enter valid panCardNumber");
+          return;
+        } else if (_password.text.isEmpty) {
+          showMessage("Please enter password");
+          return;
+        } else if (_password.text.length < 8) {
+          showMessage("Please enter 8 latter password");
+          return;
+        } else if (gender == "") {
+          showMessage("Please  select gender");
+          return;
+        } else if (birthDate == "") {
+          showMessage("Please select birthdate");
+          return;
+        } else if (imagePath.path.isEmpty) {
+          showMessage("Please choose image");
+          return;
+        } else {
+          Get.to(
+            () => SelectServicePage(
+              name: _name.text,
+              phone: _mobile.text,
+              email: _email.text,
+              experience: _experience.text,
+              address: _address.text,
+              whatsappNo: _whatsappNumber.text,
+              panNo: _panNumber.text,
+              password: _password.text,
+              isHomeService: isHomeServiceEnable,
+              gender: gender,
+              birthdate: birthDate,
+              image: imagePath,
+            ),
+          );
+        }
+      }
+    }
   }
 
   /*---------------- Count Row Widget -------------*/
@@ -204,24 +305,69 @@ class _AddStylistPageState extends State<AddStylistPage> {
     );
   }
 
+  /*------------ is Home Service --------------*/
+  bool isHomeServiceEnable = false;
+  _homeService() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            "Home Service",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          height: 50,
+          width: Get.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: ColorConstant.borderColor,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Is home service",
+                style: AppTextTheme.regular
+                    .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+              ),
+              CupertinoSwitch(
+                activeColor: ColorConstant.primaryColor,
+                value: isHomeServiceEnable,
+                onChanged: (value) {
+                  setState(() {
+                    isHomeServiceEnable =
+                        value; // Update the CupertinoSwitch state
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
 /*--------------- Dummy Data ---------*/
-  final List<String> dataList = [
-    'Both in home and saloon',
-    'yesterday',
-    'This Week',
-    'This Month',
-    'This year',
-  ];
+  final List<String> dataList = ["MALE", "FEMALE", "OTHER"];
 
   /*--------------------- No. Of Service You Offer ------------------*/
-  _dropDownButtonForFilter() {
+  _selectGender() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Service offered",
+            "Gender",
             style: AppTextTheme.regular
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
@@ -245,13 +391,16 @@ class _AddStylistPageState extends State<AddStylistPage> {
                 ),
               ),
               hint: Text(
-                'Both in home and saloon',
+                'Select Gender',
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.grayColor, fontSize: 13),
               ),
               items: dataList
                   .map((item) => DropdownMenuItem<String>(
                         value: item,
+                        onTap: () {
+                          gender = item;
+                        },
                         child: Text(item,
                             style: AppTextTheme.medium.copyWith(
                                 color: ColorConstant.blackColor, fontSize: 13)),
@@ -259,7 +408,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                   .toList(),
               validator: (value) {
                 if (value == null) {
-                  return 'Today';
+                  return 'Select Gender';
                 }
                 return null;
               },
@@ -271,13 +420,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
               },
               buttonStyleData: const ButtonStyleData(
                 padding: EdgeInsets.only(right: 8),
-              ),
-              iconStyleData: const IconStyleData(
-                icon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black,
-                ),
-                iconSize: 24,
               ),
               dropdownStyleData: DropdownStyleData(
                 decoration: BoxDecoration(
@@ -294,20 +436,27 @@ class _AddStylistPageState extends State<AddStylistPage> {
     );
   }
 
-  /*-------------- Best at  -------------*/
-  _bestAt() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Best at",
+  /*----------------------- selectBirthdate BirthDate --------------------*/
+  _selectBirthDate() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            "Birthdate",
             style: AppTextTheme.regular
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
-          const SizedBox(height: 12),
-          Container(
+        ),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: () {
+            _selectDate(context);
+          },
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             height: 50,
             width: Get.width,
             decoration: BoxDecoration(
@@ -316,14 +465,46 @@ class _AddStylistPageState extends State<AddStylistPage> {
                 color: ColorConstant.borderColor,
               ),
             ),
-          )
-        ],
-      ),
+            child: Row(
+              children: [
+                Text(
+                  birthDate == "" ? "BirthDate" : birthDate,
+                  style: AppTextTheme.medium.copyWith(
+                      color: birthDate == ""
+                          ? ColorConstant.grayTextColor
+                          : ColorConstant.blackColor,
+                      fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 
+  /*---------------  Date Picker --------------*/
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        String inputDateStr = selectedDate.toString();
+        DateTime inputDate = DateTime.parse(inputDateStr);
+        DateFormat outputFormat = DateFormat('yyyy-MM-dd');
+        String outPutDateFromShow = outputFormat.format(inputDate);
+        birthDate = outPutDateFromShow;
+      });
+    }
+  }
+
   /*----------- Profile Photo -------------*/
-  File imagePath = File("");
+
   _stylistProfilePhoto() {
     return GestureDetector(
       onTap: () {
@@ -433,8 +614,57 @@ class _AddStylistPageState extends State<AddStylistPage> {
     );
   }
 
+  /*------------ Saloon Address TextField -----------*/
+  _addressFiled({
+    required TextEditingController textEditingController,
+    required String hintText,
+    required String title,
+    required TextInputType textInputType,
+    required TextInputAction textInputAction,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          Container(
+              height: 110,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: ColorConstant.borderColor,
+                ),
+              ),
+              child: TextField(
+                onTap: onTap,
+                controller: textEditingController,
+                maxLines: 8,
+                keyboardType: textInputType,
+                textInputAction: textInputAction,
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 12, top: 15),
+                    border: InputBorder.none,
+                    hintText: hintText,
+                    hintStyle: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.grayColor, fontSize: 13)),
+              )),
+        ],
+      ),
+    );
+  }
+
   /*--------------- Minimum Experience ---------------*/
-  int year = 1;
+
   _minimumExperience({
     required TextEditingController textEditingController,
     required String hintText,
