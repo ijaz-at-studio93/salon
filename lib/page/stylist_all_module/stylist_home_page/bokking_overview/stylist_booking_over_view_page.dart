@@ -57,7 +57,7 @@ class _StylistBookingOverViewPageState
                         children: [
                           const Padding(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
+                                horizontal: 14, vertical: 10),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -68,7 +68,7 @@ class _StylistBookingOverViewPageState
                                     titleValue: "4.1",
                                   ),
                                 ),
-                                SizedBox(width: 10),
+                                SizedBox(width: 5),
                                 Expanded(
                                   child: ServiceCountRowWidget(
                                     image: AssetsConstant.receiveDoneIcon,
@@ -202,7 +202,9 @@ class _StylistBookingOverViewPageState
                                                             .data?[index]
                                                             .appointmentId ??
                                                         "",
-                                                    callback: () {},
+                                                    callback: () {
+                                                      _stylistController.doAcceptAppointment();
+                                                    },
                                                   ));
                                             },
                                             endTime: _stylistController

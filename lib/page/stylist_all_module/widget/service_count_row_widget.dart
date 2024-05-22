@@ -33,13 +33,13 @@ class ServiceCountRowWidget extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 13),
+          const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                textScaler: const TextScaler.linear(0.85),
+                textScaler: const TextScaler.linear(0.80),
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor),
               ),

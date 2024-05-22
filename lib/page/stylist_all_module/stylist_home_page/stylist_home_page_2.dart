@@ -33,7 +33,7 @@ class _HomePage2State extends State<HomePage2> {
               children: [
                 _dashBoardTabBar(),
                 const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

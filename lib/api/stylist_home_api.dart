@@ -17,8 +17,8 @@ class StylistAPI {
 
   /*------------------------- Accepted Booking APi -------------------*/
   static Future<PendingAppointmentsListModel> acceptBooking() async {
-    final response =
-        await DioClient.client.get("artist/appointments/upcoming/confirm-appointments");
+    final response = await DioClient.client
+        .get("artist/appointments/upcoming/confirm-appointments");
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {
@@ -45,6 +45,18 @@ class StylistAPI {
         "artist/appointments/$appointmentId/status",
         data: {"status": status});
     if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Booking For Qr Code Scan ----------------*/
+  static Future<bool> qrcodeScan({required String completionToken}) async {
+    final response = await DioClient.client.put(
+        "artist/appointments/complete-with-completion-token",
+        data: {"completionToken": completionToken});
+    if (response.data['success']) {
       return true;
     } else {
       throw response.data;

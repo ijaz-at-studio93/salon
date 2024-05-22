@@ -13,14 +13,14 @@ import 'change_slot_time_bottom_sheet.dart';
 class BookingOverviewPage extends StatefulWidget {
   final String appointmentId;
   final VoidCallback callback;
-  const BookingOverviewPage({super.key, required this.appointmentId, required this.callback});
+  const BookingOverviewPage(
+      {super.key, required this.appointmentId, required this.callback});
 
   @override
   State<BookingOverviewPage> createState() => _BookingOverviewPageState();
 }
 
 class _BookingOverviewPageState extends State<BookingOverviewPage> {
-
   final _stylistController = Get.find<StylistController>();
 
   @override
@@ -105,9 +105,9 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                               Text(
                                 convertFinalDate(
                                     date: _stylistController
-                                        .getAppointmentsDetailsModel
-                                        .data
-                                        ?.finalizedAt ??
+                                            .getAppointmentsDetailsModel
+                                            .data
+                                            ?.finalizedAt ??
                                         ""),
                                 style: AppTextTheme.bold.copyWith(
                                     fontSize: 16,
@@ -137,8 +137,7 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                                     "${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.startsAt ?? "")} - ${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.endsAt ?? "")}",
                                     style: AppTextTheme.bold.copyWith(
                                         fontSize: 16,
-                                        color:
-                                        ColorConstant.blackColor),
+                                        color: ColorConstant.blackColor),
                                   ),
                                   const SizedBox(width: 10),
                                   GestureDetector(
@@ -214,13 +213,11 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                       Text(
                         "Customer Details",
                         style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.grayTextColor,
-                            fontSize: 16),
+                            color: ColorConstant.grayTextColor, fontSize: 16),
                       ),
                       const SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Name",
@@ -229,22 +226,17 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                                 fontSize: 16),
                           ),
                           Text(
-                            _stylistController
-                                .getAppointmentsDetailsModel
-                                .data
-                                ?.user
-                                ?.name ??
+                            _stylistController.getAppointmentsDetailsModel.data
+                                    ?.user?.name ??
                                 "",
                             style: AppTextTheme.bold.copyWith(
-                                color: ColorConstant.blackColor,
-                                fontSize: 16),
+                                color: ColorConstant.blackColor, fontSize: 16),
                           ),
                         ],
                       ),
                       const SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             "Phone",
@@ -253,15 +245,11 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                                 fontSize: 16),
                           ),
                           Text(
-                            _stylistController
-                                .getAppointmentsDetailsModel
-                                .data
-                                ?.user
-                                ?.mobile ??
+                            _stylistController.getAppointmentsDetailsModel.data
+                                    ?.user?.mobile ??
                                 "",
                             style: AppTextTheme.bold.copyWith(
-                                color: ColorConstant.blackColor,
-                                fontSize: 16),
+                                color: ColorConstant.blackColor, fontSize: 16),
                           ),
                         ],
                       ),
@@ -269,13 +257,11 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                       Text(
                         "Address",
                         style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.grayTextColor,
-                            fontSize: 16),
+                            color: ColorConstant.grayTextColor, fontSize: 16),
                       ),
                       const SizedBox(height: 10),
                       Row(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           SizedBox(
                             width: Get.width * 0.4,
@@ -309,8 +295,7 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                 const SizedBox(height: 20),
                 GestureDetector(
                   onTap: () {
-                    MapsLauncher.launchCoordinates(
-                        22.303894, 70.802162);
+                    MapsLauncher.launchCoordinates(22.303894, 70.802162);
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -343,8 +328,7 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                         Text(
                           "Get Direction",
                           style: AppTextTheme.medium.copyWith(
-                              color: ColorConstant.primaryColor,
-                              fontSize: 16),
+                              color: ColorConstant.primaryColor, fontSize: 16),
                         )
                       ],
                     ),
@@ -362,12 +346,11 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _stylistController.getAppointmentsDetailsModel
-                            .data?.service?.name ??
+                        _stylistController.getAppointmentsDetailsModel.data
+                                ?.service?.name ??
                             "",
                         style: AppTextTheme.bold.copyWith(
-                            fontSize: 16,
-                            color: ColorConstant.blackColor),
+                            fontSize: 16, color: ColorConstant.blackColor),
                       ),
                     ],
                   ),
@@ -376,26 +359,18 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                 _headerWidget(
                     color: ColorConstant.review,
                     title:
-                    "${_stylistController.getAppointmentsDetailsModel.data?.service?.categories?.length} Category",
+                        "${_stylistController.getAppointmentsDetailsModel.data?.service?.categories?.length} Category",
                     titleValue: "Category"),
                 const SizedBox(height: 10),
                 ListView.builder(
-                    itemCount: _stylistController
-                        .getAppointmentsDetailsModel
-                        .data
-                        ?.service
-                        ?.categories
-                        ?.length,
+                    itemCount: _stylistController.getAppointmentsDetailsModel
+                        .data?.service?.categories?.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
                       return _headerValueWidget(
-                          title: _stylistController
-                              .getAppointmentsDetailsModel
-                              .data
-                              ?.service
-                              ?.categories?[i]
-                              .name ??
+                          title: _stylistController.getAppointmentsDetailsModel
+                                  .data?.service?.categories?[i].name ??
                               "",
                           titleValue: "");
                     }),
@@ -403,36 +378,32 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                 _headerWidget(
                     color: ColorConstant.review,
                     title:
-                    "${_stylistController.getAppointmentsDetailsModel.data?.service?.products?.length} Product",
+                        "${_stylistController.getAppointmentsDetailsModel.data?.service?.products?.length} Product",
                     titleValue: "product"),
                 const SizedBox(height: 10),
                 ListView.builder(
-                    itemCount: _stylistController
-                        .getAppointmentsDetailsModel
-                        .data
-                        ?.service
-                        ?.products
-                        ?.length,
+                    itemCount: _stylistController.getAppointmentsDetailsModel
+                        .data?.service?.products?.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
                       return _headerValueWidget(
-                          title: _stylistController
-                              .getAppointmentsDetailsModel
-                              .data
-                              ?.service
-                              ?.products?[i]
-                              .name ??
+                          title: _stylistController.getAppointmentsDetailsModel
+                                  .data?.service?.products?[i].name ??
                               "",
                           titleValue:
-                          "₹${_stylistController.getAppointmentsDetailsModel.data?.service?.products?[i].price ?? ""}/-");
+                              "₹${_stylistController.getAppointmentsDetailsModel.data?.service?.products?[i].price ?? ""}/-");
                     }),
               ],
             ),
           ),
           GestureDetector(
             onTap: () {
-              Get.to(() => const ScanPage());
+              Get.to(
+                () => ScanPage(
+                  callback: widget.callback,
+                ),
+              );
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -509,8 +480,6 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
     return "$formattedDate $formattedTime";
   }
 
-
-
   /*---------------- Header Value Widget ----------- */
   _headerValueWidget({required String title, required String titleValue}) {
     return Container(
@@ -535,6 +504,4 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
       ),
     );
   }
-
-
 }

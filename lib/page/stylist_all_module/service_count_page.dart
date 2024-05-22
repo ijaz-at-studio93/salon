@@ -28,7 +28,7 @@ class _ServiceCountPageState extends State<ServiceCountPage> {
       body: ListView(
         children: [
           const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
