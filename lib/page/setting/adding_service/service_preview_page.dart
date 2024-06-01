@@ -176,7 +176,7 @@ class _ServicePreviewPageState extends State<ServicePreviewPage> {
                                     ));
                               }),
                           const SizedBox(height: 5),
-                          _homeController.getProductListModel.productList
+                          _homeController.getServiceReviewModel.data?.products
                                       ?.isEmpty ??
                                   false
                               ? const SizedBox()
@@ -185,7 +185,7 @@ class _ServicePreviewPageState extends State<ServicePreviewPage> {
                                     _headerWidget(
                                         color: ColorConstant.review,
                                         titleValue:
-                                            "${_homeController.getProductListModel.productList?.length} Added",
+                                            "${_homeController.getServiceReviewModel.data?.products?.length} Added",
                                         title: "Product"),
                                     ListView.separated(
                                         separatorBuilder: (context, index) {
@@ -196,9 +196,7 @@ class _ServicePreviewPageState extends State<ServicePreviewPage> {
                                           );
                                         },
                                         padding: EdgeInsets.zero,
-                                        itemCount: _homeController
-                                                .getProductListModel
-                                                .productList
+                                        itemCount: _homeController.getServiceReviewModel.data?.products
                                                 ?.length ??
                                             0,
                                         shrinkWrap: true,
@@ -212,21 +210,15 @@ class _ServicePreviewPageState extends State<ServicePreviewPage> {
                                                       vertical: 15),
                                               child:
                                                   ReviewProductListTileWidget(
-                                                name: _homeController
-                                                        .getProductListModel
-                                                        .productList![index]
+                                                name:  _homeController.getServiceReviewModel.data?.products?[index]
                                                         .name ??
                                                     "",
                                                 image:
-                                                    "${APIConstants.image}${_homeController.getProductListModel.productList![index].image ?? ""}",
-                                                des: _homeController
-                                                        .getProductListModel
-                                                        .productList![index]
+                                                    "${APIConstants.image}${_homeController.getServiceReviewModel.data?.products?[index].image ?? ""}",
+                                                des:_homeController.getServiceReviewModel.data?.products?[index]
                                                         .description ??
                                                     "",
-                                                price: _homeController
-                                                    .getProductListModel
-                                                    .productList![index]
+                                                price: _homeController.getServiceReviewModel.data!.products![index]
                                                     .price
                                                     .toString(),
                                               ));

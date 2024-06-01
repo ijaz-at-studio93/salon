@@ -1,9 +1,11 @@
 import 'dart:ui';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/stylist_home_api.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
 import 'package:salon/model/stylist/pending_appointment.dart';
+import '../../model/stylist/allow_portfolio_upload_model.dart';
 
 class StylistController extends GetxController {
   /*---------------  Show  Progressbar --------------*/
@@ -33,6 +35,22 @@ class StylistController extends GetxController {
   AppointmentsDetailsModel get getAppointmentsDetailsModel =>
       _appointmentsDetailsModel.value;
   set setAppointmentsDetailsModel(val) => _appointmentsDetailsModel.value = val;
+
+  /*-------------------  complete AppointmentsListModel --------------------*/
+  final Rx<PendingAppointmentsListModel> _completeAppointmentsListModel =
+      PendingAppointmentsListModel().obs;
+  PendingAppointmentsListModel get getCompleteAppointmentsListModel =>
+      _completeAppointmentsListModel.value;
+  set setCompleteAppointmentsListModel(val) =>
+      _completeAppointmentsListModel.value = val;
+
+  /*------------------------- Complete Booking For QrCode ---------------------*/
+  final Rx<AllowPortfolioUploadModel> _allowPortfolioUploadModel =
+      AllowPortfolioUploadModel().obs;
+  AllowPortfolioUploadModel get getAllowPortfolioUploadModel =>
+      _allowPortfolioUploadModel.value;
+  set setAllowPortfolioUploadModel(val) =>
+      _allowPortfolioUploadModel.value = val;
 
   /*---------------------- Get PendingAppointmentsListModel --------------------*/
   doPendingAppointmentsListModel() async {
@@ -92,14 +110,48 @@ class StylistController extends GetxController {
     }
   }
 
-  /*------------------------- Qr code To  Booking Page --------------*/
+  /*------------------------- Qr Code To Booking Page -------------------*/
   doScanQrcode(
       {required String completionToken, required VoidCallback callback}) async {
     try {
       _showProgress.value = true;
-      bool result =
+      _allowPortfolioUploadModel.value =
           await StylistAPI.qrcodeScan(completionToken: completionToken);
-      if (result) {
+      if (_allowPortfolioUploadModel.value.data?.appointment?.startsAt !=
+              null ||
+          _allowPortfolioUploadModel.value.data?.appointment?.startsAt != "") {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------- Do Get Served Booking ------------------*/
+  doGetServedBooking() async {
+    try {
+      _showProgress.value = true;
+      _completeAppointmentsListModel.value =
+          await StylistAPI.servedBookingSection();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------- do Upload Image ------------------*/
+  doUploadImage(
+      {required String appointmentId,
+      required List<String> multiplePath,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      String result = await StylistAPI.uploadImage(
+          appointmentId: appointmentId, multiplePath: multiplePath);
+      if (result != "") {
         callback.call();
       }
     } catch (e) {

@@ -134,7 +134,7 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                               Row(
                                 children: [
                                   Text(
-                                    "${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.startsAt ?? "")} - ${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.endsAt ?? "")}",
+                                    "${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.startsAt ?? "")} - ${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.endsAt ?? "")}",
                                     style: AppTextTheme.bold.copyWith(
                                         fontSize: 16,
                                         color: ColorConstant.blackColor),
@@ -340,37 +340,24 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                   width: Get.width,
                   color: ColorConstant.bgColor,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _stylistController.getAppointmentsDetailsModel.data
-                                ?.service?.name ??
-                            "",
-                        style: AppTextTheme.bold.copyWith(
-                            fontSize: 16, color: ColorConstant.blackColor),
-                      ),
-                    ],
-                  ),
-                ),
+
                 const SizedBox(height: 10),
                 _headerWidget(
                     color: ColorConstant.review,
                     title:
-                        "${_stylistController.getAppointmentsDetailsModel.data?.service?.categories?.length} Category",
+                        "${_stylistController.getAppointmentsDetailsModel
+                            .data?.items?.length} Category",
                     titleValue: "Category"),
                 const SizedBox(height: 10),
                 ListView.builder(
-                    itemCount: _stylistController.getAppointmentsDetailsModel
-                        .data?.service?.categories?.length,
+                    itemCount:_stylistController.getAppointmentsDetailsModel
+                        .data?.items?.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
                       return _headerValueWidget(
-                          title: _stylistController.getAppointmentsDetailsModel
-                                  .data?.service?.categories?[i].name ??
+                          title:_stylistController.getAppointmentsDetailsModel
+                              .data?.items?[i].service?.name ??
                               "",
                           titleValue: "");
                     }),
@@ -378,21 +365,22 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                 _headerWidget(
                     color: ColorConstant.review,
                     title:
-                        "${_stylistController.getAppointmentsDetailsModel.data?.service?.products?.length} Product",
+                        "Product",
                     titleValue: "product"),
                 const SizedBox(height: 10),
                 ListView.builder(
                     itemCount: _stylistController.getAppointmentsDetailsModel
-                        .data?.service?.products?.length,
+                        .data?.items?.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, i) {
                       return _headerValueWidget(
                           title: _stylistController.getAppointmentsDetailsModel
-                                  .data?.service?.products?[i].name ??
+                              .data?.items?[i].product?.name ??
                               "",
                           titleValue:
-                              "₹${_stylistController.getAppointmentsDetailsModel.data?.service?.products?[i].price ?? ""}/-");
+                              "₹${_stylistController.getAppointmentsDetailsModel
+                                  .data?.items?[i].product?.price ?? ""}/-");
                     }),
               ],
             ),
@@ -401,6 +389,7 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
             onTap: () {
               Get.to(
                 () => ScanPage(
+                  appointmentId: widget.appointmentId ,
                   callback: widget.callback,
                 ),
               );

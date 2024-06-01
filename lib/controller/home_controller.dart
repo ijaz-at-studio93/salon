@@ -3,13 +3,15 @@ import 'dart:ui';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/home_api.dart';
+import 'package:salon/model/service_model/appointment_details_model.dart';
 import 'package:salon/model/service_model/category_list_model.dart';
+import 'package:salon/model/service_model/pending_appointments_list_model.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
+import 'package:salon/model/stylist/artiest_list_model.dart';
 
 class HomeController extends GetxController {
-
   /*---------------  Show  Progressbar --------------*/
   final Rx<bool> _showProgress = false.obs;
   bool get showProgress => _showProgress.value;
@@ -47,6 +49,40 @@ class HomeController extends GetxController {
       SalonServiceListModel().obs;
   SalonServiceListModel get getSalonServiceList => _salonServiceList.value;
   set setSalonServiceList(val) => _salonServiceList.value = val;
+
+  /*-------------------  Salon UpComing -------------------*/
+  final Rx<PendingAppointmentsListModel> _salonUpcomingList =
+      PendingAppointmentsListModel().obs;
+  PendingAppointmentsListModel get getSalonUpcomingList =>
+      _salonUpcomingList.value;
+  set setSalonUpcomingList(val) => _salonUpcomingList.value = val;
+
+  /*-------------------  Salon Served Appointments --------------*/
+  final Rx<PendingAppointmentsListModel> _salonServedList =
+      PendingAppointmentsListModel().obs;
+  PendingAppointmentsListModel get getSalonServedList => _salonServedList.value;
+  set setSalonServedList(val) => _salonServedList.value = val;
+
+  /*------------------- Salon Cancel Appointment -----------------*/
+  final Rx<PendingAppointmentsListModel> _salonCancelServedList =
+      PendingAppointmentsListModel().obs;
+  PendingAppointmentsListModel get getSalonCancelServedList =>
+      _salonCancelServedList.value;
+  set setSalonCancelServedList(val) => _salonCancelServedList.value = val;
+
+  /*-------------------  Appointment Details  -------------------*/
+  final Rx<AppointmentDetailsModel> _appointmentDetailsModel =
+      AppointmentDetailsModel().obs;
+  AppointmentDetailsModel get getAppointmentDetailsModel =>
+      _appointmentDetailsModel.value;
+  set setAppointmentDetailsModel(val) => _appointmentDetailsModel.value = val;
+
+  /*---------------------  Salon Artist List  -----------------------------*/
+  final Rx<SalonArtistListModel> _salonArtistListModel =
+      SalonArtistListModel().obs;
+  SalonArtistListModel get getSalonArtistListModel =>
+      _salonArtistListModel.value;
+  set setSalonArtistListModel(val) => _salonArtistListModel.value = val;
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -244,6 +280,67 @@ class HomeController extends GetxController {
       if (result) {
         callback.call();
       }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*----------------- Upcoming Booking  Data ----------------*/
+  doUpcomingData() async {
+    try {
+      _showProgress.value = true;
+      _salonUpcomingList.value = await HomeAPI.getPendingAppointments();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------------  Get Cancel Booking Data --------------*/
+  doCancelData() async {
+    try {
+      _showProgress.value = true;
+      _salonCancelServedList.value = await HomeAPI.getCancelAppointments();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*----------------- Complete Booking  Data ----------------*/
+  doCompleteBookingData() async {
+    try {
+      _showProgress.value = true;
+      _salonServedList.value = await HomeAPI.getServedAppointments();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------  Appointment Details Model ---------------------*/
+  doGetAppointmentDetailsModel({required String appointmentId}) async {
+    try {
+      _showProgress.value = true;
+      _appointmentDetailsModel.value =
+          await HomeAPI.appointmentDetails(appointmentId: appointmentId);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+/*-----------------  Salon Artiest  List Data Get ----------------*/
+  doSalonArtistListModel() async {
+    try {
+      _showProgress.value = true;
+      _salonArtistListModel.value = await HomeAPI.getSalonArtiestListData();
     } catch (e) {
       showError(e);
     } finally {

@@ -1,18 +1,19 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/model/service_model/appointment_details_model.dart';
 import 'package:salon/model/service_model/category_list_model.dart';
+import 'package:salon/model/service_model/pending_appointments_list_model.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
+import 'package:salon/model/stylist/artiest_list_model.dart';
 
 class HomeAPI {
-  /*=================== eligibility =====================*/
-  static Future<bool>
+  /*=================== eligibility =====================*/ static Future<bool>
       checkEligibility() async {
     final response = await DioClient.client.get(
       APIEndPoint.eligibility,
@@ -221,6 +222,61 @@ class HomeAPI {
       return false;
     } else if (response.statusCode == 200) {
       return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*--------------------------- Get Pending Appointments Model ---------------------*/
+  static Future<PendingAppointmentsListModel> getPendingAppointments() async {
+    final response =
+        await DioClient.client.get("salon/appointments/pending-appointments");
+    if (response.isSuccess) {
+      return PendingAppointmentsListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*----------------------  Get Cancelled Booking  History ----------------------*/
+  static Future<PendingAppointmentsListModel> getCancelAppointments() async {
+    final response =
+        await DioClient.client.get("salon/appointments/cancel-appointments");
+    if (response.isSuccess) {
+      return PendingAppointmentsListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*--------------------------  Get Served Appointments --------------------*/
+  static Future<PendingAppointmentsListModel> getServedAppointments() async {
+    final response =
+        await DioClient.client.get("salon/appointments/served-appointments");
+    if (response.isSuccess) {
+      return PendingAppointmentsListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------------- Appointment - Details ----------------------------- */
+  static Future<AppointmentDetailsModel> appointmentDetails(
+      {required String appointmentId}) async {
+    final response =
+        await DioClient.client.get("salon/appointments/$appointmentId");
+    if (response.isSuccess) {
+      return AppointmentDetailsModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*------------------- Salon  Artiest L1ist Data ----------------------*/
+  static Future<SalonArtistListModel> getSalonArtiestListData() async {
+    final response = await DioClient.client.get("salon/artist/list");
+    if (response.isSuccess) {
+      return SalonArtistListModel.fromJson(response.data);
     } else {
       throw response.data;
     }

@@ -60,7 +60,14 @@ class _ServedFilterWidgetState extends State<ServedFilterWidget> {
                   style: AppTextTheme.bold
                       .copyWith(color: ColorConstant.whiteColor, fontSize: 19),
                 ),
-                const SizedBox(),
+                TextButton(
+                    onPressed: () {},
+                    child: Text(
+                      "",
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.bold.copyWith(
+                          color: ColorConstant.whiteColor, fontSize: 19),
+                    )),
               ],
             ),
           ),

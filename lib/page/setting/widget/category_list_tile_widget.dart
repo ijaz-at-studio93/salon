@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class CategoryListTileWidget extends StatelessWidget {
   final String title;
+
   final VoidCallback onPress;
-  const CategoryListTileWidget({super.key, required this.title, required this.onPress});
+  const CategoryListTileWidget(
+      {super.key, required this.title, required this.onPress});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +19,7 @@ class CategoryListTileWidget extends StatelessWidget {
           title,
           style: AppTextTheme.medium
               .copyWith(fontSize: 14, color: ColorConstant.blackColor),
-        ),
-        /*GestureDetector(
+        ), /*GestureDetector(
           onTap: onPress,
           child: Container(
             width: Get.width * 0.2,

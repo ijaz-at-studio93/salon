@@ -1,3 +1,7 @@
+import 'package:http_parser/http_parser.dart';
+import 'package:dio/dio.dart';
+import 'package:mime/mime.dart';
+import 'package:salon/model/stylist/allow_portfolio_upload_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
 
 import '../model/stylist/pending_appointment.dart';
@@ -52,12 +56,52 @@ class StylistAPI {
   }
 
   /*---------------  Booking For Qr Code Scan ----------------*/
-  static Future<bool> qrcodeScan({required String completionToken}) async {
+  static Future<AllowPortfolioUploadModel> qrcodeScan(
+      {required String completionToken}) async {
     final response = await DioClient.client.put(
         "artist/appointments/complete-with-completion-token",
         data: {"completionToken": completionToken});
     if (response.data['success']) {
-      return true;
+      return AllowPortfolioUploadModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*----------------------  Setting Section  Served Booking Section ---------------*/
+  static Future<PendingAppointmentsListModel> servedBookingSection() async {
+    final response =
+        await DioClient.client.get("artist/appointments/served-appointments");
+    if (response.isSuccess) {
+      return PendingAppointmentsListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*-------------------- Upload Image */
+  static Future<String> uploadImage(
+      {required String appointmentId,
+      required List<String> multiplePath}) async {
+    final formData = FormData.fromMap({});
+
+    if (multiplePath.isNotEmpty) {
+      for (int i = 0; i < multiplePath.length; i++) {
+        final mimeTypeData =
+            lookupMimeType(multiplePath[i], headerBytes: [0xFF, 0xD8])
+                ?.split('/');
+        final multipartFile = await MultipartFile.fromFile(
+            multiplePath[i] ?? "",
+            contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+        formData.files.add(MapEntry('images', multipartFile));
+      }
+    }
+
+    final response = await DioClient.client.put(
+        'artist/portfolio/appointments/$appointmentId/portfolio-upload',
+        data: formData);
+    if (response.isSuccess) {
+      return response.data['message'];
     } else {
       throw response.data;
     }

@@ -1,13 +1,13 @@
-class AppointmentsDetailsModel {
+class AppointmentDetailsModel {
   int? statusCode;
   bool? success;
   Data? data;
   String? message;
 
-  AppointmentsDetailsModel(
+  AppointmentDetailsModel(
       {this.statusCode, this.success, this.data, this.message});
 
-  AppointmentsDetailsModel.fromJson(Map<String, dynamic> json) {
+  AppointmentDetailsModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     success = json['success'];
     data = json['data'] != null ? Data.fromJson(json['data']) : null;
@@ -29,6 +29,7 @@ class AppointmentsDetailsModel {
 class Data {
   int? orderAmount;
   String? bookingId;
+  String? idx;
   String? finalizedAt;
   String? appointmentId;
   String? orderStatus;
@@ -39,18 +40,20 @@ class Data {
 
   Data(
       {this.orderAmount,
-        this.bookingId,
-        this.finalizedAt,
-        this.appointmentId,
-        this.orderStatus,
-        this.user,
-        this.salon,
-        this.appointment,
-        this.items});
+      this.bookingId,
+      this.idx,
+      this.finalizedAt,
+      this.appointmentId,
+      this.orderStatus,
+      this.user,
+      this.salon,
+      this.appointment,
+      this.items});
 
   Data.fromJson(Map<String, dynamic> json) {
     orderAmount = json['orderAmount'];
     bookingId = json['bookingId'];
+    idx = json['idx'];
     finalizedAt = json['finalizedAt'];
     appointmentId = json['appointmentId'];
     orderStatus = json['orderStatus'];
@@ -71,6 +74,7 @@ class Data {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['orderAmount'] = orderAmount;
     data['bookingId'] = bookingId;
+    data['idx'] = idx;
     data['finalizedAt'] = finalizedAt;
     data['appointmentId'] = appointmentId;
     data['orderStatus'] = orderStatus;
@@ -143,18 +147,23 @@ class Salon {
 class Appointment {
   String? startsAt;
   String? endsAt;
+  User? artist;
 
-  Appointment({this.startsAt, this.endsAt});
+  Appointment({this.startsAt, this.endsAt, this.artist});
 
   Appointment.fromJson(Map<String, dynamic> json) {
     startsAt = json['startsAt'];
     endsAt = json['endsAt'];
+    artist = json['artist'] != null ? User.fromJson(json['artist']) : null;
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['startsAt'] = startsAt;
     data['endsAt'] = endsAt;
+    if (artist != null) {
+      data['artist'] = artist!.toJson();
+    }
     return data;
   }
 }
@@ -171,9 +180,9 @@ class Items {
     id = json['id'];
     isService = json['isService'];
     service =
-    json['service'] != null ? Service.fromJson(json['service']) : null;
+        json['service'] != null ? Service.fromJson(json['service']) : null;
     product =
-    json['product'] != null ? Product.fromJson(json['product']) : null;
+        json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -200,11 +209,11 @@ class Service {
 
   Service(
       {this.price,
-        this.id,
-        this.name,
-        this.duration,
-        this.image,
-        this.categories});
+      this.id,
+      this.name,
+      this.duration,
+      this.image,
+      this.categories});
 
   Service.fromJson(Map<String, dynamic> json) {
     price = json['price'];
@@ -254,13 +263,27 @@ class Product {
   int? price;
   String? id;
   String? name;
+  String? image;
+  String? description;
+  Categories? serviceCategory;
 
-  Product({this.price, this.id, this.name});
+  Product(
+      {this.price,
+      this.id,
+      this.name,
+      this.image,
+      this.description,
+      this.serviceCategory});
 
   Product.fromJson(Map<String, dynamic> json) {
     price = json['price'];
     id = json['id'];
     name = json['name'];
+    image = json['image'];
+    description = json['description'];
+    serviceCategory = json['serviceCategory'] != null
+        ? Categories.fromJson(json['serviceCategory'])
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -268,6 +291,11 @@ class Product {
     data['price'] = price;
     data['id'] = id;
     data['name'] = name;
+    data['image'] = image;
+    data['description'] = description;
+    if (serviceCategory != null) {
+      data['serviceCategory'] = serviceCategory!.toJson();
+    }
     return data;
   }
 }

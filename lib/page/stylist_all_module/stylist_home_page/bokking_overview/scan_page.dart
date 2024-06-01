@@ -5,13 +5,16 @@ import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_scanner_with_effect/qr_scanner_with_effect.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/upload_photo_page.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/widget/portfolio_permission_dialog.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
-import 'package:salon/project_specific/text_theme.dart';
 
 class ScanPage extends StatefulWidget {
-  final  VoidCallback callback;
-  const ScanPage({super.key, required this.callback});
+  final VoidCallback callback;
+  final String appointmentId;
+  const ScanPage(
+      {super.key, required this.callback, required this.appointmentId});
 
   @override
   State<ScanPage> createState() => _ScanPageState();
@@ -56,7 +59,7 @@ class _ScanPageState extends State<ScanPage> {
                     ],
                   ),
                 ),
-                Positioned(
+                /*Positioned(
                   bottom: Get.height * 0.14,
                   left: 0,
                   right: 0,
@@ -93,7 +96,7 @@ class _ScanPageState extends State<ScanPage> {
                       )
                     ],
                   ),
-                ),
+                ),*/
               ],
             ),
           ),
@@ -123,9 +126,32 @@ class _ScanPageState extends State<ScanPage> {
         _stylistController.doScanQrcode(
             completionToken: myQrCode,
             callback: () {
-              widget.callback.call();
-              Get.back();
-              Get.back();
+              if (_stylistController.getAllowPortfolioUploadModel.data
+                      ?.allowPortfolioUpload ??
+                  false) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return PortfolioPermissionDialog(
+                        yes: () {
+                          widget.callback.call();
+                          Get.back();
+                          Get.to(() => UploadPhotoPage(
+                                appointmentId: widget.appointmentId,
+                              ));
+                        },
+                        cancel: () {
+                          widget.callback.call();
+                          Get.back();
+                          Get.back();
+                        },
+                      );
+                    });
+              } else {
+                widget.callback.call();
+                Get.back();
+                Get.back();
+              }
             });
       }
     });

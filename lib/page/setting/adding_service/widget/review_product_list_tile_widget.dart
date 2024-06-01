@@ -9,11 +9,16 @@ import 'package:salon/project_specific/text_theme.dart';
 import '../../../../constant/assetsconstant.dart';
 
 class ReviewProductListTileWidget extends StatefulWidget {
-  final  String  name;
-  final  String  image;
-  final  String  price;
-  final  String  des;
-  const ReviewProductListTileWidget({super.key, required this.name, required this.image, required this.price, required this.des});
+  final String name;
+  final String image;
+  final String price;
+  final String des;
+  const ReviewProductListTileWidget(
+      {super.key,
+      required this.name,
+      required this.image,
+      required this.price,
+      required this.des});
 
   @override
   State<ReviewProductListTileWidget> createState() =>
@@ -42,7 +47,6 @@ class _ReviewProductListTileWidgetState
               ),
             ),
             const SizedBox(height: 5),
-
             Text(
               "₹ ${widget.price}",
               textScaler: const TextScaler.linear(0.85),

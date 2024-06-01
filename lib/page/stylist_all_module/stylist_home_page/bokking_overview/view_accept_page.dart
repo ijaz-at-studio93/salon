@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/after_accepcting_page.dart';
 
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
@@ -17,7 +16,8 @@ import '../../../../constant/assetsconstant.dart';
 class ViewAcceptPage extends StatefulWidget {
   final String appointmentId;
   final VoidCallback callback;
-  const ViewAcceptPage({super.key, required this.appointmentId, required this.callback});
+  const ViewAcceptPage(
+      {super.key, required this.appointmentId, required this.callback});
 
   @override
   State<ViewAcceptPage> createState() => _ViewAcceptPageState();
@@ -146,7 +146,7 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                       Row(
                                         children: [
                                           Text(
-                                            "${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.startsAt ?? "")} - ${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.endsAt ?? "")}",
+                                            "${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.startsAt ?? "")} - ${convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.endsAt ?? "")}",
                                             style: AppTextTheme.bold.copyWith(
                                                 fontSize: 16,
                                                 color:
@@ -336,35 +336,18 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                           width: Get.width,
                           color: ColorConstant.bgColor,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                _stylistController.getAppointmentsDetailsModel
-                                        .data?.service?.name ??
-                                    "",
-                                style: AppTextTheme.bold.copyWith(
-                                    fontSize: 16,
-                                    color: ColorConstant.blackColor),
-                              ),
-                            ],
-                          ),
-                        ),
                         const SizedBox(height: 10),
                         _headerWidget(
                             color: ColorConstant.review,
                             title:
-                                "${_stylistController.getAppointmentsDetailsModel.data?.service?.categories?.length} Category",
+                                "${_stylistController.getAppointmentsDetailsModel.data?.items?.length} Category",
                             titleValue: "Category"),
                         const SizedBox(height: 10),
                         ListView.builder(
                             itemCount: _stylistController
                                 .getAppointmentsDetailsModel
                                 .data
-                                ?.service
-                                ?.categories
+                                ?.items
                                 ?.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -373,25 +356,23 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                   title: _stylistController
                                           .getAppointmentsDetailsModel
                                           .data
-                                          ?.service
-                                          ?.categories?[i]
-                                          .name ??
+                                          ?.items?[i]
+                                          .service
+                                          ?.name ??
                                       "",
                                   titleValue: "");
                             }),
                         const SizedBox(height: 10),
                         _headerWidget(
                             color: ColorConstant.review,
-                            title:
-                                "${_stylistController.getAppointmentsDetailsModel.data?.service?.products?.length} Product",
+                            title: "",
                             titleValue: "product"),
                         const SizedBox(height: 10),
                         ListView.builder(
                             itemCount: _stylistController
                                 .getAppointmentsDetailsModel
                                 .data
-                                ?.service
-                                ?.products
+                                ?.items
                                 ?.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
@@ -400,12 +381,12 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                   title: _stylistController
                                           .getAppointmentsDetailsModel
                                           .data
-                                          ?.service
-                                          ?.products?[i]
-                                          .name ??
+                                          ?.items?[i]
+                                          .product
+                                          ?.name ??
                                       "",
                                   titleValue:
-                                      "₹${_stylistController.getAppointmentsDetailsModel.data?.service?.products?[i].price ?? ""}/-");
+                                      "₹${_stylistController.getAppointmentsDetailsModel.data?.items?[i].product?.price ?? ""}/-");
                             }),
                       ],
                     ),
@@ -416,10 +397,13 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                     child: ButtonWidget(
                       buttonTitleText: "Accept ",
                       onPress: () {
-                        _stylistController.doBookingApprove(appointmentId: widget.appointmentId, status: "confirmed", callback: (){
-                          Get.back();
-                          widget.callback.call();
-                        });
+                        _stylistController.doBookingApprove(
+                            appointmentId: widget.appointmentId,
+                            status: "confirmed",
+                            callback: () {
+                              Get.back();
+                              widget.callback.call();
+                            });
                       },
                     ),
                   )

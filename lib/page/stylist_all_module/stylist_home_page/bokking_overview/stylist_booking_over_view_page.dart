@@ -119,17 +119,19 @@ class _StylistBookingOverViewPageState
                                             price: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
-                                                    .price ??
+                                                    .orderAmount ??
                                                 0,
                                             startTime: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
-                                                    .startsAt ??
+                                                    .appointment
+                                                    ?.startsAt ??
                                                 "",
                                             endTime: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
-                                                    .endsAt ??
+                                                    .appointment
+                                                    ?.endsAt ??
                                                 "",
                                             tapReject: () {
                                               showDialog(
@@ -145,7 +147,8 @@ class _StylistBookingOverViewPageState
                                                                       .getPendingAppointmentsListModel
                                                                       .data?[
                                                                           index]
-                                                                      .appointmentId ??
+                                                                      .appointment
+                                                                      ?.id ??
                                                                   "",
                                                               status:
                                                                   "salon_artist_rejected",
@@ -159,11 +162,13 @@ class _StylistBookingOverViewPageState
                                             },
                                             tapViewAndAccept: () {
                                               Get.to(() => ViewAcceptPage(
-                                                    appointmentId: _stylistController
-                                                            .getPendingAppointmentsListModel
-                                                            .data?[index]
-                                                            .appointmentId ??
-                                                        "",
+                                                    appointmentId:
+                                                        _stylistController
+                                                                .getPendingAppointmentsListModel
+                                                                .data?[index]
+                                                                .appointment
+                                                                ?.id ??
+                                                            "",
                                                     callback: () {
                                                       _stylistController
                                                           .doPendingAppointmentsListModel();
@@ -197,30 +202,35 @@ class _StylistBookingOverViewPageState
                                           child: AcceptBookingOverViewWidget(
                                             onPress: () {
                                               Get.to(() => BookingOverviewPage(
-                                                    appointmentId: _stylistController
-                                                            .getAcceptAppointmentsListModel
-                                                            .data?[index]
-                                                            .appointmentId ??
-                                                        "",
+                                                    appointmentId:
+                                                        _stylistController
+                                                                .getAcceptAppointmentsListModel
+                                                                .data?[index]
+                                                                .appointment
+                                                                ?.id ??
+                                                            "",
                                                     callback: () {
-                                                      _stylistController.doAcceptAppointment();
+                                                      _stylistController
+                                                          .doAcceptAppointment();
                                                     },
                                                   ));
                                             },
                                             endTime: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]
-                                                    .endsAt ??
+                                                    .appointment
+                                                    ?.endsAt ??
                                                 "",
                                             price: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]
-                                                    .price ??
+                                                    .orderAmount ??
                                                 0,
                                             startTime: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]
-                                                    .startsAt ??
+                                                    .appointment
+                                                    ?.startsAt ??
                                                 "",
                                           ),
                                         );
@@ -229,94 +239,7 @@ class _StylistBookingOverViewPageState
                       ),
                     ),
             ),
-          ), /*bookingOverView == "1"
-              ? Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: ColorConstant.whiteColor,
-                    border:
-                        Border.all(color: ColorConstant.grayColor, width: 1),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(100),
-                            child: Image.network(
-                              "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                              height: 46,
-                              width: 46,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          const SizedBox(width: 5),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Anirudh Tiwari",
-                                style: AppTextTheme.bold.copyWith(
-                                    color: ColorConstant.blackColor,
-                                    fontSize: 19),
-                              ),
-                              Text(
-                                "2.5 Km Away",
-                                style: AppTextTheme.medium.copyWith(
-                                    color: ColorConstant.grayTextColor,
-                                    fontSize: 13),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          height: 40,
-                          width: 40,
-                          decoration: BoxDecoration(
-                            color: ColorConstant.callColor,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: ColorConstant.primaryColor,
-                            ),
-                          ),
-                          child: Center(
-                            child: Image.asset(
-                              AssetsConstant.callIcon,
-                              width: 20,
-                              height: 20,
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: ColorConstant.callColor,
-                            borderRadius: BorderRadius.circular(65),
-                            border: Border.all(
-                              color: ColorConstant.primaryColor,
-                            ),
-                          ),
-                          child: Center(
-                              child: Text(
-                            "Get Direction",
-                            style: AppTextTheme.medium
-                                .copyWith(color: ColorConstant.primaryColor),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox(),*/
+          ),
         ],
       ),
     );
@@ -439,14 +362,12 @@ class _StylistBookingOverViewPageState
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              bookingOverView = value;
-              if (bookingOverView == "1") {
-                _stylistController.doAcceptAppointment();
-              } else {
-                _stylistController.doPendingAppointmentsListModel();
-              }
-            });
+            bookingOverView = value;
+            if (bookingOverView == "1") {
+              _stylistController.doAcceptAppointment();
+            } else {
+              _stylistController.doPendingAppointmentsListModel();
+            }
           }),
     );
   }

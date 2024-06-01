@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/auth_api.dart';
@@ -8,7 +7,6 @@ import 'package:salon/model/artist_model/artist_login_model.dart';
 import 'package:salon/model/auth/otp_verify_model.dart';
 import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/page/auth/login_page.dart';
-
 import '../util/shared_prefs.dart';
 
 class AuthController extends GetxController {
@@ -248,6 +246,7 @@ class AuthController extends GetxController {
     }
   }
 
+  /*-------------- Artiest  Model  Data  Store ---------------------*/
   Future<void> userArtiestDataStoreToSharedPrefs(
       SalonArtistResponseModel model) async {
     _salonArtistResponseModel.value = model;

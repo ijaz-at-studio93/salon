@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "891312168844",
-    "project_id": "stylistsalon-7acb7",
-    "storage_bucket": "stylistsalon-7acb7.appspot.com"
+    "project_number": "9001451192",
+    "project_id": "salon-534a7",
+    "storage_bucket": "salon-534a7.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:891312168844:android:fc8e99e9ca9edc5799c0a9",
+        "mobilesdk_app_id": "1:9001451192:android:8836c1686be55ed370fe4d",
         "android_client_info": {
           "package_name": "com.ananta.saloon"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyB4l28qUI9rWAcN1KQfipf57MrEj0P5fXQ"
+          "current_key": "AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9001451192:android:b378fec7894f8aea70fe4d",
+        "android_client_info": {
+          "package_name": "com.ananta.scout"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU"
         }
       ],
       "services": {

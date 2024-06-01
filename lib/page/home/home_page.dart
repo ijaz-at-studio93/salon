@@ -289,10 +289,11 @@ class _HomepageState extends State<Homepage> {
           VerticalBarchart(
             background: Colors.transparent,
             maxX: 75,
-            data: bardata,
-            barSize: 11,
+            data: barData,
+            barSize: 12,
             barStyle: BarStyle.DEFAULT,
-            showLegend: false,
+            showLegend: true,
+            tooltipSize: 10,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -338,7 +339,7 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  List<VBarChartModel> bardata = [
+  List<VBarChartModel> barData = [
     const VBarChartModel(
       index: 0,
       label: "Akhil",

@@ -1,10 +1,12 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/setting/adding_service/create_new_service_page.dart';
+import 'package:salon/page/setting/adding_service/service_list_tile_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -123,16 +125,30 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
                                       .getSalonServiceList.data?.length ??
                                   0,
                               shrinkWrap: true,
+                              padding: EdgeInsets.zero,
                               physics: const NeverScrollableScrollPhysics(),
                               itemBuilder: (context, index) {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 10),
-                                  child: CategoryListTileWidget(
-                                    title: _homeController.getSalonServiceList
+                                  child: ServiceListTileWidget(
+                                    isHomeService: _homeController
+                                            .getSalonServiceList
+                                            .data?[index]
+                                            .homeService ??
+                                        false,
+                                    time: _homeController.getSalonServiceList
+                                            .data?[index].duration
+                                            .toString() ??
+                                        "",
+                                    gender: _homeController.getSalonServiceList
+                                            .data?[index].gender ??
+                                        "",
+                                    image:
+                                        "${APIConstants.image}${_homeController.getSalonServiceList.data?[index].image ?? ""}",
+                                    name: _homeController.getSalonServiceList
                                             .data?[index].name ??
                                         "",
-                                    onPress: () {},
                                   ),
                                 );
                               }),

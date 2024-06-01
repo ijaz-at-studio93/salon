@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -6,7 +7,14 @@ import 'package:salon/project_specific/text_theme.dart';
 
 class StylistListTileWidget extends StatelessWidget {
   final VoidCallback onPress;
-  const StylistListTileWidget({super.key, required this.onPress});
+  final String image;
+  final String name;
+
+  const StylistListTileWidget(
+      {super.key,
+      required this.onPress,
+      required this.image,
+      required this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +27,23 @@ class StylistListTileWidget extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  "https://images.unsplash.com/photo-1548454782-15b189d129ab?q=80&w=1976&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                child: CachedNetworkImage(
                   height: 58,
                   width: 58,
                   fit: BoxFit.cover,
+                  imageUrl: image,
+                  placeholder: (context, url) => const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    height: 58,
+                    width: 58,
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    height: 58,
+                    width: 58,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
@@ -31,9 +51,9 @@ class StylistListTileWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Michael Johnson ",
-                    style: AppTextTheme.medium
-                        .copyWith(color: ColorConstant.blackColor, fontSize: 16),
+                    name,
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 16),
                   ),
                   Row(
                     children: [
@@ -57,22 +77,23 @@ class StylistListTileWidget extends StatelessWidget {
           Row(
             children: [
               GestureDetector(
-                onTap: (){
+                onTap: () {
                   showModalBottomSheet(
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          )),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        ),
+                      ),
                       context: context,
                       builder: (context) {
                         return const AvailiblitySheetPage();
                       });
                 },
                 child: Container(
-                  padding:
-                      const EdgeInsets.only(top: 8, right: 11, bottom: 8, left: 11),
+                  padding: const EdgeInsets.only(
+                      top: 8, right: 11, bottom: 8, left: 11),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(45),
                     border: Border.all(
@@ -89,8 +110,9 @@ class StylistListTileWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Image.asset(AssetsConstant.dotVertical,
-              width: 5,
+              Image.asset(
+                AssetsConstant.dotVertical,
+                width: 5,
                 height: 19,
               ),
             ],

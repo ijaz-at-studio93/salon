@@ -3,8 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/bank_account/widget/booking_history_widget.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/page/home/widget/booking_history_widget.dart';
+import 'package:salon/page/home/widget/cancelled_booking_history_widget.dart';
+import 'package:salon/page/home/widget/complete_booking_history_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/NoItemsWidget.dart';
 import '../../project_specific/project_appbar.dart';
 import 'booking_history_view_page.dart';
 
@@ -16,6 +21,16 @@ class BookingHistoryPage extends StatefulWidget {
 }
 
 class _BookingHistoryPageState extends State<BookingHistoryPage> {
+  final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doUpcomingData();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,20 +57,111 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             ),
           ),
           _stylistAndSalon(),
-          Expanded(
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: 15,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      child: BookingHistoryWidget(
-                        onPress: () {
-                          Get.to(()=> const BookingHistoryViewpage());
-                        },
-                      ),
-                    );
-                  })),
+          Obx(
+            () => Expanded(
+                child: _homeController.showProgress
+                    ? const ProgressBarView()
+                    : overall == "0"
+                        ? _homeController.getSalonUpcomingList.data?.isEmpty ??
+                                false
+                            ? const NoItemsWidget(
+                                text: "No Any Upcoming Booking Found",
+                              )
+                            : ListView.builder(
+                                shrinkWrap: true,
+                                itemCount: _homeController
+                                        .getSalonUpcomingList.data?.length ??
+                                    0,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding:
+                                        const EdgeInsets.symmetric(vertical: 5),
+                                    child: BookingHistoryPendingWidget(
+                                      orderData: _homeController
+                                          .getSalonUpcomingList.data![index],
+                                      onPress: () {
+                                        Get.to(() => BookingHistoryViewpage(
+                                              appointmentId: _homeController
+                                                      .getSalonUpcomingList
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.id ??
+                                                  "",
+                                              status: "Pending",
+                                            ));
+                                      },
+                                    ),
+                                  );
+                                })
+                        : overall == "1"
+                            ? _homeController.getSalonCancelServedList.data
+                                        ?.isEmpty ??
+                                    false
+                                ? const NoItemsWidget(
+                                    text: "No Any Cancel Booking Found",
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _homeController
+                                            .getSalonCancelServedList
+                                            .data
+                                            ?.length ??
+                                        0,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5),
+                                        child: CancelledBookingHistoryWidget(
+                                          orderData: _homeController
+                                              .getSalonCancelServedList
+                                              .data![index],
+                                          onPress: () {
+                                            Get.to(() => BookingHistoryViewpage(
+                                                  appointmentId: _homeController
+                                                          .getSalonCancelServedList
+                                                          .data?[index]
+                                                          .appointment
+                                                          ?.id ??
+                                                      "",
+                                                  status: "Cancel",
+                                                ));
+                                          },
+                                        ),
+                                      );
+                                    })
+                            : _homeController
+                                        .getSalonServedList.data?.isEmpty ??
+                                    false
+                                ? const NoItemsWidget(
+                                    text: "No Any Complete Booking Found",
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _homeController
+                                            .getSalonServedList.data?.length ??
+                                        0,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5),
+                                        child: CompleteHistoryWidget(
+                                          orderData: _homeController
+                                              .getSalonServedList.data![index],
+                                          onPress: () {
+                                            Get.to(() => BookingHistoryViewpage(
+                                                  appointmentId: _homeController
+                                                          .getSalonServedList
+                                                          .data?[index]
+                                                          .appointment
+                                                          ?.id ??
+                                                      "",
+                                                  status: "Complete",
+                                                ));
+                                          },
+                                        ),
+                                      );
+                                    })),
+          ),
         ],
       ),
     );
@@ -75,7 +181,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
-        height:50,
+        height: 50,
         width: Get.width * 0.4,
         child: DropdownButtonFormField2<String>(
           isExpanded: true,
@@ -143,8 +249,6 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
       color: ColorConstant.whiteColor,
       width: Get.width,
       padding: const EdgeInsets.symmetric(horizontal: 15),
-
-
       child: CupertinoSlidingSegmentedControl(
           backgroundColor: ColorConstant.gray,
           padding: const EdgeInsets.all(6),
@@ -183,9 +287,21 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              overall = value;
-            });
+            overall = value;
+            if (overall == "0") {
+              setState(() {
+              _homeController.doUpcomingData();
+              });
+            } else if (overall == "1") {
+              setState(() {
+
+              _homeController.doCancelData();
+              });
+            } else {
+              setState(() {
+                _homeController.doCompleteBookingData();
+              });
+            }
           }),
     );
   }
