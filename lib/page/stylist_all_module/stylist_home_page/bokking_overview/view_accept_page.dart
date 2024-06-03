@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -339,8 +338,7 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                         const SizedBox(height: 10),
                         _headerWidget(
                             color: ColorConstant.review,
-                            title:
-                                "${_stylistController.getAppointmentsDetailsModel.data?.items?.length} Category",
+                            title: "",
                             titleValue: "Category"),
                         const SizedBox(height: 10),
                         ListView.builder(
@@ -352,15 +350,23 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, i) {
-                              return _headerValueWidget(
-                                  title: _stylistController
+                              return _stylistController
                                           .getAppointmentsDetailsModel
                                           .data
                                           ?.items?[i]
-                                          .service
-                                          ?.name ??
-                                      "",
-                                  titleValue: "");
+                                          .isService ??
+                                      false
+                                  ? _headerValueWidget(
+                                      title: _stylistController
+                                              .getAppointmentsDetailsModel
+                                              .data
+                                              ?.items?[i]
+                                              .service
+                                              ?.name ??
+                                          "",
+                                      titleValue:
+                                          "₹${_stylistController.getAppointmentsDetailsModel.data?.items?[i].service?.price ?? ""}/-")
+                                  : const SizedBox();
                             }),
                         const SizedBox(height: 10),
                         _headerWidget(
@@ -377,16 +383,23 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, i) {
-                              return _headerValueWidget(
-                                  title: _stylistController
+                              return _stylistController
                                           .getAppointmentsDetailsModel
                                           .data
                                           ?.items?[i]
-                                          .product
-                                          ?.name ??
-                                      "",
-                                  titleValue:
-                                      "₹${_stylistController.getAppointmentsDetailsModel.data?.items?[i].product?.price ?? ""}/-");
+                                          .isService ==
+                                      false
+                                  ? _headerValueWidget(
+                                      title: _stylistController
+                                              .getAppointmentsDetailsModel
+                                              .data
+                                              ?.items?[i]
+                                              .product
+                                              ?.name ??
+                                          "",
+                                      titleValue:
+                                          "₹${_stylistController.getAppointmentsDetailsModel.data?.items?[i].product?.price ?? ""}/-")
+                                  : const SizedBox();
                             }),
                       ],
                     ),

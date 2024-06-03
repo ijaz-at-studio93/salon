@@ -18,7 +18,7 @@ class _LogOutDialogWidgetState extends State<LogOutDialogWidget> {
   Widget build(BuildContext context) {
     return Dialog(
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(15),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

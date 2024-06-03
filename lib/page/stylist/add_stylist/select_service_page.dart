@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
-import 'package:salon/page/stylist/add_stylist/widget/select_service_widget.dart';
+
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -79,31 +79,33 @@ class _SelectServicePageState extends State<SelectServicePage> {
                   builder: (context) {
                     return AddServicesForStylistPage(
                       callback: () {
-                        _homeController.gender.clear();
-                        _homeController.serviceId.clear();
-                        for (int i = 0;
-                            i <
-                                _homeController
-                                    .getSalonServiceList.data!.length;
-                            i++) {
-                          if (_homeController.getSalonServiceList.data![i]
-                                  .isSelectService ??
-                              false) {
-                            _homeController.serviceId.add(_homeController
-                                .getSalonServiceList.data![i].id);
-                            _homeController.gender.add(_homeController
-                                        .getSalonServiceList
-                                        .data![i]
-                                        .selectGender ==
-                                    1
-                                ? "male"
-                                : _homeController.getSalonServiceList.data![i]
-                                            .selectGender ==
-                                        2
-                                    ? "female"
-                                    : "unisex");
+                        setState(() {
+                          _homeController.gender.clear();
+                          _homeController.serviceId.clear();
+                          for (int i = 0;
+                              i <
+                                  _homeController
+                                      .getSalonServiceList.data!.length;
+                              i++) {
+                            if (_homeController.getSalonServiceList.data![i]
+                                    .isSelectService ??
+                                false) {
+                              _homeController.serviceId.add(_homeController
+                                  .getSalonServiceList.data![i].id);
+                              _homeController.gender.add(_homeController
+                                          .getSalonServiceList
+                                          .data![i]
+                                          .selectGender ==
+                                      1
+                                  ? "male"
+                                  : _homeController.getSalonServiceList.data![i]
+                                              .selectGender ==
+                                          2
+                                      ? "female"
+                                      : "unisex");
+                            }
                           }
-                        }
+                        });
                       },
                     );
                   });
@@ -135,10 +137,26 @@ class _SelectServicePageState extends State<SelectServicePage> {
                           endIndent: 19,
                         );
                       },
-                      itemCount: 15,
+                      itemCount:
+                          _homeController.getSalonServiceList.data?.length ?? 0,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return const SelectServiceWidget();
+                        return _homeController.getSalonServiceList.data?[index]
+                                    .isSelectService ??
+                                false
+                            ? Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 15),
+                                child: Text(
+                                  _homeController.getSalonServiceList
+                                          .data?[index].name ??
+                                      "",
+                                  style: AppTextTheme.medium.copyWith(
+                                      color: ColorConstant.blackColor,
+                                      fontSize: 16),
+                                ),
+                              )
+                            : const SizedBox();
                       }),
             ),
           ),

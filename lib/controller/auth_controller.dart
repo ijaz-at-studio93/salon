@@ -154,6 +154,19 @@ class AuthController extends GetxController {
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
   }
 
+  Future<void> userDataStoreToArtiestSharedPrefs(
+      SalonArtistResponseModel model) async {
+    _salonArtistResponseModel.value = model;
+    debugPrint(model.toString());
+    if (model.data?.accessToken != null) {
+      debugPrint("AccessTOKEN1:${model.data?.accessToken ?? ''}");
+      await SharedPrefs.writeValue(
+          PrefConstants.token, model.data?.accessToken);
+    }
+    await SharedPrefs.writeValue(PrefConstants.userModel, model.toJson());
+    await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
+  }
+
   /*---------------  init User Data -----------*/
   initUserData() async {
     if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
@@ -175,7 +188,7 @@ class AuthController extends GetxController {
         if (SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
           _salonArtistResponseModel.value = SalonArtistResponseModel.fromJson(
               SharedPrefs.read(PrefConstants.stylistModel));
-          userDataStoreToSharedPrefs(_salonResponseModel.value);
+          userDataStoreToArtiestSharedPrefs(_salonArtistResponseModel.value);
         }
       } catch (e) {
         debugPrint(e.toString());
