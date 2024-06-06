@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-class OverAllRatingCardWidget extends StatelessWidget {
-  const OverAllRatingCardWidget({super.key});
+class ProductRatingCardWidget extends StatelessWidget {
+  final OverAllProducts overAllProducts;
+  const ProductRatingCardWidget({super.key, required this.overAllProducts});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
+        /*Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Row(
             children: [
@@ -48,8 +52,9 @@ class OverAllRatingCardWidget extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 12),*/
         Container(
+          width: Get.width,
           margin: const EdgeInsets.symmetric(horizontal: 20),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
@@ -60,13 +65,13 @@ class OverAllRatingCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a typeface without relying on meaningful content.",
+                overAllProducts.review ?? "",
                 style: AppTextTheme.italic
                     .copyWith(color: ColorConstant.blackColor, fontSize: 13),
               ),
               const SizedBox(height: 10),
               RatingBar.builder(
-                initialRating: 3.5,
+                initialRating: overAllProducts.rating ?? 0.0,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: true,
@@ -82,15 +87,26 @@ class OverAllRatingCardWidget extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "Aditya Mishra • Posted on 24 March 2024",
+                "Posted on ${convertDateFormat(overAllProducts.updatedAt ?? "")}",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
               )
             ],
           ),
         ),
-
       ],
     );
+  }
+
+  String convertDateFormat(String timestamp) {
+    // Parse the timestamp into a DateTime object
+    DateTime dateTime = DateTime.parse(timestamp);
+    // Define the desired date format
+    DateFormat dateFormat = DateFormat('dd MMMM yyyy');
+    // Format the date
+    String formattedDate = dateFormat.format(dateTime);
+    print(formattedDate); //
+
+    return formattedDate; // Output: 04 June 2024
   }
 }

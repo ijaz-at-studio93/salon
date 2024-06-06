@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
+import 'package:salon/model/salon_review_model/salon_review_by_artiest_model.dart';
 import 'package:salon/model/service_model/appointment_details_model.dart';
 import 'package:salon/model/service_model/category_list_model.dart';
 import 'package:salon/model/service_model/pending_appointments_list_model.dart';
@@ -13,7 +15,8 @@ import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 
 class HomeAPI {
-  /*=================== eligibility =====================*/ static Future<bool>
+  /*=================== eligibility =====================*/
+  static Future<bool>
       checkEligibility() async {
     final response = await DioClient.client.get(
       APIEndPoint.eligibility,
@@ -281,4 +284,29 @@ class HomeAPI {
       throw response.data;
     }
   }
+
+
+  /*--------------  Get OverAll  Review --------------*/
+  static Future<OverallReviewListModel> getOverAllReview() async {
+    final response = await DioClient.client.get("salon/review/overall/list");
+    if (response.isSuccess) {
+      return OverallReviewListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+
+  /*-------------------- Salon Review By Artiest ----------*/
+  static Future<SalonReviewByArtiestModel> getSalonReviewByArtiest() async {
+    final response = await DioClient.client.get("salon/review/by-artist");
+    if (response.isSuccess) {
+      return SalonReviewByArtiestModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+
+
 }

@@ -1,14 +1,17 @@
-
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:salon/constant/api_constant.dart';
+import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import '../../../../constant/assetsconstant.dart';
 import '../../../../constant/color_constant.dart';
 import '../../../../project_specific/text_theme.dart';
 
 class InsightsCardWidget extends StatefulWidget {
   final VoidCallback onPress;
-  const InsightsCardWidget({super.key, required this.onPress});
+  final BlogData blogData;
+  const InsightsCardWidget(
+      {super.key, required this.onPress, required this.blogData});
 
   @override
   State<InsightsCardWidget> createState() => _InsightsCardWidgetState();
@@ -26,10 +29,19 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
           children: [
             Stack(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: Image.network(
-                    'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+                CachedNetworkImage(
+                  width: Get.width,
+                  height: Get.height * 0.25,
+                  fit: BoxFit.fitWidth,
+                  imageUrl: "${APIConstants.image}${widget.blogData.image}",
+                  placeholder: (context, url) => Image(
+                    image: const AssetImage(AssetsConstant.placeHolder),
+                    width: Get.width,
+                    height: Get.height * 0.25,
+                    fit: BoxFit.fitWidth,
+                  ),
+                  errorWidget: (context, url, error) => Image(
+                    image: const AssetImage(AssetsConstant.placeHolder),
                     width: Get.width,
                     height: Get.height * 0.25,
                     fit: BoxFit.fitWidth,
@@ -39,9 +51,7 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                   top: 10,
                   right: 10,
                   child: GestureDetector(
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                     child: Container(
                       width: 38,
                       height: 38,
@@ -53,11 +63,10 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                           AssetsConstant.likeBlank,
                           height: 20,
                           width: 20,
-
                         ),
                       ),
                     ),
-                    ),
+                  ),
 /*
                   Center(
                       child: _authController.isInsightsFav
@@ -66,41 +75,12 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                         color: Colors.red,
                       )
                           :*/
-                  ),
-
-                Positioned(
-                  top: 10,
-                  left: 12,
-                  child: Container(
-                    height: 30,
-                    width: Get.width * 0.25,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.topRatedColor,
-                        borderRadius: BorderRadius.circular(6)),
-                    child: Center(
-                      child: Text(
-                        "By Nykaa Saloon",
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.whiteColor, fontSize: 11),
-                      ),
-                    ),
-                  ),
                 ),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: 80,
-                  child: Image.asset(
-                    AssetsConstant.playIcon,
-                    height: 60,
-                    width: 60,
-                  ),
-                )
               ],
             ),
             const SizedBox(height: 20),
             Text(
-              'SML Isuzu Ltd. (SMLI) is a trusted and reliable',
+              widget.blogData.title ?? "",
               style: AppTextTheme.medium
                   .copyWith(color: ColorConstant.blackColor, fontSize: 16),
             ),
@@ -108,7 +88,8 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
+                SizedBox(),
+                /*  Row(
                   children: [
                     const Icon(
                       Icons.remove_red_eye,
@@ -121,13 +102,13 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                           color: ColorConstant.grayTextColor, fontSize: 13),
                     ),
                   ],
-                ),
+                ),*/
                 Row(
                   children: [
                     ClipRRect(
                       borderRadius: BorderRadius.circular(100),
                       child: Image.network(
-                        "https://images.unsplash.com/photo-1546961329-78bef0414d7c?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                        "${APIConstants.image}${widget.blogData.artist?.profileImage ?? ""}",
                         height: 17,
                         width: 17,
                         fit: BoxFit.cover,
@@ -135,9 +116,9 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "By Harshit Mehta",
-                      style: AppTextTheme.medium.copyWith(
-                          color: ColorConstant.grayTextColor, fontSize: 11),
+                      widget.blogData.artist?.name ?? "",
+                      style: AppTextTheme.bold.copyWith(
+                          color: ColorConstant.blackColor, fontSize: 12),
                     ),
                   ],
                 )

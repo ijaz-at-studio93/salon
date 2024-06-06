@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/home_api.dart';
+import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
+import 'package:salon/model/salon_review_model/salon_review_by_artiest_model.dart';
 import 'package:salon/model/service_model/appointment_details_model.dart';
 import 'package:salon/model/service_model/category_list_model.dart';
 import 'package:salon/model/service_model/pending_appointments_list_model.dart';
@@ -83,6 +85,21 @@ class HomeController extends GetxController {
   SalonArtistListModel get getSalonArtistListModel =>
       _salonArtistListModel.value;
   set setSalonArtistListModel(val) => _salonArtistListModel.value = val;
+
+  /*--------------------- Over All Rating -----------------*/
+  final Rx<OverallReviewListModel> _overallReviewListModel =
+      OverallReviewListModel().obs;
+  OverallReviewListModel get getOverallReviewListModel =>
+      _overallReviewListModel.value;
+  set setOverallReviewListModel(val) => _overallReviewListModel.value = val;
+
+  /*----------------------------- Artiest  Review  ------------------- */
+  final Rx<SalonReviewByArtiestModel> _salonReviewByArtiestModel =
+      SalonReviewByArtiestModel().obs;
+  SalonReviewByArtiestModel get getSalonReviewByArtiestModel =>
+      _salonReviewByArtiestModel.value;
+  set setSalonReviewByArtiestModel(val) =>
+      _salonReviewByArtiestModel.value = val;
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -341,6 +358,31 @@ class HomeController extends GetxController {
     try {
       _showProgress.value = true;
       _salonArtistListModel.value = await HomeAPI.getSalonArtiestListData();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------  Get Over All Review ------------------*/
+  doGetOverallReview() async {
+    try {
+      _showProgress.value = true;
+      _overallReviewListModel.value = await HomeAPI.getOverAllReview();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------  Get Artiest Review ----------*/
+  doGetArtiestReview() async {
+    try {
+      _showProgress.value = true;
+      _salonReviewByArtiestModel.value =
+          await HomeAPI.getSalonReviewByArtiest();
     } catch (e) {
       showError(e);
     } finally {

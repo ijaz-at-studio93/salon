@@ -1,8 +1,12 @@
+import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/stylist_home_api.dart';
+import 'package:salon/model/artist_model/blog_data_get_model.dart';
+import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
 import 'package:salon/model/stylist/pending_appointment.dart';
 import '../../model/stylist/allow_portfolio_upload_model.dart';
@@ -51,6 +55,20 @@ class StylistController extends GetxController {
       _allowPortfolioUploadModel.value;
   set setAllowPortfolioUploadModel(val) =>
       _allowPortfolioUploadModel.value = val;
+
+  /*--------------- Artiest blog Add ------------------ */
+
+  final Rx<BlogDataGetModel> _blogDataGetModelModel = BlogDataGetModel().obs;
+  BlogDataGetModel get getBlogDataGetModelModel => _blogDataGetModelModel.value;
+  set setBlogDataGetModelModel(val) => _blogDataGetModelModel.value = val;
+
+  /*---------------------- Over all  Review Get ---------------*/
+  final Rx<OverallReviewListModel> _overallStylistReviewListModel =
+      OverallReviewListModel().obs;
+  OverallReviewListModel get getOverallStylistReviewListModel =>
+      _overallStylistReviewListModel.value;
+  set setOverallStylistReviewListModel(val) =>
+      _overallStylistReviewListModel.value = val;
 
   /*---------------------- Get PendingAppointmentsListModel --------------------*/
   doPendingAppointmentsListModel() async {
@@ -154,6 +172,53 @@ class StylistController extends GetxController {
       if (result != "") {
         callback.call();
       }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*----------------- Do Blog Crate ----------------*/
+  doCreateBlog({
+    required String title,
+    required String body,
+    required String description,
+    required File image,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await StylistAPI.addArtiestBlog(
+          title: title, body: body, description: description, image: image);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------ Do Get Blog -----------------*/
+  doGetBlog() async {
+    try {
+      _showProgress.value = true;
+      _blogDataGetModelModel.value = await StylistAPI.getBlogList();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*---------------------------- Get  Over  All Stylist Review -------------*/
+  doGetOverallStylistReview() async {
+    try {
+      _showProgress.value = true;
+      _overallStylistReviewListModel.value =
+          await StylistAPI.getOverAllStylistReview();
     } catch (e) {
       showError(e);
     } finally {

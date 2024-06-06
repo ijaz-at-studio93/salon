@@ -319,8 +319,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   /*--------------- Dummy Data ---------*/
 
-
-
   final List<String> noOfService = [
     'less than 10',
     '10-20',

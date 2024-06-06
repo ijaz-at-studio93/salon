@@ -2,8 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/review_rating/widget/by_stylist_card_widget.dart';
-import 'package:salon/page/review_rating/widget/overall_rating_card_widget.dart';
+import 'package:salon/page/review_rating/widget/artiest_rating_card_widget.dart';
+import 'package:salon/page/review_rating/widget/product_rating_card_widget.dart';
+import 'package:salon/page/review_rating/widget/service_rating_card_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
@@ -15,87 +19,230 @@ class ReviewAndRatingPage extends StatefulWidget {
 }
 
 class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
+  final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetOverallReview();
+      _homeController.doGetArtiestReview();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
-        nameOfScreen: "Review & Ratings",
-        isBackIcon: true,
-      ),
-      body: Column(
-        children: [
-          const SizedBox(height: 16),
-          _stylistAndSalon(),
-          const SizedBox(height: 5),
-          SizedBox(
-            height: 45,
-            child: ListView.builder(
-                itemCount: 10,
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                scrollDirection: Axis.horizontal,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: filterCategory(),
-                  );
-                }),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-              child: SingleChildScrollView(
-            child: Column(children: [
-              overall == "0" ?  ListView.separated(
-                  separatorBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          height: 1,
-                          width: Get.width,
-                          decoration: const BoxDecoration(
-                              color: ColorConstant.grayTextColor),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  },
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 10),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return const OverAllRatingCardWidget();
-                  }) : ListView.separated(
-                  separatorBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        const SizedBox(height: 10),
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          height: 1,
-                          width: Get.width,
-                          decoration: const BoxDecoration(
-                              color: ColorConstant.grayTextColor),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  },
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 10),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return const ByStylistCardWidget();
-                  }) ,
-            ]),
-          )),
-        ],
-      ),
-    );
+        backgroundColor: ColorConstant.bgColor,
+        appBar: const AppBarWidget(
+          nameOfScreen: "Review & Ratings",
+          isBackIcon: true,
+        ),
+        body: Column(
+          children: [
+            const SizedBox(height: 16),
+            _stylistAndSalon(),
+            const SizedBox(height: 5),
+            Obx(
+              () => Expanded(
+                  child: _homeController.showProgress
+                      ? const ProgressBarView()
+                      : SingleChildScrollView(
+                          child: Column(children: [
+                            overall == "0"
+                                ? Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 10),
+                                        child: Text(
+                                          "Artists",
+                                          style: AppTextTheme.bold.copyWith(
+                                              color: ColorConstant.primaryColor,
+                                              fontSize: 18),
+                                        ),
+                                      ),
+                                      ListView.separated(
+                                          separatorBuilder: (context, index) {
+                                            return Column(
+                                              children: [
+                                                const SizedBox(height: 10),
+                                                Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 20),
+                                                  height: 1,
+                                                  width: Get.width,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: ColorConstant
+                                                              .grayTextColor),
+                                                ),
+                                                const SizedBox(height: 10),
+                                              ],
+                                            );
+                                          },
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          padding:
+                                              const EdgeInsets.only(bottom: 10),
+                                          itemCount: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data
+                                                  ?.artists
+                                                  ?.length ??
+                                              0,
+                                          itemBuilder: (context, index) {
+                                            return ArtiestRatingCardWidget(
+                                              overAllArtists: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data!
+                                                  .artists![index],
+                                            );
+                                          }),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 10),
+                                        child: Text(
+                                          "Products",
+                                          style: AppTextTheme.bold.copyWith(
+                                              color: ColorConstant.primaryColor,
+                                              fontSize: 18),
+                                        ),
+                                      ),
+                                      ListView.separated(
+                                          separatorBuilder: (context, index) {
+                                            return Column(
+                                              children: [
+                                                const SizedBox(height: 10),
+                                                Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 20),
+                                                  height: 1,
+                                                  width: Get.width,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: ColorConstant
+                                                              .grayTextColor),
+                                                ),
+                                                const SizedBox(height: 10),
+                                              ],
+                                            );
+                                          },
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          padding:
+                                              const EdgeInsets.only(bottom: 10),
+                                          itemCount: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data
+                                                  ?.products
+                                                  ?.length ??
+                                              0,
+                                          itemBuilder: (context, index) {
+                                            return ProductRatingCardWidget(
+                                              overAllProducts: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data!
+                                                  .products![index],
+                                            );
+                                          }),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16, vertical: 10),
+                                        child: Text(
+                                          "Services",
+                                          style: AppTextTheme.bold.copyWith(
+                                              color: ColorConstant.primaryColor,
+                                              fontSize: 18),
+                                        ),
+                                      ),
+                                      ListView.separated(
+                                          separatorBuilder: (context, index) {
+                                            return Column(
+                                              children: [
+                                                const SizedBox(height: 10),
+                                                Container(
+                                                  margin: const EdgeInsets
+                                                      .symmetric(
+                                                      horizontal: 20),
+                                                  height: 1,
+                                                  width: Get.width,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color: ColorConstant
+                                                              .grayTextColor),
+                                                ),
+                                                const SizedBox(height: 10),
+                                              ],
+                                            );
+                                          },
+                                          shrinkWrap: true,
+                                          physics:
+                                              const NeverScrollableScrollPhysics(),
+                                          padding:
+                                              const EdgeInsets.only(bottom: 10),
+                                          itemCount: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data
+                                                  ?.services
+                                                  ?.length ??
+                                              0,
+                                          itemBuilder: (context, index) {
+                                            return ServiceRatingCardWidget(
+                                              overAllServices: _homeController
+                                                  .getOverallReviewListModel
+                                                  .data!
+                                                  .services![index],
+                                            );
+                                          }),
+                                    ],
+                                  )
+                                : ListView.separated(
+                                    separatorBuilder: (context, index) {
+                                      return Column(
+                                        children: [
+                                          const SizedBox(height: 10),
+                                          Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            height: 1,
+                                            width: Get.width,
+                                            decoration: const BoxDecoration(
+                                                color: ColorConstant
+                                                    .grayTextColor),
+                                          ),
+                                          const SizedBox(height: 10),
+                                        ],
+                                      );
+                                    },
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    itemCount: _homeController
+                                            .getSalonReviewByArtiestModel
+                                            .data
+                                            ?.length ??
+                                        0,
+                                    itemBuilder: (context, index) {
+                                      return ByStylistCardWidget(
+                                        salonArtiestReviewOverall:
+                                            _homeController
+                                                .getSalonReviewByArtiestModel
+                                                .data![index],
+                                      );
+                                    }),
+                          ]),
+                        )),
+            ),
+          ],
+        ));
   }
 
   /*----------- Tab Bar variable  ----------- */
@@ -139,9 +286,16 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              overall = value;
-            });
+            overall = value;
+            if (overall == "0") {
+              setState(() {
+                _homeController.doGetOverallReview();
+              });
+            } else {
+              setState(() {
+                _homeController.doGetArtiestReview();
+              });
+            }
           }),
     );
   }

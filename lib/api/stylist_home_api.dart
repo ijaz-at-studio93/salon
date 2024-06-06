@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
+import 'package:salon/model/artist_model/blog_data_get_model.dart';
+import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/allow_portfolio_upload_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
 
@@ -79,7 +83,7 @@ class StylistAPI {
     }
   }
 
-  /*-------------------- Upload Image */
+  /*-------------------- Upload Image -------------------------*/
   static Future<String> uploadImage(
       {required String appointmentId,
       required List<String> multiplePath}) async {
@@ -106,4 +110,58 @@ class StylistAPI {
       throw response.data;
     }
   }
+
+  /*------------------------ Artiest Add Blog ------------*/
+  static Future<bool> addArtiestBlog({
+    required String title,
+    required String body,
+    required String description,
+    required File image,
+  }) async {
+    final formData = FormData.fromMap(
+        {"title": title, "body": body, "description": description});
+
+    if (image.path.isNotEmpty) {
+      final mimeTypeData =
+          lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(image.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('image', multipartFile));
+    }
+
+    final response = await DioClient.client.post(
+      "artist/blog/create",
+      data: formData,
+    );
+
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*------------- Blog Data get -------------*/
+  static Future<BlogDataGetModel> getBlogList() async {
+    final response = await DioClient.client.get("artist/blog/list");
+    if (response.isSuccess) {
+      return BlogDataGetModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+
+  /*-------------- Get Over all Stylist Review --------------*/
+  static Future<OverallReviewListModel> getOverAllStylistReview() async {
+    final response = await DioClient.client.get("artist/review/overall/list");
+    if (response.isSuccess) {
+      return OverallReviewListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+
+
 }

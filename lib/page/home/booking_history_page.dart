@@ -290,12 +290,11 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             overall = value;
             if (overall == "0") {
               setState(() {
-              _homeController.doUpcomingData();
+                _homeController.doUpcomingData();
               });
             } else if (overall == "1") {
               setState(() {
-
-              _homeController.doCancelData();
+                _homeController.doCancelData();
               });
             } else {
               setState(() {

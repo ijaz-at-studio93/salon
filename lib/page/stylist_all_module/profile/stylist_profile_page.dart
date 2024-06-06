@@ -6,10 +6,10 @@ import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/page/stylist_all_module/profile/served_booking_page.dart';
+import 'package:salon/page/stylist_all_module/profile/stylist_review_and_rating_page.dart';
 import 'package:salon/project_specific/logout_dialog.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 
 class StylistProfilePage extends StatefulWidget {
   const StylistProfilePage({super.key});
@@ -34,6 +34,13 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               image: AssetsConstant.reviewRatings,
               onTap: () {
                 Get.to(() => const ServedBookingPage());
+              }),
+          _dividerCustom(),
+          _customRowWidget(
+              titleName: "Review Rating",
+              image: AssetsConstant.reviewRatings,
+              onTap: () {
+                Get.to(() => const StylistReviewAndRatingPage());
               }),
           _dividerCustom(),
           _customRowWidget(

@@ -1,9 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -22,6 +25,9 @@ class _PostBlogPageState extends State<PostBlogPage> {
   final _titleForBlog = TextEditingController();
   final _shortDescription = TextEditingController();
   final _body = TextEditingController();
+
+  final _stylistController = Get.find<StylistController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,49 +36,78 @@ class _PostBlogPageState extends State<PostBlogPage> {
         nameOfScreen: "Post Blog",
         isBackIcon: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              children: [
-                const SizedBox(height: 15),
-                SimpleTextFieldWidget(
-                    textEditingController: _titleForBlog,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Title of your Blog"),
-                const SizedBox(height: 16),
-                SimpleTextFieldWidget(
-                    textEditingController: _shortDescription,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Short Description"),
-                const SizedBox(height: 16),
-                _addressField(
-                    textEditingController: _body,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Body"),
-                const SizedBox(height: 16),
-                _serviceImage()
-              ],
-            ),
+      body: Obx(
+        () => ProgressContainerView(
+          isProgressRunning: _stylistController.showProgress,
+          child: Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: [
+                    const SizedBox(height: 15),
+                    SimpleTextFieldWidget(
+                        textEditingController: _titleForBlog,
+                        hintText: "Tap To Enter",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        title: "Title of your Blog"),
+                    const SizedBox(height: 16),
+                    SimpleTextFieldWidget(
+                        textEditingController: _shortDescription,
+                        hintText: "Tap To Enter",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        title: "Short Description"),
+                    const SizedBox(height: 16),
+                    _addressField(
+                        textEditingController: _body,
+                        hintText: "Tap To Enter",
+                        textInputType: TextInputType.multiline,
+                        textInputAction: TextInputAction.none,
+                        title: "Body"),
+                    const SizedBox(height: 16),
+                    _serviceImage()
+                  ],
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                child: ButtonWidget(
+                  buttonTitleText: "Post",
+                  onPress: () {
+                    doCreateBlog();
+                  },
+                ),
+              )
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            child: ButtonWidget(
-              buttonTitleText: "Post",
-              onPress: () {
-                Get.to(()=> const SocialPage());
-              },
-            ),
-          )
-        ],
+        ),
       ),
     );
+  }
+
+  /*-------------------  do  Crete Blog ------------*/
+  doCreateBlog() {
+    if (_titleForBlog.text.isEmpty) {
+      showMessage("Please Enter Title");
+    } else if (_shortDescription.text.isEmpty) {
+      showMessage("Please Enter Short Description");
+    } else if (_body.text.isEmpty) {
+      showMessage("Please Enter body Text");
+    } else if (imagePath.path == "") {
+      showMessage("Please Choose Image");
+    } else {
+      _stylistController.doCreateBlog(
+          title: _titleForBlog.text,
+          body: _shortDescription.text,
+          description: _body.text,
+          image: imagePath,
+          callback: () {
+            Get.back();
+            Get.to(() => const SocialPage());
+          });
+    }
   }
 
   /*------------ Saloon Address TextField -----------*/
@@ -105,7 +140,8 @@ class _PostBlogPageState extends State<PostBlogPage> {
               ),
               child: TextField(
                 controller: textEditingController,
-                maxLines: 12,
+                maxLines: null,
+                enabled: true,
                 keyboardType: textInputType,
                 textInputAction: textInputAction,
                 style: AppTextTheme.medium

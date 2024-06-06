@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
