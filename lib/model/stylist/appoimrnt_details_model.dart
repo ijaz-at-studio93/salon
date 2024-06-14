@@ -29,9 +29,13 @@ class AppointmentsDetailsModel {
 class Data {
   int? orderAmount;
   String? bookingId;
+  String? idx;
   String? finalizedAt;
   String? appointmentId;
   String? orderStatus;
+  bool? allowPortfolioUpload;
+  bool? isHomeService;
+  Address? address;
   User? user;
   Salon? salon;
   Appointment? appointment;
@@ -39,21 +43,30 @@ class Data {
 
   Data(
       {this.orderAmount,
-        this.bookingId,
-        this.finalizedAt,
-        this.appointmentId,
-        this.orderStatus,
-        this.user,
-        this.salon,
-        this.appointment,
-        this.items});
+      this.bookingId,
+      this.idx,
+      this.finalizedAt,
+      this.appointmentId,
+      this.orderStatus,
+      this.allowPortfolioUpload,
+      this.isHomeService,
+      this.address,
+      this.user,
+      this.salon,
+      this.appointment,
+      this.items});
 
   Data.fromJson(Map<String, dynamic> json) {
     orderAmount = json['orderAmount'];
     bookingId = json['bookingId'];
+    idx = json['idx'];
     finalizedAt = json['finalizedAt'];
     appointmentId = json['appointmentId'];
     orderStatus = json['orderStatus'];
+    allowPortfolioUpload = json['allowPortfolioUpload'];
+    isHomeService = json['isHomeService'];
+    address =
+        json['address'] != null ? Address.fromJson(json['address']) : null;
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     salon = json['salon'] != null ? Salon.fromJson(json['salon']) : null;
     appointment = json['appointment'] != null
@@ -71,9 +84,15 @@ class Data {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['orderAmount'] = orderAmount;
     data['bookingId'] = bookingId;
+    data['idx'] = idx;
     data['finalizedAt'] = finalizedAt;
     data['appointmentId'] = appointmentId;
     data['orderStatus'] = orderStatus;
+    data['allowPortfolioUpload'] = allowPortfolioUpload;
+    data['isHomeService'] = isHomeService;
+    if (address != null) {
+      data['address'] = address!.toJson();
+    }
     if (user != null) {
       data['user'] = user!.toJson();
     }
@@ -86,6 +105,118 @@ class Data {
     if (items != null) {
       data['items'] = items!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class Address {
+  String? id;
+  String? bookingOrderId;
+  String? address;
+  GeoLocationPoint? geoLocationPoint;
+  String? addressLabel;
+  String? addressType;
+  String? description;
+  String? house;
+
+  Address(
+      {this.id,
+      this.bookingOrderId,
+      this.address,
+      this.geoLocationPoint,
+      this.addressLabel,
+      this.addressType,
+      this.description,
+      this.house});
+
+  Address.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    bookingOrderId = json['bookingOrderId'];
+    address = json['address'];
+    geoLocationPoint = json['geoLocationPoint'] != null
+        ? GeoLocationPoint.fromJson(json['geoLocationPoint'])
+        : null;
+    addressLabel = json['addressLabel'];
+    addressType = json['addressType'];
+    description = json['description'];
+    house = json['house'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['bookingOrderId'] = bookingOrderId;
+    data['address'] = address;
+    if (geoLocationPoint != null) {
+      data['geoLocationPoint'] = geoLocationPoint!.toJson();
+    }
+    data['addressLabel'] = addressLabel;
+    data['addressType'] = addressType;
+    data['description'] = description;
+    data['house'] = house;
+    return data;
+  }
+}
+
+class GeoLocationPoint {
+  Crs? crs;
+  String? type;
+  List<double>? coordinates;
+
+  GeoLocationPoint({this.crs, this.type, this.coordinates});
+
+  GeoLocationPoint.fromJson(Map<String, dynamic> json) {
+    crs = json['crs'] != null ? Crs.fromJson(json['crs']) : null;
+    type = json['type'];
+    coordinates = json['coordinates'].cast<double>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (crs != null) {
+      data['crs'] = crs!.toJson();
+    }
+    data['type'] = type;
+    data['coordinates'] = coordinates;
+    return data;
+  }
+}
+
+class Crs {
+  String? type;
+  Properties? properties;
+
+  Crs({this.type, this.properties});
+
+  Crs.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    properties = json['properties'] != null
+        ? Properties.fromJson(json['properties'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    if (properties != null) {
+      data['properties'] = properties!.toJson();
+    }
+    return data;
+  }
+}
+
+class Properties {
+  String? name;
+
+  Properties({this.name});
+
+  Properties.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
     return data;
   }
 }
@@ -171,9 +302,9 @@ class Items {
     id = json['id'];
     isService = json['isService'];
     service =
-    json['service'] != null ? Service.fromJson(json['service']) : null;
+        json['service'] != null ? Service.fromJson(json['service']) : null;
     product =
-    json['product'] != null ? Product.fromJson(json['product']) : null;
+        json['product'] != null ? Product.fromJson(json['product']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -183,9 +314,7 @@ class Items {
     if (service != null) {
       data['service'] = service!.toJson();
     }
-    if (product != null) {
-      data['product'] = product!.toJson();
-    }
+    data['product'] = product;
     return data;
   }
 }
@@ -200,11 +329,11 @@ class Service {
 
   Service(
       {this.price,
-        this.id,
-        this.name,
-        this.duration,
-        this.image,
-        this.categories});
+      this.id,
+      this.name,
+      this.duration,
+      this.image,
+      this.categories});
 
   Service.fromJson(Map<String, dynamic> json) {
     price = json['price'];

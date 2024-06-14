@@ -33,6 +33,8 @@ class Data {
   String? finalizedAt;
   String? appointmentId;
   String? orderStatus;
+  bool? isHomeService;
+  Address? address;
   User? user;
   Salon? salon;
   Appointment? appointment;
@@ -45,6 +47,8 @@ class Data {
       this.finalizedAt,
       this.appointmentId,
       this.orderStatus,
+      this.isHomeService,
+      this.address,
       this.user,
       this.salon,
       this.appointment,
@@ -57,6 +61,9 @@ class Data {
     finalizedAt = json['finalizedAt'];
     appointmentId = json['appointmentId'];
     orderStatus = json['orderStatus'];
+    isHomeService = json['isHomeService'];
+    address =
+        json['address'] != null ? Address.fromJson(json['address']) : null;
     user = json['user'] != null ? User.fromJson(json['user']) : null;
     salon = json['salon'] != null ? Salon.fromJson(json['salon']) : null;
     appointment = json['appointment'] != null
@@ -78,6 +85,10 @@ class Data {
     data['finalizedAt'] = finalizedAt;
     data['appointmentId'] = appointmentId;
     data['orderStatus'] = orderStatus;
+    data['isHomeService'] = isHomeService;
+    if (address != null) {
+      data['address'] = address!.toJson();
+    }
     if (user != null) {
       data['user'] = user!.toJson();
     }
@@ -90,6 +101,118 @@ class Data {
     if (items != null) {
       data['items'] = items!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class Address {
+  String? id;
+  String? bookingOrderId;
+  String? address;
+  GeoLocationPoint? geoLocationPoint;
+  String? addressLabel;
+  String? addressType;
+  String? description;
+  String? house;
+
+  Address(
+      {this.id,
+      this.bookingOrderId,
+      this.address,
+      this.geoLocationPoint,
+      this.addressLabel,
+      this.addressType,
+      this.description,
+      this.house});
+
+  Address.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    bookingOrderId = json['bookingOrderId'];
+    address = json['address'];
+    geoLocationPoint = json['geoLocationPoint'] != null
+        ? GeoLocationPoint.fromJson(json['geoLocationPoint'])
+        : null;
+    addressLabel = json['addressLabel'];
+    addressType = json['addressType'];
+    description = json['description'];
+    house = json['house'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['bookingOrderId'] = bookingOrderId;
+    data['address'] = address;
+    if (geoLocationPoint != null) {
+      data['geoLocationPoint'] = geoLocationPoint!.toJson();
+    }
+    data['addressLabel'] = addressLabel;
+    data['addressType'] = addressType;
+    data['description'] = description;
+    data['house'] = house;
+    return data;
+  }
+}
+
+class GeoLocationPoint {
+  Crs? crs;
+  String? type;
+  List<double>? coordinates;
+
+  GeoLocationPoint({this.crs, this.type, this.coordinates});
+
+  GeoLocationPoint.fromJson(Map<String, dynamic> json) {
+    crs = json['crs'] != null ? Crs.fromJson(json['crs']) : null;
+    type = json['type'];
+    coordinates = json['coordinates'].cast<double>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (crs != null) {
+      data['crs'] = crs!.toJson();
+    }
+    data['type'] = type;
+    data['coordinates'] = coordinates;
+    return data;
+  }
+}
+
+class Crs {
+  String? type;
+  Properties? properties;
+
+  Crs({this.type, this.properties});
+
+  Crs.fromJson(Map<String, dynamic> json) {
+    type = json['type'];
+    properties = json['properties'] != null
+        ? Properties.fromJson(json['properties'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['type'] = type;
+    if (properties != null) {
+      data['properties'] = properties!.toJson();
+    }
+    return data;
+  }
+}
+
+class Properties {
+  String? name;
+
+  Properties({this.name});
+
+  Properties.fromJson(Map<String, dynamic> json) {
+    name = json['name'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['name'] = name;
     return data;
   }
 }

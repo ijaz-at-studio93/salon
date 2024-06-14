@@ -32,6 +32,8 @@ class ProductListModel {
 }
 
 class Product {
+  int? price;
+  double? rating;
   String? id;
   String? createdAt;
   String? updatedAt;
@@ -41,24 +43,27 @@ class Product {
   String? name;
   String? description;
   String? image;
-  int? price;
+  int? reviewCount;
   bool? isSelectedProduct;
 
-  Product({
-    this.id,
-    this.createdAt,
-    this.updatedAt,
-    this.deletedAt,
-    this.salonId,
-    this.serviceCategoryId,
-    this.name,
-    this.description,
-    this.image,
-    this.price,
-    this.isSelectedProduct,
-  });
+  Product(
+      {this.price,
+      this.rating,
+      this.id,
+      this.createdAt,
+      this.updatedAt,
+      this.deletedAt,
+      this.salonId,
+      this.serviceCategoryId,
+      this.name,
+      this.description,
+      this.image,
+      this.reviewCount,
+      this.isSelectedProduct});
 
   Product.fromJson(Map<String, dynamic> json) {
+    price = json['price'];
+    rating = double.parse(json['rating'].toString());
     id = json['id'];
     createdAt = json['createdAt'];
     updatedAt = json['updatedAt'];
@@ -68,11 +73,13 @@ class Product {
     name = json['name'];
     description = json['description'];
     image = json['image'];
-    price = json['price'];
+    reviewCount = json['reviewCount'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['price'] = price;
+    data['rating'] = rating;
     data['id'] = id;
     data['createdAt'] = createdAt;
     data['updatedAt'] = updatedAt;
@@ -82,7 +89,8 @@ class Product {
     data['name'] = name;
     data['description'] = description;
     data['image'] = image;
-    data['price'] = price;
+    data['reviewCount'] = reviewCount;
     return data;
   }
 }
+

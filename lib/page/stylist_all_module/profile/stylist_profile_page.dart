@@ -5,6 +5,7 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/page/blog/Insights_home_page.dart';
 import 'package:salon/page/stylist_all_module/profile/served_booking_page.dart';
 import 'package:salon/page/stylist_all_module/profile/stylist_review_and_rating_page.dart';
 import 'package:salon/project_specific/logout_dialog.dart';
@@ -31,7 +32,7 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
           _dividerCustom(),
           _customRowWidget(
               titleName: "Served Service",
-              image: AssetsConstant.reviewRatings,
+              image: AssetsConstant.booking,
               onTap: () {
                 Get.to(() => const ServedBookingPage());
               }),
@@ -41,6 +42,13 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               image: AssetsConstant.reviewRatings,
               onTap: () {
                 Get.to(() => const StylistReviewAndRatingPage());
+              }),
+          _dividerCustom(),
+          _customRowWidget(
+              titleName: "Blog",
+              image: AssetsConstant.insights,
+              onTap: () {
+                Get.to(() => const InsightsHomePage(url: "artist/blog/list",));
               }),
           _dividerCustom(),
           _customRowWidget(
@@ -106,46 +114,14 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
             ),
           ),
           const SizedBox(width: 20),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _authController.getSalonArtistResponseModel.data
-                        ?.salonArtistData?.name ??
-                    "",
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.bold
-                    .copyWith(color: ColorConstant.blackColor, fontSize: 20),
-              ),
-              const SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(68),
-                    border:
-                        Border.all(color: ColorConstant.primaryColor, width: 1),
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        AssetsConstant.editIcon,
-                        width: 14,
-                        height: 14,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Edit Details",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.primaryColor, fontSize: 13),
-                      )
-                    ],
-                  ),
-                ),
-              )
-            ],
-          )
+          Text(
+            _authController
+                    .getSalonArtistResponseModel.data?.salonArtistData?.name ??
+                "",
+            textScaler: const TextScaler.linear(0.85),
+            style: AppTextTheme.bold
+                .copyWith(color: ColorConstant.blackColor, fontSize: 20),
+          ),
         ],
       ),
     );
@@ -169,6 +145,7 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               image,
               height: 24,
               width: 24,
+              color: ColorConstant.primaryColor,
             ),
             const SizedBox(width: 15),
             Text(

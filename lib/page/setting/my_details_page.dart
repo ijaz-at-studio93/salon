@@ -5,6 +5,7 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/page/blog/Insights_home_page.dart';
 import 'package:salon/page/review_rating/review_and_rating_page.dart';
 import 'package:salon/page/setting/availability_setting_page.dart';
 import 'package:salon/page/setting/categoty_page.dart';
@@ -53,7 +54,7 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                 titleName: "Product",
                 image: AssetsConstant.product,
                 onTap: () {
-                  Get.to(()=> const ProductListPage());
+                  Get.to(() => const ProductListPage());
                 }),
             _dividerCustom(),
             _customRowWidget(
@@ -62,13 +63,13 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                 onTap: () {
                   Get.to(() => const ServiceListPage());
                 }),
-            /*  _dividerCustom(),
+            _dividerCustom(),
             _customRowWidget(
-                titleName: "Job",
-                image: AssetsConstant.job,
+                titleName: "Blog",
+                image: AssetsConstant.insights,
                 onTap: () {
-                  Get.to(() => const JobVacancyPage());
-                }),*/
+                  Get.to(() => const InsightsHomePage(url: "salon/blog/list",));
+                }),
             _dividerCustom(),
             _customRowWidget(
                 titleName: "Account Details",
@@ -124,7 +125,7 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
               height: 66,
               fit: BoxFit.cover,
               imageUrl:
-              "${APIConstants.image}${_authController.salonResponseModel.data?.salonData?.image ?? ""}",
+                  "${APIConstants.image}${_authController.salonResponseModel.data?.salonData?.image ?? ""}",
               placeholder: (context, url) => const Image(
                 image: AssetImage(AssetsConstant.placeHolder),
                 width: 66,
@@ -139,7 +140,6 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
               ),
             ),
           ),
-
           const SizedBox(width: 20),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,6 +204,7 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
               image,
               height: 24,
               width: 24,
+              color: ColorConstant.primaryColor,
             ),
             const SizedBox(width: 15),
             Text(

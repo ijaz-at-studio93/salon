@@ -58,8 +58,7 @@ class _ScanPageState extends State<ScanPage> {
                       Colors.redAccent,
                     ],
                   ),
-                ),
-                /*Positioned(
+                ), /*Positioned(
                   bottom: Get.height * 0.14,
                   left: 0,
                   right: 0,
@@ -142,6 +141,7 @@ class _ScanPageState extends State<ScanPage> {
                         },
                         cancel: () {
                           widget.callback.call();
+                          Get.back();
                           Get.back();
                           Get.back();
                         },

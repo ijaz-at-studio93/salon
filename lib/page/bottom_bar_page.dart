@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/booking_history_page.dart';
 import 'package:salon/page/home/home_page.dart';
 import 'package:salon/page/setting/adding_service/add_service_bottm_sheet_page.dart';
@@ -19,7 +21,7 @@ class BottomBarPage extends StatefulWidget {
 
 class _BottomBarPageState extends State<BottomBarPage> {
   int _selectedIndex = 0;
-
+  final _homeController = Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -131,13 +133,15 @@ class _BottomBarPageState extends State<BottomBarPage> {
             ),
           ],
           onTap: (val) {
-            setState(() {
-              if (val == 2) {
-                _selectedIndex = 3;
-              } else {
-                _selectedIndex = val;
-              }
-            });
+            if (_homeController.getEligibilityModel.data?.isApproved ?? false) {
+              setState(() {
+                if (val == 2) {
+                  _selectedIndex = 3;
+                } else {
+                  _selectedIndex = val;
+                }
+              });
+            }
           },
         ),
       ),

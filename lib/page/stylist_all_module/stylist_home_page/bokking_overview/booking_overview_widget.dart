@@ -13,7 +13,9 @@ import 'view_accept_page.dart';
 class BookingOverviewWidget extends StatelessWidget {
   final String startTime;
   final String endTime;
+  final String id;
   final int price;
+  final bool isHomeService;
   final VoidCallback tapReject;
   final VoidCallback tapViewAndAccept;
 
@@ -24,6 +26,8 @@ class BookingOverviewWidget extends StatelessWidget {
     required this.price,
     required this.tapReject,
     required this.tapViewAndAccept,
+    required this.id,
+    required this.isHomeService,
   });
 
   @override
@@ -45,7 +49,7 @@ class BookingOverviewWidget extends StatelessWidget {
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
                   Text(
-                    "79828AH8918",
+                    id,
                     style: AppTextTheme.bold.copyWith(
                         color: ColorConstant.blackColor, fontSize: 16),
                   ),
@@ -118,7 +122,7 @@ class BookingOverviewWidget extends StatelessWidget {
                         color: ColorConstant.blackColor,
                       ),
                       Text(
-                        "Home",
+                        isHomeService ? "Home" : "Salon",
                         style: AppTextTheme.bold.copyWith(
                             fontSize: 13, color: ColorConstant.blackColor),
                       ),

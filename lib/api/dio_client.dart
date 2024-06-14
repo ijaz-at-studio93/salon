@@ -4,10 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:salon/constant/assetsconstant.dart';
+
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-import 'package:salon/project_specific/button_widget.dart';
+
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../constant/api_constant.dart';
@@ -42,6 +42,8 @@ class DioClient {
           requestHeader: true,
           requestBody: true,
           responseBody: true,
+          error: true,
+          request: true,
           responseHeader: false,
           compact: false,
         ),

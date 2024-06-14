@@ -1,10 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:readmore/readmore.dart';
 import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/page/setting/adding_service/create_new_service_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -161,27 +164,93 @@ class _ServiceListPageState extends State<ServiceListPage> {
                             ),
                           ],
                         ),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: CachedNetworkImage(
-                            width: 108,
-                            height: 123,
-                            fit: BoxFit.cover,
-                            imageUrl:
-                                "${APIConstants.image}${_homeController.getSalonServiceList.data?[i].image}",
-                            placeholder: (context, url) => const Image(
-                              image: AssetImage(AssetsConstant.placeHolder),
-                              width: 108,
-                              height: 123,
-                              fit: BoxFit.cover,
+                        Stack(
+                          clipBehavior: Clip.none,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: CachedNetworkImage(
+                                width: 108,
+                                height: 123,
+                                fit: BoxFit.cover,
+                                imageUrl:
+                                    "${APIConstants.image}${_homeController.getSalonServiceList.data?[i].image}",
+                                placeholder: (context, url) => const Image(
+                                  image: AssetImage(AssetsConstant.placeHolder),
+                                  width: 108,
+                                  height: 123,
+                                  fit: BoxFit.cover,
+                                ),
+                                errorWidget: (context, url, error) =>
+                                    const Image(
+                                  image: AssetImage(AssetsConstant.placeHolder),
+                                  width: 108,
+                                  height: 123,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
                             ),
-                            errorWidget: (context, url, error) => const Image(
-                              image: AssetImage(AssetsConstant.placeHolder),
-                              width: 108,
-                              height: 123,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
+                            Positioned(
+                              bottom: -15,
+                              left: 3,
+                              child: GestureDetector(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(32),
+                                        topRight: Radius.circular(32),
+                                      )),
+                                      context: context,
+                                      builder: (context) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: MediaQuery.of(context)
+                                                  .viewInsets
+                                                  .bottom),
+                                          child: CreateNewServicePage(
+                                            serviceId: _homeController
+                                                    .getSalonServiceList
+                                                    .data?[i]
+                                                    .id ??
+                                                "",
+                                            isUpdate: true,
+                                            salonService: _homeController
+                                                .getSalonServiceList.data![i],
+                                          ),
+                                        );
+                                      });
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 100,
+                                  decoration: BoxDecoration(
+                                      color: ColorConstant.reviewCardColor,
+                                      borderRadius: BorderRadius.circular(5),
+                                      border: Border.all(
+                                          color: ColorConstant.primaryColor)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Image.asset(
+                                        AssetsConstant.editIcon,
+                                        color: ColorConstant.primaryColor,
+                                        height: 15,
+                                        width: 15,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        "Edit",
+                                        style: AppTextTheme.regular.copyWith(
+                                            color: ColorConstant.primaryColor),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            )
+                          ],
                         ),
                       ],
                     ),

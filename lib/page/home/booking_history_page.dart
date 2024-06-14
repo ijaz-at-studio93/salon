@@ -245,7 +245,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
     return Container(
-      height: 81,
+
       color: ColorConstant.whiteColor,
       width: Get.width,
       padding: const EdgeInsets.symmetric(horizontal: 15),

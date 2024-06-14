@@ -22,7 +22,8 @@ class SelectServicePage extends StatefulWidget {
   final String password;
   final bool isHomeService;
   final String gender;
-
+  final bool isUpdate;
+  final String artistId;
   final String birthdate;
   final File image;
   const SelectServicePage(
@@ -38,7 +39,9 @@ class SelectServicePage extends StatefulWidget {
       required this.isHomeService,
       required this.gender,
       required this.birthdate,
-      required this.image});
+      required this.image,
+      required this.isUpdate,
+      required this.artistId});
 
   @override
   State<SelectServicePage> createState() => _SelectServicePageState();
@@ -51,6 +54,7 @@ class _SelectServicePageState extends State<SelectServicePage> {
   void initState() {
     _homeController.gender.clear();
     _homeController.serviceId.clear();
+
     super.initState();
   }
 
@@ -78,6 +82,8 @@ class _SelectServicePageState extends State<SelectServicePage> {
                   context: context,
                   builder: (context) {
                     return AddServicesForStylistPage(
+                      artistId: widget.artistId,
+                      isEdit: widget.isUpdate,
                       callback: () {
                         setState(() {
                           _homeController.gender.clear();
@@ -128,36 +134,39 @@ class _SelectServicePageState extends State<SelectServicePage> {
             () => Expanded(
               child: _homeController.showProgress
                   ? const ProgressBarView()
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 10),
-                      separatorBuilder: (context, index) {
-                        return const Divider(
-                          color: ColorConstant.dividerColor,
-                          indent: 21,
-                          endIndent: 19,
-                        );
-                      },
-                      itemCount:
-                          _homeController.getSalonServiceList.data?.length ?? 0,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        return _homeController.getSalonServiceList.data?[index]
-                                    .isSelectService ??
-                                false
-                            ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: Text(
-                                  _homeController.getSalonServiceList
-                                          .data?[index].name ??
-                                      "",
-                                  style: AppTextTheme.medium.copyWith(
-                                      color: ColorConstant.blackColor,
-                                      fontSize: 16),
-                                ),
-                              )
-                            : const SizedBox();
-                      }),
+                  : _homeController.getSalonServiceList.data?.isEmpty ?? false
+                      ? const SizedBox()
+                      : ListView.separated(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          separatorBuilder: (context, index) {
+                            return const Divider(
+                              color: ColorConstant.dividerColor,
+                              indent: 21,
+                              endIndent: 19,
+                            );
+                          },
+                          itemCount: _homeController
+                                  .getSalonServiceList.data?.length ??
+                              0,
+                          shrinkWrap: true,
+                          itemBuilder: (context, index) {
+                            return _homeController.getSalonServiceList
+                                        .data?[index].isSelectService ??
+                                    false
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15),
+                                    child: Text(
+                                      _homeController.getSalonServiceList
+                                              .data?[index].name ??
+                                          "",
+                                      style: AppTextTheme.medium.copyWith(
+                                          color: ColorConstant.blackColor,
+                                          fontSize: 16),
+                                    ),
+                                  )
+                                : const SizedBox();
+                          }),
             ),
           ),
           Padding(
@@ -165,45 +174,74 @@ class _SelectServicePageState extends State<SelectServicePage> {
             child: ButtonWidget(
                 buttonTitleText: "ADD",
                 onPress: () {
-                  if (_homeController.serviceId.isEmpty &&
-                      _homeController.gender.isEmpty) {
-                    showMessage("Please Select Service");
+                  if (widget.isUpdate) {
+                    if (_homeController.serviceId.isEmpty &&
+                        _homeController.gender.isEmpty) {
+                      showMessage("Please Select Service");
+                    } else {
+                      List<String> storeServiceId = [];
+                      List<String> genderStore = [];
+
+                      for (int i = 0;
+                          i < _homeController.serviceId.length;
+                          i++) {
+                        storeServiceId.add(_homeController.serviceId[i]);
+                      }
+
+                      for (int i = 0; i < _homeController.gender.length; i++) {
+                        genderStore.add(_homeController.gender[i]);
+                      }
+                      _homeController.doUpdateStylistService(
+                          artistId: widget.artistId,
+                          storeId: storeServiceId,
+                          genderDataList: genderStore,
+                          callback: () {
+                            Get.back();
+                            _homeController.doSalonArtistList();
+                          });
+                    }
                   } else {
-                    List<String> storeServiceId = [];
-                    List<String> genderStore = [];
+                    if (_homeController.serviceId.isEmpty &&
+                        _homeController.gender.isEmpty) {
+                      showMessage("Please Select Service");
+                    } else {
+                      List<String> storeServiceId = [];
+                      List<String> genderStore = [];
 
-                    for (int i = 0; i < _homeController.serviceId.length; i++) {
-                      storeServiceId.add(_homeController.serviceId[i]);
+                      for (int i = 0;
+                          i < _homeController.serviceId.length;
+                          i++) {
+                        storeServiceId.add(_homeController.serviceId[i]);
+                      }
+
+                      for (int i = 0; i < _homeController.gender.length; i++) {
+                        genderStore.add(_homeController.gender[i]);
+                      }
+
+                      _homeController.doAddArtiest(
+                          name: widget.name,
+                          mobile: widget.phone,
+                          countryCode: "91",
+                          email: widget.email,
+                          experience: widget.experience,
+                          address: widget.address,
+                          whatsapp: widget.whatsappNo,
+                          panCard: widget.panNo,
+                          homeService: widget.isHomeService.toString(),
+                          password: widget.password,
+                          gender: widget.gender,
+                          dob: widget.birthdate,
+                          image: widget.image,
+                          storeId: storeServiceId,
+                          genderDataList: genderStore,
+                          callback: () {
+                            Get.back();
+                            Get.back();
+                            Get.back();
+                            _homeController.doSalonArtistList();
+                          });
                     }
-
-                    for (int i = 0; i < _homeController.gender.length; i++) {
-                      genderStore.add(_homeController.gender[i]);
-                    }
-
-                    _homeController.doAddArtiest(
-                        name: widget.name,
-                        mobile: widget.phone,
-                        countryCode: "91",
-                        email: widget.email,
-                        experience: widget.experience,
-                        address: widget.address,
-                        whatsapp: widget.whatsappNo,
-                        panCard: widget.panNo,
-                        homeService: widget.isHomeService.toString(),
-                        password: widget.password,
-                        gender: widget.gender,
-                        dob: widget.birthdate,
-                        image: widget.image,
-                        storeId: storeServiceId,
-                        genderDataList: genderStore,
-                        callback: () {
-                          Get.back();
-                          Get.back();
-                          Get.back();
-                        });
                   }
-
-                  /* Get.to(() => const AddStylistReviewPage());*/
                 }),
           ),
         ],

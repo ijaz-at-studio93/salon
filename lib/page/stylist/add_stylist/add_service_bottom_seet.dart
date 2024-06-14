@@ -5,12 +5,17 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import 'widget/add_service_row_widget.dart';
 
 class AddServicesForStylistPage extends StatefulWidget {
   final VoidCallback callback;
-  const AddServicesForStylistPage({super.key, required this.callback});
+  final bool isEdit;
+  final String artistId;
+  const AddServicesForStylistPage(
+      {super.key,
+      required this.callback,
+      required this.isEdit,
+      required this.artistId});
 
   @override
   State<AddServicesForStylistPage> createState() =>
@@ -21,11 +26,19 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
   final _serviceTextEditingController = TextEditingController();
 
   final _homeController = Get.find<HomeController>();
+  String? serviceId;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _homeController.doGetSalonServiceList();
+      if (widget.isEdit) {
+        _homeController.doGetArtiestDetails(
+            artistId: widget.artistId, callback: () {
+          selectService();
+        });
+      }
     });
   }
 
@@ -60,7 +73,7 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
               children: [
                 TextButton(
                     onPressed: () {
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Text(
                       "Cancel",
@@ -77,7 +90,7 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
                 TextButton(
                     onPressed: () {
                       widget.callback();
-                      Get.back();
+                      Navigator.pop(context);
                     },
                     child: Text(
                       "Done",
@@ -165,5 +178,25 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
         ],
       ),
     );
+  }
+
+  selectService() {
+    setState(() {
+      for (int i = 0;
+          i < _homeController.getArtiestDetailsModel.data!.services!.length;
+          i++) {
+        serviceId =
+            _homeController.getArtiestDetailsModel.data?.services?[i].id ?? "";
+      }
+
+      for (int i = 0;
+          i < _homeController.getSalonServiceList.data!.length;
+          i++) {
+        if (_homeController.getSalonServiceList.data?[i].id == serviceId) {
+          print(serviceId);
+          _homeController.getSalonServiceList.data?[i].isSelectService = true;
+        }
+      }
+    });
   }
 }

@@ -1,20 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/stylist/availiblity_sheet_page.dart';
+import 'package:salon/page/stylist/availiblity_stylist_page.dart';
+import 'package:salon/page/stylist/widget/stylist_edit_bottom_sheet.dart';
 import 'package:salon/project_specific/text_theme.dart';
+
+import '../add_stylist/add_stylist_page.dart';
 
 class StylistListTileWidget extends StatelessWidget {
   final VoidCallback onPress;
   final String image;
   final String name;
+  final String id;
 
   const StylistListTileWidget(
       {super.key,
       required this.onPress,
       required this.image,
-      required this.name});
+      required this.name,
+      required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -78,18 +84,9 @@ class StylistListTileWidget extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  showModalBottomSheet(
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
-                        ),
-                      ),
-                      context: context,
-                      builder: (context) {
-                        return const AvailiblitySheetPage();
-                      });
+                  Get.to(() => AvailabilitySheetPage(
+                        artiestId: id,
+                      ));
                 },
                 child: Container(
                   padding: const EdgeInsets.only(
@@ -110,11 +107,42 @@ class StylistListTileWidget extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              Image.asset(
+              PopupMenuButton<String>(
+                onSelected: (val) {
+
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      enableDrag: false,
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            topRight: Radius.circular(32),
+                          )),
+                      context: context,
+                      builder: (context) {
+                        return  StylistEditBottomSheet(
+                          artistId: id,
+                        );
+                      });
+
+                  /*Get.to(() => AddStylistPage(
+                        isEdit: true,
+                        artistId: id,
+                      ));*/
+                },
+                itemBuilder: (BuildContext context) {
+                  return {'Edit'}.map((String choice) {
+                    return PopupMenuItem<String>(
+                      value: choice,
+                      child: Text(choice),
+                    );
+                  }).toList();
+                },
+              ), /* Image.asset(
                 AssetsConstant.dotVertical,
                 width: 5,
                 height: 19,
-              ),
+              ),*/
             ],
           )
         ],

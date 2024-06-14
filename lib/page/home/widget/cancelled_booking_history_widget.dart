@@ -41,11 +41,14 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
                     style: AppTextTheme.regular
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
-                  Text(
-                     "A12345687",
-                    textScaler: const TextScaler.linear(0.85),
-                    style: AppTextTheme.medium.copyWith(
-                        fontSize: 16, color: ColorConstant.blackColor),
+                  SizedBox(
+                    width: Get.width *0.4,
+                    child: Text(
+                      widget.orderData.idx ?? "",maxLines: 1,
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.medium.copyWith(
+                          fontSize: 16, color: ColorConstant.blackColor),
+                    ),
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,19 +9,26 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/stylist/add_stylist/select_service_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/password_text_field.dart';
 import 'package:salon/project_specific/phone_field_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
 
+import '../../../constant/api_constant.dart';
 import '../../location_pick/location_pick.dart';
 
 class AddStylistPage extends StatefulWidget {
-  const AddStylistPage({super.key});
+  final String artistId;
+
+  final bool isBasicInfoUpdate;
+  const AddStylistPage(
+      {super.key, required this.artistId, required this.isBasicInfoUpdate});
 
   @override
   State<AddStylistPage> createState() => _AddStylistPageState();
@@ -40,6 +48,44 @@ class _AddStylistPageState extends State<AddStylistPage> {
   String birthDate = "";
   File imagePath = File("");
   final _authController = Get.find<AuthController>();
+  final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isBasicInfoUpdate) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _homeController.doGetArtiestDetails(
+            artistId: widget.artistId,
+            callback: () {
+              _name.text =
+                  _homeController.getArtiestDetailsModel.data?.name ?? "";
+              _mobile.text =
+                  _homeController.getArtiestDetailsModel.data?.mobile ?? "";
+              _email.text =
+                  _homeController.getArtiestDetailsModel.data?.email ?? "";
+              _panNumber.text =
+                  _homeController.getArtiestDetailsModel.data?.panCard ?? "";
+              _experience.text = _homeController
+                      .getArtiestDetailsModel.data?.experience
+                      .toString() ??
+                  "";
+              _address.text =
+                  _homeController.getArtiestDetailsModel.data?.address ?? "";
+              _whatsappNumber.text =
+                  _homeController.getArtiestDetailsModel.data?.whatsapp ?? "";
+              gender =
+                  _homeController.getArtiestDetailsModel.data?.gender ?? "";
+              birthDate =
+                  _homeController.getArtiestDetailsModel.data?.dob ?? "";
+              isHomeServiceEnable =
+                  _homeController.getArtiestDetailsModel.data?.homeService ??
+                      false;
+            });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,89 +97,101 @@ class _AddStylistPageState extends State<AddStylistPage> {
       body: Column(
         children: [
           _countRowWidget(),
-          Expanded(
-            child: ListView(
-              children: [
-                _stylistProfilePhoto(),
-                SimpleTextFieldWidget(
-                    textEditingController: _name,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Stylist Name"),
-                const SizedBox(height: 20),
-                PhoneFieldWidget(
-                    textEditingController: _mobile,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    title: "Phone Number"),
-                const SizedBox(height: 20),
-                SimpleTextFieldWidget(
-                    textEditingController: _email,
-                    hintText: "sourabh@gmail.com",
-                    textInputType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    title: "Email ID"),
-                const SizedBox(height: 20),
-                _minimumExperience(
-                    textEditingController: _experience,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    title: ""),
-                const SizedBox(height: 20),
-                _addressFiled(
-                    onTap: () {
-                      Get.to(() => LocationPickPage(
-                            callback: () {
-                              _address.text =
-                                  _authController.salonCurrentAddress;
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : ListView(
+                      children: [
+                        _stylistProfilePhoto(),
+                        SimpleTextFieldWidget(
+                            textEditingController: _name,
+                            hintText: "Tap To Enter",
+                            textInputType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
+                            title: "Stylist Name"),
+                        const SizedBox(height: 20),
+                        PhoneFieldWidget(
+                            textEditingController: _mobile,
+                            hintText: "Tap To Enter",
+                            textInputType: TextInputType.phone,
+                            textInputAction: TextInputAction.next,
+                            title: "Phone Number"),
+                        const SizedBox(height: 20),
+                        SimpleTextFieldWidget(
+                            textEditingController: _email,
+                            hintText: "sourabh@gmail.com",
+                            textInputType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            title: "Email ID"),
+                        const SizedBox(height: 20),
+                        _minimumExperience(
+                            textEditingController: _experience,
+                            hintText: "Tap To Enter",
+                            textInputType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
+                            title: ""),
+                        const SizedBox(height: 20),
+                        _addressFiled(
+                            onTap: () {
+                              Get.to(() => LocationPickPage(
+                                    callback: () {
+                                      _address.text =
+                                          _authController.salonCurrentAddress;
+                                    },
+                                  ));
                             },
-                          ));
-                    },
-                    textEditingController: _address,
-                    hintText: "address",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.none,
-                    title: "Address"),
-                const SizedBox(height: 20),
-                PhoneFieldWidget(
-                    textEditingController: _whatsappNumber,
-                    hintText: "Tap To Enter",
-                    textInputType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    title: "Whatsapp Number"),
-                const SizedBox(height: 20),
-                SimpleTextFieldWidget(
-                    textEditingController: _panNumber,
-                    hintText: "For eg. ABCDE1234F",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "PAN Card"),
-                const SizedBox(height: 20),
-                PasswordTextFieldWidget(
-                    textEditingController: _password,
-                    hintText: "*************",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Password"),
-                const SizedBox(height: 20),
-                _homeService(),
-                const SizedBox(height: 20),
-                _selectGender(),
-                const SizedBox(height: 20),
-                _selectBirthDate(),
-                const SizedBox(height: 25),
-              ],
+                            textEditingController: _address,
+                            hintText: "address",
+                            textInputType: TextInputType.text,
+                            textInputAction: TextInputAction.none,
+                            title: "Address"),
+                        const SizedBox(height: 20),
+                        PhoneFieldWidget(
+                            textEditingController: _whatsappNumber,
+                            hintText: "Tap To Enter",
+                            textInputType: TextInputType.phone,
+                            textInputAction: TextInputAction.next,
+                            title: "Whatsapp Number"),
+                        const SizedBox(height: 20),
+                        SimpleTextFieldWidget(
+                            textEditingController: _panNumber,
+                            hintText: "For eg. ABCDE1234F",
+                            textInputType: TextInputType.text,
+                            textInputAction: TextInputAction.next,
+                            title: "PAN Card"),
+                        const SizedBox(height: 20),
+                        widget.isBasicInfoUpdate
+                            ? const SizedBox()
+                            : PasswordTextFieldWidget(
+                                textEditingController: _password,
+                                hintText: "*************",
+                                textInputType: TextInputType.text,
+                                textInputAction: TextInputAction.next,
+                                title: "Password"),
+                        widget.isBasicInfoUpdate
+                            ? const SizedBox()
+                            : const SizedBox(height: 20),
+                        _homeService(),
+                        const SizedBox(height: 20),
+                        _selectGender(),
+                        const SizedBox(height: 20),
+                        _selectBirthDate(),
+                        const SizedBox(height: 25),
+                      ],
+                    ),
             ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: ButtonWidget(
-                buttonTitleText: "Add",
+                buttonTitleText: widget.isBasicInfoUpdate ? "Update" : "Add",
                 onPress: () {
-                  _doAddStylist();
+                  if (widget.isBasicInfoUpdate) {
+                    _doUpdateStylist();
+                  } else {
+                    _doAddStylist();
+                  }
                 }),
           )
         ],
@@ -198,6 +256,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
         } else {
           Get.to(
             () => SelectServicePage(
+              artistId: "",
+              isUpdate: false,
               name: _name.text,
               phone: _mobile.text,
               email: _email.text,
@@ -212,6 +272,75 @@ class _AddStylistPageState extends State<AddStylistPage> {
               image: imagePath,
             ),
           );
+        }
+      }
+    }
+  }
+
+  /*----------------  Update Stylist -----------*/
+  _doUpdateStylist() {
+    if (_name.text.isEmpty) {
+      showMessage("Please enter stylist-name");
+      return;
+    } else if (_mobile.text.isEmpty) {
+      showMessage("Please enter phoneNumber");
+      return;
+    } else if (_mobile.text.length != 10) {
+      showMessage("Please enter 10 digit phoneNumber");
+      return;
+    } else if (_email.text.isEmpty) {
+      showMessage("Please enter email");
+      return;
+    } else {
+      final bool emailValid = RegExp(
+              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+          .hasMatch(_email.text);
+      if (!emailValid) {
+        showMessage("Please enter valid email");
+        return;
+      } else if (_experience.text.isEmpty) {
+        showMessage("Please enter your experience");
+        return;
+      } else if (_address.text.isEmpty) {
+        showMessage("Please enter address");
+        return;
+      } else if (_whatsappNumber.text.isEmpty) {
+        showMessage("Please enter whatsapp-number");
+        return;
+      } else if (_panNumber.text.isEmpty) {
+        showMessage("Please enter panCardNumber");
+        return;
+      } else {
+        final bool panCard =
+            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panNumber.text);
+        if (!panCard) {
+          showMessage("Please enter valid panCardNumber");
+          return;
+        } else if (gender == "") {
+          showMessage("Please  select gender");
+          return;
+        } else if (birthDate == "") {
+          showMessage("Please select birthdate");
+          return;
+        } else {
+          _homeController.doUpdateStylistBasicInfo(
+              artistId: widget.artistId,
+              name: _name.text,
+              mobile: _mobile.text,
+              countryCode: "91",
+              email: _email.text,
+              experience: _experience.text,
+              address: _address.text,
+              whatsapp: _whatsappNumber.text,
+              panCard: _panNumber.text,
+              homeService: isHomeServiceEnable.toString(),
+              gender: gender,
+              dob: birthDate,
+              image: imagePath,
+              callback: () {
+                Get.back();
+                _homeController.doSalonArtistList();
+              });
         }
       }
     }
@@ -290,7 +419,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
                   style: AppTextTheme.regular.copyWith(
                       color: ColorConstant.grayTextColor, fontSize: 12),
                 ),
-                const SizedBox(width: 5),
                 Text(
                   "Review",
                   textScaler: const TextScaler.linear(0.85),
@@ -391,9 +519,12 @@ class _AddStylistPageState extends State<AddStylistPage> {
                 ),
               ),
               hint: Text(
-                'Select Gender',
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.grayColor, fontSize: 13),
+                widget.isBasicInfoUpdate ? gender : 'Select Gender',
+                style: AppTextTheme.medium.copyWith(
+                    color: widget.isBasicInfoUpdate
+                        ? ColorConstant.blackColor
+                        : ColorConstant.grayColor,
+                    fontSize: 13),
               ),
               items: dataList
                   .map((item) => DropdownMenuItem<String>(
@@ -519,14 +650,37 @@ class _AddStylistPageState extends State<AddStylistPage> {
         alignment: Alignment.center,
         children: [
           imagePath.path == ""
-              ? Container(
-                  height: 100,
-                  width: 100,
-                  decoration: BoxDecoration(
-                    color: ColorConstant.grayTextColor.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                )
+              ? widget.isBasicInfoUpdate
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: CachedNetworkImage(
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        imageUrl:
+                            "${APIConstants.image}${_homeController.getArtiestDetailsModel.data?.profileImage ?? ""}",
+                        placeholder: (context, url) => const Image(
+                          image: AssetImage(AssetsConstant.placeHolder),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                        errorWidget: (context, url, error) => const Image(
+                          image: AssetImage(AssetsConstant.placeHolder),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: ColorConstant.grayTextColor.withOpacity(0.3),
+                        shape: BoxShape.circle,
+                      ),
+                    )
               : ClipRRect(
                   borderRadius: BorderRadius.circular(100),
                   child: Image.file(

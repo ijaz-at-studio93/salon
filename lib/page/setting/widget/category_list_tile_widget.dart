@@ -1,53 +1,72 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:salon/constant/api_constant.dart';
+import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/model/service_model/category_list_model.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class CategoryListTileWidget extends StatelessWidget {
-  final String title;
-
+  final CategoryDataList categoryDataList;
   final VoidCallback onPress;
   const CategoryListTileWidget(
-      {super.key, required this.title, required this.onPress});
+      {super.key, required this.categoryDataList, required this.onPress});
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: AppTextTheme.medium
-              .copyWith(fontSize: 14, color: ColorConstant.blackColor),
-        ), /*GestureDetector(
-          onTap: onPress,
-          child: Container(
-            width: Get.width * 0.2,
-            height: 35,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(40),
-              border: Border.all(
-                color: ColorConstant.primaryColor,
-              ),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: CachedNetworkImage(
+            width: 66,
+            height: 66,
+            fit: BoxFit.cover,
+            imageUrl: categoryDataList.serviceableGender == "male"
+                ? "${APIConstants.image}${categoryDataList.imageMale ?? ""}"
+                : "${APIConstants.image}${categoryDataList.imageFemale ?? ""}",
+            placeholder: (context, url) => const Image(
+              image: AssetImage(AssetsConstant.placeHolder),
+              width: 66,
+              height: 66,
+              fit: BoxFit.cover,
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  AssetsConstant.editIcon,
-                  height: 14,
-                  width: 12,
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  "Edit",
-                  style: AppTextTheme.regular
-                      .copyWith(color: ColorConstant.primaryColor, fontSize: 13),
-                )
-              ],
+            errorWidget: (context, url, error) => const Image(
+              image: AssetImage(AssetsConstant.placeHolder),
+              width: 66,
+              height: 66,
+              fit: BoxFit.cover,
             ),
           ),
-        )*/
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              categoryDataList.name ?? "",
+              style: AppTextTheme.bold
+                  .copyWith(fontSize: 14, color: ColorConstant.blackColor),
+            ),
+            Row(
+              children: [
+                Text(
+                  "Gender : ",
+                  style: AppTextTheme.bold
+                      .copyWith(fontSize: 14, color: ColorConstant.blackColor),
+                ),
+
+                Text(
+                  categoryDataList.serviceableGender ?? "",
+                  style: AppTextTheme.medium
+                      .copyWith(fontSize: 14, color: ColorConstant.blackColor),
+                ),
+              ],
+            )
+          ],
+        ),
+
       ],
     );
   }

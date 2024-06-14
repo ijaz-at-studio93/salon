@@ -48,6 +48,14 @@ class _LocationPickPageState extends State<LocationPickPage> {
       child: Scaffold(
         backgroundColor: ColorConstant.bgColor,
         appBar: AppBarWidget(
+          actions: [
+            IconButton(
+              onPressed: () {
+                Get.back();
+              },
+              icon: const Icon(Icons.check_circle),
+            ),
+          ],
           nameOfScreen: "Pick Your Location",
           isBackIcon: true,
           callback: widget.callback,
@@ -77,7 +85,6 @@ class _LocationPickPageState extends State<LocationPickPage> {
             ));
 
             setState(() {});
-
             _authController.salonAddressLan = latLng.longitude;
             _authController.salonAddressLat = latLng.latitude;
             _authController.salonCurrentAddress =
@@ -130,13 +137,17 @@ class _LocationPickPageState extends State<LocationPickPage> {
     }
     Position position = await Geolocator.getCurrentPosition();
     initialPosition = LatLng(position.latitude, position.latitude);
-    _marker.add(Marker(
-      markerId: const MarkerId('current_Postion'),
-      position: LatLng(position.latitude, position.longitude),
-      icon: BitmapDescriptor.defaultMarkerWithHue(
-        BitmapDescriptor.hueViolet,
-      ),
-    ));
+
+    setState(() {
+      _marker.add(Marker(
+        markerId: const MarkerId('current_Postion'),
+        position: LatLng(position.latitude, position.longitude),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueViolet,
+        ),
+      ));
+    });
+
     List<Placemark> placeMarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placeMarks[0];

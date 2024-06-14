@@ -5,11 +5,12 @@ import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/widget/booking_widget.dart';
-import 'package:salon/page/profile/document_submitted_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:vertical_barchart/vertical-barchart.dart';
 import 'package:vertical_barchart/vertical-barchartmodel.dart';
+import '../salon_profile_complete/complete_profile_page.dart';
+import '../salon_profile_complete/document_submitted_page.dart';
 import 'widget/earning_widget.dart';
 
 class Homepage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _HomepageState extends State<Homepage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _homeController.doCheckEligibility();
+      _homeController.doGetSalonDocument();
     });
   }
 
@@ -34,7 +36,7 @@ class _HomepageState extends State<Homepage> {
     return Obx(
       () => _homeController.showProgress
           ? const ProgressBarView()
-          : _homeController.eligibility
+          : _homeController.getEligibilityModel.data?.isApproved ?? false
               ? Container(
                   color: ColorConstant.bgColor,
                   child: Column(
@@ -55,7 +57,10 @@ class _HomepageState extends State<Homepage> {
                                         title: "Total Earning",
                                         subTitle: "+17.09% than yesterday",
                                         amount: "₹4000,000",
-                                        callback: () {},
+                                        callback: () {
+                                          Get.to(() =>
+                                              const CompleteProfilePage());
+                                        },
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -123,7 +128,11 @@ class _HomepageState extends State<Homepage> {
                     ],
                   ),
                 )
-              : const DocumentSubmittedPage(),
+              : _homeController.getEligibilityModel.data?.documentData
+                          ?.isAllSubmitted ??
+                      false
+                  ? const CompleteProfilePage()
+                  : const DocumentSubmittedPage(),
     );
   }
 

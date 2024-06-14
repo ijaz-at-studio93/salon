@@ -84,6 +84,7 @@ class AuthController extends GetxController {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
+    required bool homeService,
     required VoidCallback callback,
   }) async {
     try {
@@ -106,6 +107,7 @@ class AuthController extends GetxController {
           image: image,
           geolocationLat: geolocationLat,
           geolocationLng: geolocationLng,
+          isHomeService: homeService,
           description: description);
       if (_salonResponseModel.value.data?.id != null) {
         userDataStoreToSharedPrefs(_salonResponseModel.value);

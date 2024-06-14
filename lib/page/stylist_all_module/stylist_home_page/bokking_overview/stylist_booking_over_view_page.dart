@@ -116,6 +116,16 @@ class _StylistBookingOverViewPageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: BookingOverviewWidget(
+                                            isHomeService: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .isHomeService ??
+                                                false,
+                                            id: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .idx ??
+                                                "",
                                             price: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
@@ -200,6 +210,11 @@ class _StylistBookingOverViewPageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: AcceptBookingOverViewWidget(
+                                            isHomeService: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .isHomeService ??
+                                                false,
                                             onPress: () {
                                               Get.to(() => BookingOverviewPage(
                                                     appointmentId:
@@ -215,6 +230,11 @@ class _StylistBookingOverViewPageState
                                                     },
                                                   ));
                                             },
+                                            id: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .idx ??
+                                                "",
                                             endTime: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]

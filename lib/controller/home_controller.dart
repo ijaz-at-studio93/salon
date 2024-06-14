@@ -1,8 +1,18 @@
 import 'dart:io';
 import 'dart:ui';
+import 'package:flutter/animation.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/home_api.dart';
+import 'package:salon/model/artist_model/blog_data_get_model.dart';
+import 'package:salon/model/availability/artiest_availability_get_model.dart';
+import 'package:salon/model/availability/salon_avibility_model.dart';
+import 'package:salon/model/salon_document_model/eligibility_model.dart';
+import 'package:salon/model/salon_document_model/salon_document_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/salon_review_model/salon_review_by_artiest_model.dart';
 import 'package:salon/model/service_model/appointment_details_model.dart';
@@ -11,10 +21,11 @@ import 'package:salon/model/service_model/pending_appointments_list_model.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
+import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 
 class HomeController extends GetxController {
-  /*---------------  Show  Progressbar --------------*/
+  /*---------------  Show Progressbar --------------*/
   final Rx<bool> _showProgress = false.obs;
   bool get showProgress => _showProgress.value;
   set setShowProgress(val) => _showProgress.value = val;
@@ -24,9 +35,9 @@ class HomeController extends GetxController {
   set setShowProgressCategory(val) => _showProgressCategory.value = val;
 
   /*-----------------  Eligibility Store  ---------------*/
-  final Rx<bool> _eligibility = false.obs;
-  bool get eligibility => _eligibility.value;
-  set eligibility(val) => _eligibility.value = val;
+  final Rx<EligibilityModel> _eligibility = EligibilityModel().obs;
+  EligibilityModel get getEligibilityModel => _eligibility.value;
+  set setEligibilityModel(val) => _eligibility.value = val;
 
   /*------------------- Store Service Category List -------------*/
   final Rx<CategoryListModel> _categoryListModel = CategoryListModel().obs;
@@ -100,6 +111,40 @@ class HomeController extends GetxController {
       _salonReviewByArtiestModel.value;
   set setSalonReviewByArtiestModel(val) =>
       _salonReviewByArtiestModel.value = val;
+
+  /*-------------------------- ArtiestAvailabilityGetModel  -----------------*/
+
+  final Rx<ArtiestAvailabilityGetModel> _artiestAvailabilityGetModel =
+      ArtiestAvailabilityGetModel().obs;
+  ArtiestAvailabilityGetModel get getArtiestAvailabilityGetModel =>
+      _artiestAvailabilityGetModel.value;
+  set setArtiestAvailabilityGetModel(val) =>
+      _artiestAvailabilityGetModel.value = val;
+
+  /*-------------------- SalonAvailability -------------*/
+  final Rx<SalonAvailability> _salonAvailability = SalonAvailability().obs;
+  SalonAvailability get getSalonAvailability => _salonAvailability.value;
+  set setSalonAvailability(val) => _salonAvailability.value = val;
+
+  /*---------------------  BlogDataGetModel -------------------*/
+  final Rx<BlogDataGetModel> _salonBlogDataGetModel = BlogDataGetModel().obs;
+  BlogDataGetModel get getBlogDataGetModel => _salonBlogDataGetModel.value;
+  set setBlogDataGetModel(val) => _salonBlogDataGetModel.value = val;
+
+  /*-------------------------- Upload Document -------------------*/
+  final Rx<SalonDocumentGetModel> _salonDocumentGetModel =
+      SalonDocumentGetModel().obs;
+  SalonDocumentGetModel get getSalonDocumentGetModel =>
+      _salonDocumentGetModel.value;
+  set setSalonDocumentGetModel(val) => _salonDocumentGetModel.value = val;
+
+  /*------------  Get Artiest Details -----------*/
+
+  final Rx<ArtiestDetailsModel> _artiestDetailsModel =
+      ArtiestDetailsModel().obs;
+
+  ArtiestDetailsModel get getArtiestDetailsModel => _artiestDetailsModel.value;
+  set setArtiestDetailsModel(val) => _artiestDetailsModel.value = val;
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -180,6 +225,29 @@ class HomeController extends GetxController {
     }
   }
 
+  /*--------------  Update Product --------------*/
+  doUpdateProduct({
+    required String productId,
+    required String name,
+    required String description,
+    required String price,
+    required File? image,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool  result =  await  HomeAPI.updateProduct(productId: productId, name: name, description: description, price: price, image: image);
+
+      if(result){
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
   /*------------------------ get Service Review --------------*/
   doGetServiceReview({required String salonServiceId}) async {
     try {
@@ -223,6 +291,45 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------  Update service ----------------*/
+  doUpdateService({
+    required String serviceId,
+    required String name,
+    required String description,
+    required String price,
+    required String duration,
+    required String gender,
+    required List<String> categoryID,
+    required List<String> productId,
+    required File? image,
+    required bool isHomeService,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.updateService(
+          serviceId: serviceId,
+          name: name,
+          description: description,
+          price: price,
+          duration: duration,
+          gender: gender,
+          categoryID: categoryID,
+          productId: productId,
+          image: image,
+          isHomeService: isHomeService);
+
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+      print(e.toString());
     } finally {
       _showProgress.value = false;
     }
@@ -304,6 +411,70 @@ class HomeController extends GetxController {
     }
   }
 
+  /*----------------- Update stylist Basic Info -----------------*/
+  doUpdateStylistBasicInfo({
+    required String artistId,
+    required String name,
+    required String mobile,
+    required String countryCode,
+    required String email,
+    required String experience,
+    required String address,
+    required String whatsapp,
+    required String panCard,
+    required String homeService,
+    required String gender,
+    required String dob,
+    required File image,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.updateBasicInfoStylist(
+          artistId: artistId,
+          name: name,
+          mobile: mobile,
+          countryCode: countryCode,
+          email: email,
+          experience: experience,
+          address: address,
+          whatsapp: whatsapp,
+          panCard: panCard,
+          homeService: homeService,
+          gender: gender,
+          dob: dob,
+          image: image);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*----------------------- Update Stylist Service -------------------*/
+  doUpdateStylistService({
+    required String artistId,
+    required List<String> storeId,
+    required List<String> genderDataList,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.stylistUpdateService(
+          artistId: artistId, genderDataList: genderDataList, storeId: storeId);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
   /*----------------- Upcoming Booking  Data ----------------*/
   doUpcomingData() async {
     try {
@@ -354,7 +525,7 @@ class HomeController extends GetxController {
   }
 
 /*-----------------  Salon Artiest  List Data Get ----------------*/
-  doSalonArtistListModel() async {
+  doSalonArtistList() async {
     try {
       _showProgress.value = true;
       _salonArtistListModel.value = await HomeAPI.getSalonArtiestListData();
@@ -383,6 +554,127 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       _salonReviewByArtiestModel.value =
           await HomeAPI.getSalonReviewByArtiest();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------- Get Artiest Availability  -------------------*/
+  doGetArtiestAvailability({required String artistId}) async {
+    try {
+      _showProgress.value = true;
+      _artiestAvailabilityGetModel.value =
+          await HomeAPI.getArtiestAvailability(artistId: artistId);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------  Update Artiest Availability  -----------------*/
+  doUpdateArtiestAvailability(
+      {required Map availability,
+      required String artistId,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.updateArtiestAvailability(
+          availability: availability, artistId: artistId);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------- SalonAvailability ----------------*/
+  doGetSalonAvailability() async {
+    try {
+      _showProgress.value = true;
+      _salonAvailability.value = await HomeAPI.getSalonAvailability();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------------- Update SalonAvailability -------------------------- */
+  doUpdateSalonAvailability(
+      {required Map availability, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result =
+          await HomeAPI.updateSalonAvailability(availability: availability);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*----------------  Get Salon Document -------------------*/
+  doGetSalonDocument() async {
+    try {
+      _showProgress.value = true;
+      _salonDocumentGetModel.value = await HomeAPI.getSalonDocument();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------  Salon Upload Document ------------------*/
+  doUploadDocument(
+      {required String documentId,
+      required File image,
+      required VoidCallback callback}) async {
+    try {
+      _showProgressCategory.value = true;
+      bool result =
+          await HomeAPI.documentSubmit(documentId: documentId, image: image);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgressCategory.value = false;
+    }
+  }
+
+  /*---------------  Salon Blog Data Get ------------ */
+  doGetSalonBlogData({required String url}) async {
+    try {
+      _showProgress.value = true;
+      _salonBlogDataGetModel.value = await HomeAPI.getSalonBlogList(url: url);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*---------------- Get Artiest Details --------------*/
+  doGetArtiestDetails(
+      {required String artistId, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      _artiestDetailsModel.value =
+          await HomeAPI.getSalonArtiest(artistId: artistId);
+      if (_artiestDetailsModel.value.data?.id?.isNotEmpty ?? false) {
+        callback.call();
+      }
     } catch (e) {
       showError(e);
     } finally {

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/setting/widget/category_list_tile_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
@@ -19,7 +21,15 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   final _categoryTextEditingController = TextEditingController();
+  final _homeController = Get.find<HomeController>();
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetCategoryListData();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,78 +44,40 @@ class _CategoryPageState extends State<CategoryPage> {
           const SizedBox(height: 20),
           _searchAndService(),
           const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Suggested Service:",
-                  style: AppTextTheme.regular.copyWith(
-                      color: ColorConstant.grayTextColor, fontSize: 15),
-                ),
-                GestureDetector(
-                  onTap: (){
-
-                  },
-                  child: DottedBorder(
-                    borderType: BorderType.RRect,
-                    color: ColorConstant.primaryColor,
-                    radius: const Radius.circular(66),
-                    padding: const EdgeInsets.all(4),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      child: Container(
-                        height: 30,
-                        width: 100,
-                        color: ColorConstant.lightColor,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.add,
-                              color: ColorConstant.primaryColor,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              "Add New",
-                              style: AppTextTheme.regular.copyWith(
-                                  color: ColorConstant.primaryColor,
-                                  fontSize: 14),
-                            )
-                          ],
-                        ),
+          Obx(
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return const Divider(
+                                  endIndent: 20,
+                                  indent: 20,
+                                  color: ColorConstant.grayTextColor,
+                                );
+                              },
+                              itemCount: _homeController
+                                      .getCategoryModel.data?.length ??
+                                  0,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 10),
+                                  child: CategoryListTileWidget(
+                                    categoryDataList: _homeController
+                                        .getCategoryModel.data![index],
+                                    onPress: () {},
+                                  ),
+                                );
+                              }),
+                        ],
                       ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  ListView.separated(
-                    separatorBuilder: (context,index){
-                      return const Divider(
-                        endIndent:20,
-                        indent: 20,
-                        color: ColorConstant.grayTextColor,
-                      );
-                    },
-                      itemCount: 5,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                    return   Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-                      child: CategoryListTileWidget(title: 'Hair Cut',onPress: (){},),
-                    );
-                  }),
-                ],
-              ),
             ),
           ),
         ],
@@ -149,5 +121,3 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 }
-
-

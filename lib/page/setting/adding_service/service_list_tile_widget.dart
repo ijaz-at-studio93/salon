@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -7,16 +9,18 @@ import 'package:salon/project_specific/text_theme.dart';
 class ServiceListTileWidget extends StatefulWidget {
   final String image;
   final String name;
+  final String price;
   final String gender;
   final String time;
   final bool isHomeService;
+  final VoidCallback editOnTap;
   const ServiceListTileWidget(
       {super.key,
       required this.image,
       required this.name,
       required this.gender,
       required this.time,
-      required this.isHomeService});
+      required this.isHomeService, required this.editOnTap, required this.price});
 
   @override
   State<ServiceListTileWidget> createState() => _ServiceListTileWidgetState();
@@ -83,7 +87,7 @@ class _ServiceListTileWidgetState extends State<ServiceListTileWidget> {
                             color: ColorConstant.grayTextColor, fontSize: 13),
                       ),
                       Text(
-                        widget.name,
+                        widget.price,
                         style: AppTextTheme.bold.copyWith(
                             color: ColorConstant.blackColor, fontSize: 13),
                       )
@@ -128,12 +132,39 @@ class _ServiceListTileWidgetState extends State<ServiceListTileWidget> {
               const Icon(Icons.home),
               const SizedBox(height: 5),
               Text(
-                "${widget.isHomeService}",
+                widget.isHomeService ? "Home" : "Salon",
                 style: AppTextTheme.bold
                     .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+              ),
+              const SizedBox(height: 8),
+              GestureDetector(
+                onTap: widget.editOnTap,
+                child: Container(
+                  width: 70,
+                  height: 30,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: ColorConstant.primaryColor)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.edit,
+                        size: 18,
+                        color: ColorConstant.primaryColor,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        "Edit",
+                        style: AppTextTheme.bold.copyWith(
+                            color: ColorConstant.primaryColor, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
               )
             ],
-          )
+          ),
         ],
       ),
     );

@@ -9,14 +9,18 @@ import 'package:salon/project_specific/text_theme.dart';
 class AcceptBookingOverViewWidget extends StatefulWidget {
   final String startTime;
   final String endTime;
+  final String id;
   final int price;
+  final bool isHomeService;
   final VoidCallback onPress;
   const AcceptBookingOverViewWidget(
       {super.key,
       required this.onPress,
       required this.startTime,
       required this.endTime,
-      required this.price});
+      required this.price,
+      required this.id,
+      required this.isHomeService});
 
   @override
   State<AcceptBookingOverViewWidget> createState() =>
@@ -44,7 +48,7 @@ class _AcceptBookingOverViewWidgetState
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
                   Text(
-                    "79828AH8918",
+                    widget.id,
                     style: AppTextTheme.bold.copyWith(
                         color: ColorConstant.blackColor, fontSize: 16),
                   ),
@@ -117,7 +121,7 @@ class _AcceptBookingOverViewWidgetState
                         color: ColorConstant.blackColor,
                       ),
                       Text(
-                        "Home",
+                        widget.isHomeService ? "Home" : "Salon",
                         style: AppTextTheme.bold.copyWith(
                             fontSize: 13, color: ColorConstant.blackColor),
                       ),

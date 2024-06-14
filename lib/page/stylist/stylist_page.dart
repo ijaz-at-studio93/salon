@@ -22,14 +22,14 @@ class StylistPage extends StatefulWidget {
 
 class _StylistPageState extends State<StylistPage> {
   final _stylistTextEditingController = TextEditingController();
-  int _isSelected = 0;
 
   final _homeController = Get.find<HomeController>();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doSalonArtistListModel();
+      _homeController.doSalonArtistList();
     });
   }
 
@@ -47,42 +47,22 @@ class _StylistPageState extends State<StylistPage> {
             const SizedBox(height: 20),
             _searchAndService(),
             const SizedBox(height: 20),
-            SizedBox(
-              height: 45,
-              child: ListView.builder(
-                  itemCount: 10,
-                  padding: EdgeInsets.zero,
-                  shrinkWrap: true,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: FilterWidget(
-                        title: "Hair Cut",
-                        isSelected: _isSelected == index,
-                        onPress: () {
-                          setState(() {
-                            _isSelected = index;
-                          });
-                        },
-                      ),
-                    );
-                  }),
-            ),
-            const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "35 Stylist Found:",
+                    "${_homeController.getSalonArtistListModel.data?.length ?? 0} Stylist Found:",
                     style: AppTextTheme.regular.copyWith(
                         color: ColorConstant.grayTextColor, fontSize: 15),
                   ),
                   GestureDetector(
                     onTap: () {
-                      Get.to(() => const AddStylistPage());
+                      Get.to(() => const AddStylistPage(
+                            isBasicInfoUpdate: false,
+                            artistId: "",
+                          ));
                     },
                     child: DottedBorder(
                       borderType: BorderType.RRect,
@@ -144,6 +124,9 @@ class _StylistPageState extends State<StylistPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 12),
                                   child: StylistListTileWidget(
+                                    id: _homeController.getSalonArtistListModel
+                                            .data?[index].id ??
+                                        "",
                                     image:
                                         "${APIConstants.image}${_homeController.getSalonArtistListModel.data?[index].profileImage}",
                                     name: _homeController
@@ -152,7 +135,7 @@ class _StylistPageState extends State<StylistPage> {
                                             .name ??
                                         "",
                                     onPress: () {
-                                      Get.to(() => const StylistAboutPage());
+                                      /* Get.to(() => const StylistAboutPage());*/
                                     },
                                   ),
                                 );

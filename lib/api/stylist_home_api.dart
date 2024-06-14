@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
@@ -7,7 +6,6 @@ import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/allow_portfolio_upload_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
-
 import '../model/stylist/pending_appointment.dart';
 import 'dio_client.dart';
 

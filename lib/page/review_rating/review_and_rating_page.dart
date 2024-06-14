@@ -10,6 +10,7 @@ import 'package:salon/page/review_rating/widget/service_rating_card_widget.dart'
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/NoItemsWidget.dart';
 
 class ReviewAndRatingPage extends StatefulWidget {
   const ReviewAndRatingPage({super.key});
@@ -64,45 +65,51 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
                                               fontSize: 18),
                                         ),
                                       ),
-                                      ListView.separated(
-                                          separatorBuilder: (context, index) {
-                                            return Column(
-                                              children: [
-                                                const SizedBox(height: 10),
-                                                Container(
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 20),
-                                                  height: 1,
-                                                  width: Get.width,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          color: ColorConstant
-                                                              .grayTextColor),
-                                                ),
-                                                const SizedBox(height: 10),
-                                              ],
-                                            );
-                                          },
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          padding:
-                                              const EdgeInsets.only(bottom: 10),
-                                          itemCount: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data
-                                                  ?.artists
-                                                  ?.length ??
-                                              0,
-                                          itemBuilder: (context, index) {
-                                            return ArtiestRatingCardWidget(
-                                              overAllArtists: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data!
-                                                  .artists![index],
-                                            );
-                                          }),
+                                      _homeController.getOverallReviewListModel
+                                                  .data!.artists?.isEmpty ??
+                                              false
+                                          ? const NoItemsWidget(
+                                              text: "Artiest Review Not Found")
+                                          : ListView.separated(
+                                              separatorBuilder:
+                                                  (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    const SizedBox(height: 10),
+                                                    Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20),
+                                                      height: 1,
+                                                      width: Get.width,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                              color: ColorConstant
+                                                                  .grayTextColor),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                  ],
+                                                );
+                                              },
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              itemCount: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data
+                                                      ?.artists
+                                                      ?.length ??
+                                                  0,
+                                              itemBuilder: (context, index) {
+                                                return ArtiestRatingCardWidget(
+                                                  overAllArtists: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data!
+                                                      .artists![index],
+                                                );
+                                              }),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16, vertical: 10),
@@ -113,45 +120,51 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
                                               fontSize: 18),
                                         ),
                                       ),
-                                      ListView.separated(
-                                          separatorBuilder: (context, index) {
-                                            return Column(
-                                              children: [
-                                                const SizedBox(height: 10),
-                                                Container(
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 20),
-                                                  height: 1,
-                                                  width: Get.width,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          color: ColorConstant
-                                                              .grayTextColor),
-                                                ),
-                                                const SizedBox(height: 10),
-                                              ],
-                                            );
-                                          },
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          padding:
-                                              const EdgeInsets.only(bottom: 10),
-                                          itemCount: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data
-                                                  ?.products
-                                                  ?.length ??
-                                              0,
-                                          itemBuilder: (context, index) {
-                                            return ProductRatingCardWidget(
-                                              overAllProducts: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data!
-                                                  .products![index],
-                                            );
-                                          }),
+                                      _homeController.getOverallReviewListModel
+                                                  .data!.artists?.isEmpty ??
+                                              false
+                                          ? const NoItemsWidget(
+                                              text: "Product Review Not Found")
+                                          : ListView.separated(
+                                              separatorBuilder:
+                                                  (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    const SizedBox(height: 10),
+                                                    Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20),
+                                                      height: 1,
+                                                      width: Get.width,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                              color: ColorConstant
+                                                                  .grayTextColor),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                  ],
+                                                );
+                                              },
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              itemCount: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data
+                                                      ?.products
+                                                      ?.length ??
+                                                  0,
+                                              itemBuilder: (context, index) {
+                                                return ProductRatingCardWidget(
+                                                  overAllProducts: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data!
+                                                      .products![index],
+                                                );
+                                              }),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 16, vertical: 10),
@@ -162,82 +175,103 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
                                               fontSize: 18),
                                         ),
                                       ),
-                                      ListView.separated(
-                                          separatorBuilder: (context, index) {
-                                            return Column(
-                                              children: [
-                                                const SizedBox(height: 10),
-                                                Container(
-                                                  margin: const EdgeInsets
-                                                      .symmetric(
-                                                      horizontal: 20),
-                                                  height: 1,
-                                                  width: Get.width,
-                                                  decoration:
-                                                      const BoxDecoration(
-                                                          color: ColorConstant
-                                                              .grayTextColor),
-                                                ),
-                                                const SizedBox(height: 10),
-                                              ],
-                                            );
-                                          },
-                                          shrinkWrap: true,
-                                          physics:
-                                              const NeverScrollableScrollPhysics(),
-                                          padding:
-                                              const EdgeInsets.only(bottom: 10),
-                                          itemCount: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data
-                                                  ?.services
-                                                  ?.length ??
-                                              0,
-                                          itemBuilder: (context, index) {
-                                            return ServiceRatingCardWidget(
-                                              overAllServices: _homeController
-                                                  .getOverallReviewListModel
-                                                  .data!
-                                                  .services![index],
-                                            );
-                                          }),
+                                      _homeController.getOverallReviewListModel
+                                                  .data?.services?.isEmpty ??
+                                              false
+                                          ? const NoItemsWidget(
+                                              text: "Service Review Not Found")
+                                          : ListView.separated(
+                                              separatorBuilder:
+                                                  (context, index) {
+                                                return Column(
+                                                  children: [
+                                                    const SizedBox(height: 10),
+                                                    Container(
+                                                      margin: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 20),
+                                                      height: 1,
+                                                      width: Get.width,
+                                                      decoration:
+                                                          const BoxDecoration(
+                                                              color: ColorConstant
+                                                                  .grayTextColor),
+                                                    ),
+                                                    const SizedBox(height: 10),
+                                                  ],
+                                                );
+                                              },
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 10),
+                                              itemCount: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data
+                                                      ?.services
+                                                      ?.length ??
+                                                  0,
+                                              itemBuilder: (context, index) {
+                                                return ServiceRatingCardWidget(
+                                                  overAllServices: _homeController
+                                                      .getOverallReviewListModel
+                                                      .data!
+                                                      .services![index],
+                                                );
+                                              }),
                                     ],
                                   )
-                                : ListView.separated(
-                                    separatorBuilder: (context, index) {
-                                      return Column(
+                                : _homeController.getSalonReviewByArtiestModel
+                                            .data?.isEmpty ??
+                                        false
+                                    ? Column(
                                         children: [
-                                          const SizedBox(height: 10),
-                                          Container(
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 20),
-                                            height: 1,
-                                            width: Get.width,
-                                            decoration: const BoxDecoration(
-                                                color: ColorConstant
-                                                    .grayTextColor),
+                                          SizedBox(
+                                            height: Get.height * 0.2,
                                           ),
-                                          const SizedBox(height: 10),
+                                          const NoItemsWidget(
+                                              text:
+                                                  "No Any Stylist Review Found"),
                                         ],
-                                      );
-                                    },
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    itemCount: _homeController
-                                            .getSalonReviewByArtiestModel
-                                            .data
-                                            ?.length ??
-                                        0,
-                                    itemBuilder: (context, index) {
-                                      return ByStylistCardWidget(
-                                        salonArtiestReviewOverall:
-                                            _homeController
+                                      )
+                                    : ListView.separated(
+                                        separatorBuilder: (context, index) {
+                                          return Column(
+                                            children: [
+                                              const SizedBox(height: 10),
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 20),
+                                                height: 1,
+                                                width: Get.width,
+                                                decoration: const BoxDecoration(
+                                                    color: ColorConstant
+                                                        .grayTextColor),
+                                              ),
+                                              const SizedBox(height: 10),
+                                            ],
+                                          );
+                                        },
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 10),
+                                        itemCount: _homeController
                                                 .getSalonReviewByArtiestModel
-                                                .data![index],
-                                      );
-                                    }),
+                                                .data
+                                                ?.length ??
+                                            0,
+                                        itemBuilder: (context, index) {
+                                          return ByStylistCardWidget(
+                                            salonArtiestReviewOverall:
+                                                _homeController
+                                                    .getSalonReviewByArtiestModel
+                                                    .data![index],
+                                          );
+                                        }),
                           ]),
                         )),
             ),

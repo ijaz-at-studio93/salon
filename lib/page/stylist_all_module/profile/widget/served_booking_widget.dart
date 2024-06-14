@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -11,13 +12,17 @@ class ServedBookingWidget extends StatelessWidget {
   final String startTime;
   final String endTime;
   final String image;
+  final String id;
   final String name;
   final int price;
   const ServedBookingWidget(
       {super.key,
       required this.startTime,
       required this.endTime,
-      required this.price, required this.image, required this.name});
+      required this.price,
+      required this.image,
+      required this.name,
+      required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +43,19 @@ class ServedBookingWidget extends StatelessWidget {
                     style: AppTextTheme.regular
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
-                  Text(
-                    "79828AH8918",
-                    style: AppTextTheme.bold.copyWith(
-                        color: ColorConstant.blackColor, fontSize: 16),
+                  SizedBox(
+                    width: Get.width * 0.4,
+                    child: Text(
+                      id,
+                      maxLines: 1,
+                      style: AppTextTheme.bold.copyWith(
+                          color: ColorConstant.blackColor, fontSize: 16),
+                    ),
                   ),
                 ],
               ),
               Text(
-                "${convertDate(date: startTime)}- ${convertDate(date: endTime)}",
+                "${startTime == "" ? "" : convertDate(date: startTime)}- ${endTime == "" ? "" : convertDate(date: endTime)}",
                 style: AppTextTheme.regular
                     .copyWith(fontSize: 13, color: ColorConstant.grayTextColor),
               )
@@ -154,48 +163,46 @@ class ServedBookingWidget extends StatelessWidget {
           ),
           const SizedBox(height: 15),
           Row(
-           children: [
-             ClipRRect(
-               borderRadius: BorderRadius.circular(100),
-               child: CachedNetworkImage(
-                 width: 60,
-                 height: 60,
-                 fit: BoxFit.cover,
-                 imageUrl: image,
-                 placeholder: (context, url) => const Image(
-                   image: AssetImage(AssetsConstant.placeHolder),
-                   width: 60,
-                   height: 60,
-                   fit: BoxFit.cover,
-                 ),
-                 errorWidget: (context, url, error) => const Image(
-                   image: AssetImage(AssetsConstant.placeHolder),
-                   width: 60,
-                   height: 60,
-                   fit: BoxFit.cover,
-                 ),
-               ),
-             ),
-             const SizedBox(width: 10),
-             Row(
-               children: [
-                 Text(
-                   "Name :",
-                   style: AppTextTheme.medium
-                       .copyWith(fontSize: 12, color: ColorConstant.grayTextColor),
-                 ),
-                 const SizedBox(width: 5),
-                 Text(
-                   name,
-                   style: AppTextTheme.bold
-                       .copyWith(fontSize: 13, color: ColorConstant.primaryColor),
-                 ),
-               ],
-             ),
-
-           ],
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(100),
+                child: CachedNetworkImage(
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  imageUrl: image,
+                  placeholder: (context, url) => const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                  errorWidget: (context, url, error) => const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    width: 60,
+                    height: 60,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Row(
+                children: [
+                  Text(
+                    "Name :",
+                    style: AppTextTheme.medium.copyWith(
+                        fontSize: 12, color: ColorConstant.grayTextColor),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    name,
+                    style: AppTextTheme.bold.copyWith(
+                        fontSize: 13, color: ColorConstant.primaryColor),
+                  ),
+                ],
+              ),
+            ],
           )
-
         ],
       ),
     );

@@ -37,11 +37,15 @@ class CompleteHistoryWidget extends StatelessWidget {
                     style: AppTextTheme.regular
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
-                  Text(
-                    "ABc123456",
-                    textScaler: const TextScaler.linear(0.85),
-                    style: AppTextTheme.medium.copyWith(
-                        fontSize: 16, color: ColorConstant.blackColor),
+                  SizedBox(
+                    width: Get.width *0.4,
+                    child: Text(
+                      orderData.idx ?? "",
+                      maxLines: 1,
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.medium.copyWith(
+                          fontSize: 16, color: ColorConstant.blackColor),
+                    ),
                   ),
                 ],
               ),

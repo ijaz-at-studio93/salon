@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -171,6 +172,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           textInputAction: TextInputAction.none,
                           title: "Address"),
                       const SizedBox(height: 20),
+                      _homeService(),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
@@ -314,6 +317,57 @@ class _RegisterPageState extends State<RegisterPage> {
               )),
         ],
       ),
+    );
+  }
+
+  /*------------ is Home Service --------------*/
+  bool isHomeServiceEnable = false;
+  _homeService() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            "Home Service",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          height: 50,
+          width: Get.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: ColorConstant.borderColor,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Is home service",
+                style: AppTextTheme.regular
+                    .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+              ),
+              CupertinoSwitch(
+                activeColor: ColorConstant.primaryColor,
+                value: isHomeServiceEnable,
+                onChanged: (value) {
+                  setState(() {
+                    isHomeServiceEnable =
+                        value; // Update the CupertinoSwitch state
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -729,6 +783,7 @@ class _RegisterPageState extends State<RegisterPage> {
             geolocationLat: _authController.salonAddressLat.toString(),
             geolocationLng: _authController.salonAddressLan.toString(),
             description: _description.text,
+            homeService: isHomeServiceEnable,
             callback: () {
               Get.to(() => const BottomBarPage());
             },

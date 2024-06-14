@@ -36,5 +36,6 @@ class ColorConstant {
   static const Color callColor = Color(0xffDBD0F8);
   static const Color topRatedColor = Color(0xff696A6B);
   static const Color skyBlueColor = Color(0xff2178FC);
+  static const Color divider2Color = Color(0xffE8E8E8);
 
 }

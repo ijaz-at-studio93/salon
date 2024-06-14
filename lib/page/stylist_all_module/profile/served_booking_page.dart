@@ -60,6 +60,10 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: ServedBookingWidget(
+                                    id: _stylistController
+                                        .getCompleteAppointmentsListModel
+                                        .data?[index]
+                                        .idx ?? "",
                                     price: _stylistController
                                             .getCompleteAppointmentsListModel
                                             .data?[index]

@@ -60,7 +60,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
     return Container(
-      height: 81,
       color: ColorConstant.whiteColor,
       width: Get.width,
       padding: const EdgeInsets.symmetric(horizontal: 15),

@@ -1,11 +1,14 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/page/setting/adding_service/service_preview_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/plus_icon_simple_textfield.dart';
@@ -19,7 +22,14 @@ import 'add_category_new_service.dart';
 import 'add_new_product_service_page.dart';
 
 class CreateNewServicePage extends StatefulWidget {
-  const CreateNewServicePage({super.key});
+  final bool isUpdate;
+  final String serviceId;
+  final SalonService salonService;
+  const CreateNewServicePage(
+      {super.key,
+      required this.isUpdate,
+      required this.salonService,
+      required this.serviceId});
 
   @override
   State<CreateNewServicePage> createState() => _CreateNewServicePageState();
@@ -30,7 +40,6 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   final _descriptionController = TextEditingController();
   final _servicePrice = TextEditingController();
   final _duration = TextEditingController();
-
   final _category = TextEditingController();
   final _product = TextEditingController();
   bool isHomeServiceEnable = false; // Variable to track the switch state
@@ -42,6 +51,15 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     super.initState();
     _homeController.categoryId.clear();
     _homeController.productId.clear();
+    if (widget.isUpdate) {
+      _serviceName.text = widget.salonService.name ?? "";
+      _descriptionController.text = widget.salonService.description ?? "";
+      _servicePrice.text = widget.salonService.price.toString();
+      _duration.text = widget.salonService.duration.toString();
+      _category.text =
+          "Select Category${widget.salonService.categories?.length.toString() ?? ""}";
+      isHomeServiceEnable = widget.salonService.homeService ?? false;
+    }
   }
 
   @override
@@ -211,7 +229,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                                             false) {
                                           _product.text =
                                               "Select Product Service ${i == 0 ? 1 : i}";
-                                          print("===============> Test");
+
                                           _homeController.productId.add(
                                               _homeController
                                                   .getProductListModel
@@ -265,9 +283,14 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 30),
                         child: ButtonWidget(
-                            buttonTitleText: "Next",
+                            buttonTitleText:
+                                widget.isUpdate ? "Update" : "Next",
                             onPress: () {
-                              _doAddService();
+                              if (widget.isUpdate) {
+                                _doUpdateService();
+                              } else {
+                                _doAddService();
+                              }
                             }),
                       ),
                     ],
@@ -282,7 +305,6 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   }
 
   /*--------------------- Do add Service ------------------------*/
-
   _doAddService() {
     if (_serviceName.text.isEmpty) {
       showMessage("Please enter service-name");
@@ -344,6 +366,54 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                     salonServiceId: _homeController.salonServiceId.value,
                   );
                 });
+          });
+    }
+  }
+
+  /*-------------------- Do Update Service ----------------------*/
+  _doUpdateService() {
+    if (_serviceName.text.isEmpty) {
+      showMessage("Please enter service-name");
+      return;
+    } else if (_descriptionController.text.isEmpty) {
+      showMessage("Please enter service description");
+      return;
+    } else if (_servicePrice.text.isEmpty) {
+      showMessage("Please enter service price");
+      return;
+    } else if (_duration.text.isEmpty) {
+      showMessage("Please enter service timing");
+      return;
+    } else {
+      List<String> categoryData = [];
+      List<String> productData = [];
+
+      for (int i = 0; i < _homeController.categoryId.length; i++) {
+        categoryData.add(_homeController.categoryId[i]);
+      }
+
+      for (int i = 0; i < _homeController.productId.length; i++) {
+        productData.add(_homeController.productId[i]);
+      }
+
+      _homeController.doUpdateService(
+          serviceId: widget.serviceId,
+          name: _serviceName.text,
+          description: _descriptionController.text,
+          price: _servicePrice.text,
+          duration: _duration.text,
+          gender: _selectedGender == 1
+              ? "male"
+              : _selectedGender == 2
+                  ? "female"
+                  : "unisex",
+          categoryID: categoryData,
+          productId: productData,
+          image: imagePath.path.isEmpty ? null : File(imagePath.path),
+          isHomeService: isHomeServiceEnable,
+          callback: () {
+            Navigator.pop(context);
+            _homeController.doGetSalonServiceList();
           });
     }
   }
@@ -493,13 +563,27 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                 ),
               ),
               child: imagePath.path.isEmpty
-                  ? Center(
-                      child: Image.asset(
-                        AssetsConstant.uploadIcon,
-                        height: 24,
-                        width: 24,
-                      ),
-                    )
+                  ? widget.isUpdate
+                      ? CachedNetworkImage(
+                          fit: BoxFit.fitHeight,
+                          imageUrl:
+                              "${APIConstants.image}${widget.salonService.image ?? ""}",
+                          placeholder: (context, url) => const Image(
+                            image: AssetImage(AssetsConstant.placeHolder),
+                            fit: BoxFit.fitHeight,
+                          ),
+                          errorWidget: (context, url, error) => const Image(
+                            image: AssetImage(AssetsConstant.placeHolder),
+                            fit: BoxFit.fitHeight,
+                          ),
+                        )
+                      : Center(
+                          child: Image.asset(
+                            AssetsConstant.uploadIcon,
+                            height: 24,
+                            width: 24,
+                          ),
+                        )
                   : ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.file(

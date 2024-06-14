@@ -47,35 +47,7 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                     fit: BoxFit.fitWidth,
                   ),
                 ),
-                Positioned(
-                  top: 10,
-                  right: 10,
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: Container(
-                      width: 38,
-                      height: 38,
-                      decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: ColorConstant.blackColor),
-                      child: Center(
-                        child: Image.asset(
-                          AssetsConstant.likeBlank,
-                          height: 20,
-                          width: 20,
-                        ),
-                      ),
-                    ),
-                  ),
-/*
-                  Center(
-                      child: _authController.isInsightsFav
-                          ? const Icon(
-                        CupertinoIcons.heart_fill,
-                        color: Colors.red,
-                      )
-                          :*/
-                ),
+
               ],
             ),
             const SizedBox(height: 20),
@@ -88,7 +60,7 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                SizedBox(),
+                const SizedBox(),
                 /*  Row(
                   children: [
                     const Icon(

@@ -38,8 +38,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
-        nameOfScreen: "ID: 79828AH8918",
+      appBar: AppBarWidget(
+        nameOfScreen:
+            "ID: ${_homeController.getAppointmentDetailsModel.data?.idx ?? ""}",
         isBackIcon: true,
       ),
       body: Obx(
@@ -485,7 +486,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                           ),
                           const SizedBox(height: 20),
                           _customerDetails(
-                              titleName: "Total", titleValue: "₹300.00"),
+                              titleName: "Total",
+                              titleValue:
+                                  "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}"),
                           const SizedBox(height: 10),
                           _customerDetails(
                               titleName: "Tax Applied (18%)",
@@ -531,7 +534,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                             ),
                           ),
                           Text(
-                            "₹600",
+                            "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}",
                             style: AppTextTheme.bold.copyWith(
                               fontSize: 16,
                               color: ColorConstant.whiteColor,

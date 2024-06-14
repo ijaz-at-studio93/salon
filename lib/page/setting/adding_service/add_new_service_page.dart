@@ -5,6 +5,7 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/page/setting/adding_service/create_new_service_page.dart';
 import 'package:salon/page/setting/adding_service/service_list_tile_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
@@ -67,7 +68,12 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
                             padding: EdgeInsets.only(
                                 bottom:
                                     MediaQuery.of(context).viewInsets.bottom),
-                            child: const CreateNewServicePage(),
+                            child: CreateNewServicePage(
+                              serviceId: "",
+                              isUpdate: false,
+                              salonService: _homeController
+                                  .getSalonServiceList.data!.first,
+                            ),
                           );
                         });
                   },
@@ -132,6 +138,39 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 10),
                                   child: ServiceListTileWidget(
+                                    editOnTap: () {
+                                      showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(32),
+                                            topRight: Radius.circular(32),
+                                          )),
+                                          context: context,
+                                          builder: (context) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom),
+                                              child: CreateNewServicePage(
+                                                serviceId: _homeController
+                                                        .getSalonServiceList
+                                                        .data?[index]
+                                                        .id ??
+                                                    "",
+                                                isUpdate: true,
+                                                salonService: _homeController
+                                                    .getSalonServiceList
+                                                    .data![index],
+                                              ),
+                                            );
+                                          });
+                                    },
+                                    price: _homeController.getSalonServiceList
+                                            .data?[index].price
+                                            .toString() ??
+                                        "",
                                     isHomeService: _homeController
                                             .getSalonServiceList
                                             .data?[index]

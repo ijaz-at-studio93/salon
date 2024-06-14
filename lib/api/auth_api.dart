@@ -33,6 +33,7 @@ class AuthAPI {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
+    required bool isHomeService,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
@@ -53,7 +54,8 @@ class AuthAPI {
       "employeeSlab": employeeSlab,
       "geolocationLat": geolocationLat,
       "geolocationLng": geolocationLng,
-      "description": description
+      "description": description,
+      "homeService": isHomeService,
     });
     if (image != null) {
       final mimeTypeData =

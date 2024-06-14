@@ -64,7 +64,11 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                     fontSize: 16),
                               ),
                               Text(
-                                "Home Service",
+                                _stylistController.getAppointmentsDetailsModel
+                                            .data?.isHomeService ??
+                                        false
+                                    ? "Home Service"
+                                    : "Salon Service",
                                 style: AppTextTheme.bold.copyWith(
                                     color: ColorConstant.primaryColor,
                                     fontSize: 16),
@@ -94,7 +98,11 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                       ),
                                       const SizedBox(height: 5),
                                       Text(
-                                        "AGSDG765657",
+                                        _stylistController
+                                                .getAppointmentsDetailsModel
+                                                .data
+                                                ?.idx ??
+                                            "",
                                         style: AppTextTheme.bold.copyWith(
                                             fontSize: 16,
                                             color: ColorConstant.blackColor),
@@ -245,91 +253,105 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                 ],
                               ),
                               const SizedBox(height: 10),
-                              Text(
-                                "Address",
-                                style: AppTextTheme.medium.copyWith(
-                                    color: ColorConstant.grayTextColor,
-                                    fontSize: 16),
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  SizedBox(
-                                    width: Get.width * 0.4,
-                                    child: Text(
-                                      "Akshya Nagar 1st Block 1st Cross, Rammurthy nagar, Bangalore-560016",
-                                      style: AppTextTheme.bold.copyWith(
-                                          color: ColorConstant.blackColor,
-                                          fontSize: 16),
-                                    ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: ColorConstant.lightColor,
-                                      borderRadius: BorderRadius.circular(15),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        "3.5 Km Away",
-                                        style: AppTextTheme.medium.copyWith(
-                                            color: ColorConstant.primaryColor,
-                                            fontSize: 12),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              )
+                              _stylistController.getAppointmentsDetailsModel
+                                          .data?.isHomeService ??
+                                      false
+                                  ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "Address",
+                                          style: AppTextTheme.medium.copyWith(
+                                              color:
+                                                  ColorConstant.grayTextColor,
+                                              fontSize: 16),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                              width: Get.width * 0.8,
+
+                                              child: Text(
+                                                _stylistController
+                                                        .getAppointmentsDetailsModel
+                                                        .data
+                                                        ?.address
+                                                        ?.address ??
+                                                    "",
+                                                maxLines: 3,
+                                                style: AppTextTheme.bold
+                                                    .copyWith(
+                                                        color: ColorConstant
+                                                            .blackColor,
+                                                        fontSize: 16),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+                                        GestureDetector(
+                                          onTap: () {
+                                            MapsLauncher.launchCoordinates(
+                                                22.303894, 70.802162);
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.symmetric(
+                                                horizontal: 20),
+                                            height: 50,
+                                            width: Get.width,
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(9),
+                                              border: Border.all(
+                                                color:
+                                                    ColorConstant.primaryColor,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  width: 24,
+                                                  height: 24,
+                                                  decoration:
+                                                      const BoxDecoration(
+                                                          color:
+                                                              ColorConstant
+                                                                  .primaryColor,
+                                                          shape:
+                                                              BoxShape.circle),
+                                                  child: Center(
+                                                    child: Image.asset(
+                                                      AssetsConstant.map,
+                                                      height: 10,
+                                                      width: 10,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 10),
+                                                Text(
+                                                  "Get Direction",
+                                                  style: AppTextTheme.medium
+                                                      .copyWith(
+                                                          color: ColorConstant
+                                                              .primaryColor,
+                                                          fontSize: 16),
+                                                )
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    )
+                                  : const SizedBox(),
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () {
-                            MapsLauncher.launchCoordinates(
-                                22.303894, 70.802162);
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
-                            height: 50,
-                            width: Get.width,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(9),
-                              border: Border.all(
-                                color: ColorConstant.primaryColor,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  decoration: const BoxDecoration(
-                                      color: ColorConstant.primaryColor,
-                                      shape: BoxShape.circle),
-                                  child: Center(
-                                    child: Image.asset(
-                                      AssetsConstant.map,
-                                      height: 10,
-                                      width: 10,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  "Get Direction",
-                                  style: AppTextTheme.medium.copyWith(
-                                      color: ColorConstant.primaryColor,
-                                      fontSize: 16),
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
                         Container(
                           height: 1.5,
                           width: Get.width,

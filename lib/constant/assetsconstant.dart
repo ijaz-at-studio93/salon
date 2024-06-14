@@ -24,6 +24,7 @@ class AssetsConstant {
   static const String likeBlank = "assets/icon/like_blank.png";
   static const String playIcon = "assets/icon/play_Icon.png";
   static const String crossSign = "assets/icon/cross_sign.png";
+  static const String insights = "assets/icon/Insights.png";
 
   /*----------- Bottom Bar -------------*/
   static const String home = "assets/icon/home.png";
@@ -44,6 +45,8 @@ class AssetsConstant {
   static const String scanner = "assets/images/scanner.png";
   static const String blogs = "assets/images/blogs.png";
   static const String filter = "assets/images/filter.png";
+  static const String scooter = "assets/images/noto_motor-scooter.png";
+  static const String salonIcon = "assets/images/hair-salon.png";
 
   static const String placeHolder = "assets/images/place_holder.jpg";
 
