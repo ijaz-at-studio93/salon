@@ -43,6 +43,7 @@ class _ProductListPageState extends State<ProductListPage> {
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 separatorBuilder: (context, i) {
                   return const Divider(
+
                     indent: 1,
                     color: ColorConstant.blackColor,
                   );
@@ -53,7 +54,7 @@ class _ProductListPageState extends State<ProductListPage> {
                         0,
                 itemBuilder: (context, i) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

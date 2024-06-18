@@ -24,7 +24,7 @@ class _InsightsHomePageState extends State<InsightsHomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doGetSalonBlogData(url: widget.url);
+      _homeController.doGetSalonBlogData(url: widget.url,);
     });
   }
 

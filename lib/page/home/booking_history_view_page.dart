@@ -489,12 +489,13 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                               titleName: "Total",
                               titleValue:
                                   "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}"),
-                          const SizedBox(height: 10),
-                          _customerDetails(
+                          const SizedBox(
+                              height:
+                                  10), /* _customerDetails(
                               titleName: "Tax Applied (18%)",
                               titleValue: "₹300.00"),
-                          const SizedBox(height: 10),
-                          Padding(
+                          const SizedBox(height: 10),*/
+                          /*   Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -513,7 +514,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                 ),
                               ],
                             ),
-                          ),
+                          ),*/
                         ],
                       ),
                     ),

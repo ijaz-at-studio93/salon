@@ -11,6 +11,7 @@ import 'package:salon/page/stylist_all_module/profile/stylist_review_and_rating_
 import 'package:salon/project_specific/logout_dialog.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import '../../setting/about_app_page.dart';
 
 class StylistProfilePage extends StatefulWidget {
   const StylistProfilePage({super.key});
@@ -48,7 +49,9 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               titleName: "Blog",
               image: AssetsConstant.insights,
               onTap: () {
-                Get.to(() => const InsightsHomePage(url: "artist/blog/list",));
+                Get.to(() => const InsightsHomePage(
+                      url: "artist/blog/list",
+                    ));
               }),
           _dividerCustom(),
           _customRowWidget(
@@ -57,7 +60,11 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               onTap: () {}),
           _dividerCustom(),
           _customRowWidget(
-              titleName: "About Us", image: AssetsConstant.info, onTap: () {}),
+              titleName: "About Us",
+              image: AssetsConstant.info,
+              onTap: () {
+                Get.to(() => const AboutAppPage());
+              }),
           _dividerCustom(),
           _customRowWidget(
               titleName: "Sign Out",

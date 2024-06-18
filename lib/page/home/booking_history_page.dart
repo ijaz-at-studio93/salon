@@ -52,7 +52,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                   style: AppTextTheme.bold
                       .copyWith(fontSize: 20, color: ColorConstant.blackColor),
                 ),
-                _noOfServiceYouOffer(),
+                overall == "0" ? const SizedBox() : _noOfServiceYouOffer(),
               ],
             ),
           ),
@@ -211,7 +211,35 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             return null;
           },
           onChanged: (value) {
-            //Do something when selected item is changed.
+            if (overall == "1") {
+              if (value == 'Today') {
+                _homeController.doCancelData(distribution: "today");
+              } else if (value == 'yesterday') {
+                _homeController.doCancelData(distribution: "yesterday");
+              } else if (value == 'This Week') {
+                _homeController.doCancelData(distribution: "this_week");
+              } else if (value == 'This Month') {
+                _homeController.doCancelData(distribution: "this_month");
+              } else if (value == 'This year') {
+                _homeController.doCancelData(distribution: "this_year");
+              }
+            } else {
+              if (value == 'Today') {
+                _homeController.doCompleteBookingData(distribution: "today");
+              } else if (value == 'yesterday') {
+                _homeController.doCompleteBookingData(
+                    distribution: "yesterday");
+              } else if (value == 'This Week') {
+                _homeController.doCompleteBookingData(
+                    distribution: "this_week");
+              } else if (value == 'This Month') {
+                _homeController.doCompleteBookingData(
+                    distribution: "this_month");
+              } else if (value == 'This year') {
+                _homeController.doCompleteBookingData(
+                    distribution: "this_year");
+              }
+            }
           },
           onSaved: (value) {
             /* selectedValue = value.toString();*/
@@ -245,7 +273,6 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
     return Container(
-
       color: ColorConstant.whiteColor,
       width: Get.width,
       padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -294,11 +321,11 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               });
             } else if (overall == "1") {
               setState(() {
-                _homeController.doCancelData();
+                _homeController.doCancelData(distribution: "all_time");
               });
             } else {
               setState(() {
-                _homeController.doCompleteBookingData();
+                _homeController.doCompleteBookingData(distribution: "all_time");
               });
             }
           }),

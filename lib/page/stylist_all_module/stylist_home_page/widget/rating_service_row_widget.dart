@@ -53,12 +53,7 @@ class RatingServicesRowWidget extends StatelessWidget {
                 style: AppTextTheme.bold
                     .copyWith(color: color ),
               ),
-              Text(
-                subTitleValue,
-                textScaler: const TextScaler.linear(0.80),
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.blackColor),
-              ),
+
             ],
           )
         ],

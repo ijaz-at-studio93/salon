@@ -6,6 +6,7 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
+import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
 import 'package:salon/model/salon_document_model/salon_document_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
@@ -425,9 +426,11 @@ class HomeAPI {
   }
 
   /*----------------------  Get Cancelled Booking  History ----------------------*/
-  static Future<PendingAppointmentsListModel> getCancelAppointments() async {
-    final response =
-        await DioClient.client.get("salon/appointments/cancel-appointments");
+  static Future<PendingAppointmentsListModel> getCancelAppointments(
+      {required String distribution}) async {
+    final response = await DioClient.client.get(
+        "salon/appointments/cancel-appointments",
+        queryParameters: {"distribution": distribution});
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {
@@ -436,9 +439,11 @@ class HomeAPI {
   }
 
   /*--------------------------  Get Served Appointments --------------------*/
-  static Future<PendingAppointmentsListModel> getServedAppointments() async {
-    final response =
-        await DioClient.client.get("salon/appointments/served-appointments");
+  static Future<PendingAppointmentsListModel> getServedAppointments(
+      {required String distribution}) async {
+    final response = await DioClient.client.get(
+        "salon/appointments/served-appointments",
+        queryParameters: {"distribution": distribution});
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {
@@ -576,6 +581,19 @@ class HomeAPI {
         await DioClient.client.get("salon/artist/$artistId/details");
     if (response.isSuccess) {
       return ArtiestDetailsModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*------------------  Salon DashBoard APi ------------*/
+  static Future<SalonDashboardModel> getSalonDashBoard(
+      {required String distribution}) async {
+    final response = await DioClient.client.get("salon/dashboard/analytics",
+        queryParameters: {"distribution": distribution});
+
+    if (response.isSuccess) {
+      return SalonDashboardModel.fromJson(response.data);
     } else {
       throw response.data;
     }

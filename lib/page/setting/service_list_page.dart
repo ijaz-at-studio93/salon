@@ -54,7 +54,7 @@ class _ServiceListPageState extends State<ServiceListPage> {
                     _homeController.getSalonServiceList.data?.length ?? 0,
                 itemBuilder: (context, i) {
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,

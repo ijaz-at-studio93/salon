@@ -95,6 +95,8 @@ class _DocumentSubmittedPageState extends State<DocumentSubmittedPage> {
 
   /*------------- Get Tread Log Data ------------*/
   Future getTradLogData() async {
-    _homeController.doCheckEligibility();
+    _homeController.doCheckEligibility(callback: () {
+      _homeController.doGetSalonDashBoard(distribution: "all_time");
+    });
   }
 }

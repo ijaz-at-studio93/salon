@@ -5,12 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/home_api.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
+import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
 import 'package:salon/model/salon_document_model/salon_document_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
@@ -139,12 +141,16 @@ class HomeController extends GetxController {
   set setSalonDocumentGetModel(val) => _salonDocumentGetModel.value = val;
 
   /*------------  Get Artiest Details -----------*/
-
   final Rx<ArtiestDetailsModel> _artiestDetailsModel =
       ArtiestDetailsModel().obs;
-
   ArtiestDetailsModel get getArtiestDetailsModel => _artiestDetailsModel.value;
   set setArtiestDetailsModel(val) => _artiestDetailsModel.value = val;
+
+  /*----------------- Get Salon DashBoard --------------*/
+  final Rx<SalonDashboardModel> _salonDashboardModel =
+      SalonDashboardModel().obs;
+  SalonDashboardModel get getSalonDashboardModel => _salonDashboardModel.value;
+  set setSalonDashboardModel(val) => _salonDashboardModel.value = val;
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -163,10 +169,13 @@ class HomeController extends GetxController {
   set setStatus(val) => _statusChange.value = val;
 
   /*-----------------------  eligibility check ---------------*/
-  doCheckEligibility() async {
+  doCheckEligibility({required VoidCallback callback}) async {
     try {
       _showProgress.value = true;
       _eligibility.value = await HomeAPI.checkEligibility();
+      if (_eligibility.value.data?.isApproved ?? false) {
+        callback.call();
+      }
     } catch (e) {
       showError(e);
     } finally {
@@ -236,9 +245,14 @@ class HomeController extends GetxController {
   }) async {
     try {
       _showProgress.value = true;
-      bool  result =  await  HomeAPI.updateProduct(productId: productId, name: name, description: description, price: price, image: image);
+      bool result = await HomeAPI.updateProduct(
+          productId: productId,
+          name: name,
+          description: description,
+          price: price,
+          image: image);
 
-      if(result){
+      if (result) {
         callback.call();
       }
     } catch (e) {
@@ -488,10 +502,11 @@ class HomeController extends GetxController {
   }
 
   /*-----------------------  Get Cancel Booking Data --------------*/
-  doCancelData() async {
+  doCancelData({required String distribution}) async {
     try {
       _showProgress.value = true;
-      _salonCancelServedList.value = await HomeAPI.getCancelAppointments();
+      _salonCancelServedList.value =
+          await HomeAPI.getCancelAppointments(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {
@@ -500,10 +515,10 @@ class HomeController extends GetxController {
   }
 
   /*----------------- Complete Booking  Data ----------------*/
-  doCompleteBookingData() async {
+  doCompleteBookingData({required String distribution}) async {
     try {
       _showProgress.value = true;
-      _salonServedList.value = await HomeAPI.getServedAppointments();
+      _salonServedList.value = await HomeAPI.getServedAppointments(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {
@@ -675,6 +690,19 @@ class HomeController extends GetxController {
       if (_artiestDetailsModel.value.data?.id?.isNotEmpty ?? false) {
         callback.call();
       }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------  Get Salon DashBoard -----------------*/
+  doGetSalonDashBoard({required String distribution}) async {
+    try {
+      _showProgress.value = true;
+      _salonDashboardModel.value =
+          await HomeAPI.getSalonDashBoard(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {

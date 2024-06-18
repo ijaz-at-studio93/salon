@@ -124,43 +124,43 @@ class _SalonDayTileWidgetState extends State<SalonDayTileWidget> {
 
                         if (widget.dayTitle == "Sunday") {
                           _homeController.getSalonAvailability.data?.sunday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Monday") {
                           _homeController.getSalonAvailability.data?.monday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "TuesDay") {
                           _homeController.getSalonAvailability.data?.tuesday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Wednesday") {
                           _homeController.getSalonAvailability.data?.wednesday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Thursday") {
                           _homeController.getSalonAvailability.data?.thursday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Friday") {
                           _homeController.getSalonAvailability.data?.friday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Saturday") {
                           _homeController.getSalonAvailability.data?.saturday =
-                              SalonDay(start: "9:00", end: "18:00", breaks: [
+                              SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }

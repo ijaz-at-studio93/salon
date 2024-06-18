@@ -26,7 +26,9 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doCheckEligibility();
+      _homeController.doCheckEligibility(callback: () {
+        _homeController.doGetSalonDashBoard(distribution: "all_time");
+      });
       _homeController.doGetSalonDocument();
     });
   }
@@ -55,8 +57,9 @@ class _HomepageState extends State<Homepage> {
                                       child: EarningWidget(
                                         color: ColorConstant.primaryColor,
                                         title: "Total Earning",
-                                        subTitle: "+17.09% than yesterday",
-                                        amount: "₹4000,000",
+                                        subTitle: "",
+                                        amount:
+                                            "₹${_homeController.getSalonDashboardModel.data?.totalEarnings}",
                                         callback: () {
                                           Get.to(() =>
                                               const CompleteProfilePage());
@@ -69,8 +72,9 @@ class _HomepageState extends State<Homepage> {
                                         callback: () {},
                                         color: ColorConstant.orangeDotColor,
                                         title: "Rating",
-                                        subTitle: "983 Reviews",
-                                        amount: "4.3",
+                                        subTitle: "",
+                                        amount:
+                                            "₹${_homeController.getSalonDashboardModel.data?.ratingReview?.rating}",
                                       ),
                                     ),
                                   ],
@@ -87,13 +91,14 @@ class _HomepageState extends State<Homepage> {
                                         callback: () {},
                                         color: ColorConstant.grayTextColor
                                             .withOpacity(0.1),
-                                        amount: "40",
+                                        amount:
+                                            "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingCount}",
                                         title: "Total bookings",
                                         imageUrl:
                                             AssetsConstant.totalBookingsIcon,
                                         imageColor:
                                             ColorConstant.orangeContainer,
-                                        total: "+25",
+                                        total: "",
                                         valueColor:
                                             ColorConstant.totalContainer,
                                       ),
@@ -104,13 +109,14 @@ class _HomepageState extends State<Homepage> {
                                         callback: () {},
                                         color: ColorConstant.grayTextColor
                                             .withOpacity(0.1),
-                                        amount: "40",
+                                        amount:
+                                            "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingRevenue}",
                                         title: "Total Revenue",
                                         imageUrl:
                                             AssetsConstant.totalRevenueIcon,
                                         imageColor:
                                             ColorConstant.totalRevenueContainer,
-                                        total: "+25",
+                                        total: "",
                                         valueColor:
                                             ColorConstant.totalContainer,
                                       ),
@@ -269,9 +275,24 @@ class _HomepageState extends State<Homepage> {
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              dashboard = value;
-            });
+            dashboard = value;
+            if (dashboard == "0") {
+              setState(() {
+                _homeController.doGetSalonDashBoard(distribution: "all_time");
+              });
+            } else if (dashboard == "1") {
+              setState(() {
+                _homeController.doGetSalonDashBoard(distribution: "daily");
+              });
+            } else if (dashboard == "2") {
+              setState(() {
+                _homeController.doGetSalonDashBoard(distribution: "weekly");
+              });
+            } else if (dashboard == "3") {
+              setState(() {
+                _homeController.doGetSalonDashBoard(distribution: "monthly");
+              });
+            }
           }),
     );
   }
@@ -297,11 +318,50 @@ class _HomepageState extends State<Homepage> {
           VerticalBarchart(
             background: Colors.transparent,
             maxX: 75,
-            data: barData,
+            data: List.generate(
+              _homeController.getSalonDashboardModel.data
+                      ?.distributedArtistAnalytics?.length ??
+                  0,
+              (index) => VBarChartModel(
+                index: index,
+                label: _homeController.getSalonDashboardModel.data
+                        ?.distributedArtistAnalytics?[index].name ??
+                    "",
+                colors: [ColorConstant.service, Colors.transparent],
+                jumlah: double.parse(_homeController.getSalonDashboardModel.data
+                        ?.distributedArtistAnalytics?[index].serviceDone
+                        .toString() ??
+                    ""),
+                tooltip: "",
+              ),
+            ),
             barSize: 12,
             barStyle: BarStyle.DEFAULT,
-            showLegend: true,
-            tooltipSize: 10,
+            showLegend: false,
+          ),
+          VerticalBarchart(
+            background: Colors.transparent,
+            maxX: 75,
+            data: List.generate(
+              _homeController.getSalonDashboardModel.data
+                      ?.distributedArtistAnalytics?.length ??
+                  0,
+              (index) => VBarChartModel(
+                index: index,
+                label: _homeController.getSalonDashboardModel.data
+                        ?.distributedArtistAnalytics?[index].name ??
+                    "",
+                colors: [ColorConstant.primaryColor, Colors.transparent],
+                jumlah: double.parse(_homeController.getSalonDashboardModel.data
+                        ?.distributedArtistAnalytics?[index].rating
+                        .toString() ??
+                    ""),
+                tooltip: "",
+              ),
+            ),
+            barSize: 12,
+            barStyle: BarStyle.DEFAULT,
+            showLegend: false,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -346,63 +406,4 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
-
-  List<VBarChartModel> barData = [
-    const VBarChartModel(
-      index: 0,
-      label: "Akhil",
-      colors: [ColorConstant.primaryColor, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 1,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 2,
-      label: "Akhil",
-      colors: [ColorConstant.primaryColor, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 4,
-      label: "Akhil",
-      colors: [ColorConstant.primaryColor, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 5,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 6,
-      label: "Akhil",
-      colors: [ColorConstant.primaryColor, Colors.transparent],
-      jumlah: 50,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-  ];
 }

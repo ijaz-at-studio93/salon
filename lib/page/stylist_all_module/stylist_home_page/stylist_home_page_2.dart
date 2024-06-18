@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/stylist_all_module/service_count_page.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_service_row_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/service_breakdown_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
+import 'package:salon/util/NoItemsWidget.dart';
 import 'package:vertical_barchart/vertical-barchart.dart';
 import 'package:vertical_barchart/vertical-barchartmodel.dart';
 import '../../../constant/assetsconstant.dart';
@@ -19,6 +21,14 @@ class HomePage2 extends StatefulWidget {
 }
 
 class _HomePage2State extends State<HomePage2> {
+  final _stylistController = Get.find<StylistController>();
+
+  @override
+  void initState() {
+    super.initState();
+    _stylistController.doGetArtiestDashBoard(distribution: "all_time");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,108 +38,116 @@ class _HomePage2State extends State<HomePage2> {
         children: [
           _headerWidget(),
           Container(height: 1, color: ColorConstant.bgColor),
-          Expanded(
-            child: ListView(
-              children: [
-                _dashBoardTabBar(),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: RatingServicesRowWidget(
-                          image: AssetsConstant.overallDoneIcon,
-                          title: "Overall Rating",
-                          titleValue: "4.2",
-                          color: ColorConstant.primaryColor,
-                          subTitleValue: "+2.1 % Today",
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: RatingServicesRowWidget(
-                          image: AssetsConstant.serviceDoneIcon,
-                          title: "Service Done ",
-                          titleValue: "12",
-                          color: ColorConstant.totalRevenueContainer,
-                          subTitleValue: "+10 Today",
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: (){
-                    Get.to(()=> const ServiceCountPage());
-                  },
-                  child: Container(
-                    width: Get.width,
-                    height: Get.height * 0.16,
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(7),
-                        color: ColorConstant.gray),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          Obx(
+            () => Expanded(
+              child: _stylistController.showProgress
+                  ? const ProgressBarView()
+                  : ListView(
                       children: [
+                        _dashBoardTabBar(),
                         Padding(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 15),
-                          child: Text(
-                            "Service Breakdown",
-                            style: AppTextTheme.bold.copyWith(
-                                color: ColorConstant.blackColor, fontSize: 13),
+                              horizontal: 15, vertical: 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: RatingServicesRowWidget(
+                                  image: AssetsConstant.overallDoneIcon,
+                                  title: "Overall Rating",
+                                  titleValue:
+                                      "${_stylistController.getArtiestDashboardModel.data?.ratingData?.rating ?? ""}",
+                                  color: ColorConstant.primaryColor,
+                                  subTitleValue: "",
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: RatingServicesRowWidget(
+                                  image: AssetsConstant.serviceDoneIcon,
+                                  title: "Service Done",
+                                  titleValue:
+                                      "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.totalServiceCount ?? ""}",
+                                  color: ColorConstant.totalRevenueContainer,
+                                  subTitleValue: " ",
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        const Row(
-                          children: [
-                            Expanded(
-                              child: ServiceBreakdownWidget(
-                                imageUrl: AssetsConstant.haircutImage,
-                                count: '5',
-                                name: 'Haircut',
+                        const SizedBox(height: 16),
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(7),
+                              color: ColorConstant.gray),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 15),
+                                child: Text(
+                                  "Service Breakdown",
+                                  style: AppTextTheme.bold.copyWith(
+                                      color: ColorConstant.blackColor,
+                                      fontSize: 13),
+                                ),
                               ),
-                            ),
-                            Expanded(
-                              child: ServiceBreakdownWidget(
-                                imageUrl: AssetsConstant.facialImage,
-                                count: '5',
-                                name: 'Facia...',
-                              ),
-                            ),
-                            Expanded(
-                              child: ServiceBreakdownWidget(
-                                imageUrl: AssetsConstant.haircImage,
-                                count: '5',
-                                name: 'Hairc...',
-                              ),
-                            ),
-                            Expanded(
-                              child: ServiceBreakdownWidget(
-                                imageUrl: AssetsConstant.reboImage,
-                                count: '2',
-                                name: 'Rebo...',
-                              ),
-                            ),
-                            Expanded(
-                              child: ServiceBreakdownWidget(
-                                imageUrl: AssetsConstant.maniImage,
-                                count: '1',
-                                name: 'Mani...',
-                              ),
-                            ),
-                          ],
+                              _stylistController
+                                          .getArtiestDashboardModel
+                                          .data
+                                          ?.serviceCountData
+                                          ?.serviceBreakdown
+                                          ?.isEmpty ??
+                                      false
+                                  ? const NoItemsWidget(
+                                      text: "No Any BreakDownService Found",
+                                    )
+                                  : GridView.builder(
+                                      shrinkWrap: true,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      padding: const EdgeInsets.only(
+                                        left: 20.0,
+                                        right: 20.0,
+                                        bottom: 40.0,
+                                      ),
+                                      gridDelegate:
+                                          const SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount: 3,
+                                        mainAxisSpacing: 20.0,
+                                        crossAxisSpacing: 20.0,
+                                        childAspectRatio: 2,
+                                      ),
+                                      itemCount: _stylistController
+                                              .getArtiestDashboardModel
+                                              .data
+                                              ?.serviceCountData
+                                              ?.serviceBreakdown
+                                              ?.length ??
+                                          0,
+                                      itemBuilder: (context, index) {
+                                        return ServiceBreakdownWidget(
+                                          imageUrl: AssetsConstant.haircutImage,
+                                          count:
+                                              "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.serviceBreakdown?[index].count ?? ""}",
+                                          name: _stylistController
+                                                  .getArtiestDashboardModel
+                                                  .data
+                                                  ?.serviceCountData
+                                                  ?.serviceBreakdown?[index]
+                                                  .name ??
+                                              "",
+                                        );
+                                      },
+                                    ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(height: 16),
+                        _reportAnalytics(),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                _reportAnalytics(),
-
-              ],
             ),
           ),
         ],
@@ -270,15 +288,30 @@ class _HomePage2State extends State<HomePage2> {
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              dashboard = value;
-            });
+            dashboard = value;
+            if (dashboard == "0") {
+              setState(() {
+                _stylistController.doGetArtiestDashBoard(
+                    distribution: "all_time");
+              });
+            } else if (dashboard == "1") {
+              setState(() {
+                _stylistController.doGetArtiestDashBoard(distribution: "daily");
+              });
+            } else if (dashboard == "2") {
+              setState(() {
+                _stylistController.doGetArtiestDashBoard(
+                    distribution: "weekly");
+              });
+            } else if (dashboard == "3") {
+              setState(() {
+                _stylistController.doGetArtiestDashBoard(
+                    distribution: "monthly");
+              });
+            }
           }),
     );
   }
-
-
-
 
   /*----------------- Report Analytics --------------*/
   _reportAnalytics() {
@@ -298,14 +331,73 @@ class _HomePage2State extends State<HomePage2> {
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.blackColor, fontSize: 20),
           ),
-          VerticalBarchart(
-            background: Colors.transparent,
-            maxX: 75,
-            data: bardata,
-            barSize: 11,
-            barStyle: BarStyle.DEFAULT,
-            showLegend: false,
-          ),
+          _stylistController.getArtiestDashboardModel.data
+                      ?.serviceWithReviewCount?.isEmpty ??
+                  false
+              ? const NoItemsWidget(
+                  text: "No DataFound Report Analytics",
+                )
+              : Column(
+                  children: [
+                    VerticalBarchart(
+                      background: Colors.transparent,
+                      maxX: 75,
+                      data: List.generate(
+                        _stylistController.getArtiestDashboardModel.data!
+                                .serviceWithReviewCount?.length ??
+                            0,
+                        (index) => VBarChartModel(
+                          index: index,
+                          label: _stylistController.getArtiestDashboardModel
+                                  .data!.serviceWithReviewCount?[index].name ??
+                              "",
+                          colors: [
+                            ColorConstant.skyBlueColor,
+                            Colors.transparent
+                          ],
+                          jumlah: double.parse(_stylistController
+                                  .getArtiestDashboardModel
+                                  .data
+                                  ?.serviceWithReviewCount?[index]
+                                  .rating
+                                  .toString() ??
+                              ""),
+                          tooltip: "",
+                        ),
+                      ),
+                      barSize: 11,
+                      barStyle: BarStyle.DEFAULT,
+                      showLegend: false,
+                    ),
+                    VerticalBarchart(
+                      background: Colors.transparent,
+                      maxX: 75,
+                      data: List.generate(
+                        _stylistController.getArtiestDashboardModel.data!
+                                .serviceWithReviewCount?.length ??
+                            0,
+                        (index) => VBarChartModel(
+                          index: index,
+                          label: _stylistController.getArtiestDashboardModel
+                                  .data!.serviceWithReviewCount?[index].name ??
+                              "",
+                          colors: [ColorConstant.service, Colors.transparent],
+                          jumlah: double.parse(_stylistController
+                                  .getArtiestDashboardModel
+                                  .data
+                                  ?.serviceWithReviewCount?[index]
+                                  .count
+                                  .toString() ??
+                              ""),
+                          tooltip: "",
+                        ),
+                      ),
+                      barSize: 11,
+                      barStyle: BarStyle.DEFAULT,
+                      showLegend: false,
+                    )
+                  ],
+                ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -349,64 +441,4 @@ class _HomePage2State extends State<HomePage2> {
       ),
     );
   }
-
-  List<VBarChartModel> bardata = [
-    const VBarChartModel(
-      index: 0,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 1,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 2,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 4,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 5,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 6,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 50,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-  ];
-
 }

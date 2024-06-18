@@ -47,7 +47,11 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
 
   /*------------------- Refresh  Function  -------*/
   Future getTradLogData() async {
-    _homeController.doCheckEligibility();
+    _homeController.doCheckEligibility(
+      callback: (){
+        _homeController.doGetSalonDashBoard(distribution: "all_time");
+      }
+    );
     _homeController.doGetSalonDocument();
   }
 }

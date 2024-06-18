@@ -63,22 +63,8 @@ class BookingWidget extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Text(
-                  total,
-                  style:
-                      AppTextTheme.bold.copyWith(fontSize: 13, color: valueColor),
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  "Today",
-                  style: AppTextTheme.medium
-                      .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
-                )
-              ],
-            ),
+
+
           ],
         ),
       ),

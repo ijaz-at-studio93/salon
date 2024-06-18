@@ -55,7 +55,7 @@ class _StylistBookingOverViewPageState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Padding(
+                      /* const Padding(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 10),
                             child: Row(
@@ -79,7 +79,7 @@ class _StylistBookingOverViewPageState
                               ],
                             ),
                           ),
-                          _reportAnalytics(),
+                          _reportAnalytics(),*/
                           const SizedBox(height: 15),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),

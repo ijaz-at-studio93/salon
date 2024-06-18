@@ -66,7 +66,7 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
                                         ),
                                       ),
                                       _homeController.getOverallReviewListModel
-                                                  .data!.artists?.isEmpty ??
+                                                  .data?.artists?.isEmpty ??
                                               false
                                           ? const NoItemsWidget(
                                               text: "Artiest Review Not Found")

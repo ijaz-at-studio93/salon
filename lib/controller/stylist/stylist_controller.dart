@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/stylist_home_api.dart';
+import 'package:salon/model/artist_model/artiest_dashboard_model.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
@@ -57,10 +58,16 @@ class StylistController extends GetxController {
       _allowPortfolioUploadModel.value = val;
 
   /*--------------- Artiest blog Add ------------------ */
-
   final Rx<BlogDataGetModel> _blogDataGetModelModel = BlogDataGetModel().obs;
   BlogDataGetModel get getBlogDataGetModelModel => _blogDataGetModelModel.value;
   set setBlogDataGetModelModel(val) => _blogDataGetModelModel.value = val;
+
+  /*---------------  Get Artiest DashBoard --------------*/
+  final Rx<ArtiestDashboardModel> _artiestDashboardModel =
+      ArtiestDashboardModel().obs;
+  ArtiestDashboardModel get getArtiestDashboardModel =>
+      _artiestDashboardModel.value;
+  set setArtiestDashboardModel(val) => _artiestDashboardModel.value = val;
 
   /*---------------------- Over all  Review Get ---------------*/
   final Rx<OverallReviewListModel> _overallStylistReviewListModel =
@@ -219,6 +226,19 @@ class StylistController extends GetxController {
       _showProgress.value = true;
       _overallStylistReviewListModel.value =
           await StylistAPI.getOverAllStylistReview();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------ get Artiest Dashboard Model -----------------*/
+  doGetArtiestDashBoard({required String distribution}) async {
+    try {
+      _showProgress.value = true;
+      _artiestDashboardModel.value =
+          await StylistAPI.getStylistDashBoard(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {

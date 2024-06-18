@@ -10,12 +10,15 @@ import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/project_specific/button_widget.dart';
+import 'package:salon/project_specific/progress_container_view.dart';
+
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
 
 import '../../../project_specific/phone_field_widget.dart';
+import '../../location_pick/location_pick.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({super.key});
@@ -31,8 +34,10 @@ class _EditProfileState extends State<EditProfile> {
   final _email = TextEditingController();
   final _mobileNo = TextEditingController();
   final _verificationCode = TextEditingController();
-  final _ownerName = TextEditingController();
+
   final _ownerMobileNo = TextEditingController();
+  final _address = TextEditingController();
+  final _description = TextEditingController();
 
   bool isResendOTp = false;
   int _start = 60;
@@ -41,16 +46,20 @@ class _EditProfileState extends State<EditProfile> {
   @override
   void initState() {
     super.initState();
-    _fullName.text =
-        _authController.salonResponseModel.data?.salonData?.name ?? "";
-    _email.text =
-        _authController.salonResponseModel.data?.salonData?.email ?? "";
-    _mobileNo.text =
-        _authController.salonResponseModel.data?.salonData?.mobile ?? "";
-    _ownerName.text =
-        _authController.salonResponseModel.data?.salonData?.ownerName ?? "";
-    _ownerMobileNo.text =
-        _authController.salonResponseModel.data?.salonData?.ownerMobile ?? "";
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _authController.doGetSalonProfile(callback: () {
+        _fullName.text = _authController.getGetSalonProfile.data?.name ?? "";
+        _email.text = _authController.getGetSalonProfile.data?.email ?? "";
+        _mobileNo.text = _authController.getGetSalonProfile.data?.mobile ?? "";
+        _ownerMobileNo.text =
+            _authController.getGetSalonProfile.data?.ownerMobile ?? "";
+        _address.text = _authController.getGetSalonProfile.data?.address ?? "";
+        _description.text =
+            _authController.getGetSalonProfile.data?.description ?? "";
+        isHomeServiceEnable =
+            _authController.getGetSalonProfile.data?.homeService ?? false;
+      });
+    });
   }
 
   @override
@@ -63,139 +72,162 @@ class _EditProfileState extends State<EditProfile> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-              children: [
-                _stylistProfilePhoto(),
-                const SizedBox(height: 15),
-                SimpleTextFieldWidget(
-                    textEditingController: _fullName,
-                    hintText: "Enter Here......",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Full Name"),
-                _dividerWidget(),
-                SimpleTextFieldWidget(
-                    textEditingController: _email,
-                    hintText: "example@gmail.com",
-                    textInputType: TextInputType.emailAddress,
-                    textInputAction: TextInputAction.next,
-                    title: "Email Id"),
-                _dividerWidget(),
-                _mobileNumberWidget(
-                    textEditingController: _mobileNo,
-                    hintText: "Enter Here",
-                    textInputType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    title: "Mobile No"),
-                _dividerWidget(),
-                isOTPField
-                    ? Column(
-                        children: [
-                          SimpleTextFieldWidget(
-                              onChanged: (val) {
-                                if (val.length == 6) {
-                                  _authController.doVerifyOtp(
-                                      mobileNO: _mobileNo.text,
-                                      cc: "91",
-                                      verificationCode: val);
+          Obx(
+            () => Expanded(
+              child: ProgressContainerView(
+                isProgressRunning: _authController.showProgress,
+                child: ListView(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+                  children: [
+                    _stylistProfilePhoto(),
+                    const SizedBox(height: 15),
+                    SimpleTextFieldWidget(
+                        textEditingController: _fullName,
+                        hintText: "Enter Here......",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        title: "Full Name"),
+                    _dividerWidget(),
+                    SimpleTextFieldWidget(
+                        textEditingController: _email,
+                        hintText: "example@gmail.com",
+                        textInputType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        title: "Email Id"),
+                    _dividerWidget(),
+                    _mobileNumberWidget(
+                        textEditingController: _mobileNo,
+                        hintText: "Enter Here",
+                        textInputType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
+                        title: "Mobile No"),
+                    _dividerWidget(),
+                    isOTPField
+                        ? Column(
+                            children: [
+                              SimpleTextFieldWidget(
+                                  onChanged: (val) {
+                                    if (val.length == 6) {
+                                      _authController.doVerifyOtp(
+                                          mobileNO: _mobileNo.text,
+                                          cc: "91",
+                                          verificationCode: val);
 
-                                  if (_authController
-                                          .otpVerifyModelResponseModel
-                                          .data
-                                          ?.isVerificationCodeValid ??
-                                      false) {
-                                    timer?.cancel();
-                                  }
-                                }
-                              },
-                              textEditingController: _verificationCode,
-                              hintText: "",
-                              textInputType: TextInputType.number,
-                              textInputAction: TextInputAction.done,
-                              title: "Enter OTP"),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 20, top: 15),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                isResendOTp
-                                    ? TextButton(
-                                        onPressed: () {
-                                          setState(() {
-                                            _start = 60;
-                                            isResendOTp = false;
-                                            startTimer();
-                                            _authController.doSendOTP(
-                                                mobileNo: _mobileNo.text,
-                                                cc: "91");
-                                            _verificationCode.clear();
-                                          });
-                                        },
-                                        child: Text(
-                                          "Resend",
-                                          style: AppTextTheme.bold.copyWith(
-                                              fontSize: 16,
-                                              color: ColorConstant.redColor),
-                                        ))
-                                    : Text(
-                                        "Retry in 00:${_start.toString()}",
-                                        style: AppTextTheme.bold.copyWith(
-                                            fontSize: 16,
-                                            color: ColorConstant.redColor),
-                                      ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : const SizedBox(),
-                _dividerWidget(),
-                SimpleTextFieldWidget(
-                    textEditingController: _ownerName,
-                    hintText: "Enter Here......",
-                    textInputType: TextInputType.text,
-                    textInputAction: TextInputAction.next,
-                    title: "Owner Name"),
-                _dividerWidget(),
-                PhoneFieldWidget(
-                    textEditingController: _ownerMobileNo,
-                    hintText: "Enter Here",
-                    textInputType: TextInputType.phone,
-                    textInputAction: TextInputAction.next,
-                    title: "Owner Mobile Number"),
-                _dividerWidget(),
-                _dividerWidget(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Portfolio",
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.grayTextColor, fontSize: 16),
-                      ),
-                      Row(
+                                      if (_authController
+                                              .otpVerifyModelResponseModel
+                                              .data
+                                              ?.isVerificationCodeValid ??
+                                          false) {
+                                        timer?.cancel();
+                                      }
+                                    }
+                                  },
+                                  textEditingController: _verificationCode,
+                                  hintText: "",
+                                  textInputType: TextInputType.number,
+                                  textInputAction: TextInputAction.done,
+                                  title: "Enter OTP"),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 20, top: 15),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    isResendOTp
+                                        ? TextButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _start = 60;
+                                                isResendOTp = false;
+                                                startTimer();
+                                                _authController.doSendOTP(
+                                                    mobileNo: _mobileNo.text,
+                                                    cc: "91");
+                                                _verificationCode.clear();
+                                              });
+                                            },
+                                            child: Text(
+                                              "Resend",
+                                              style: AppTextTheme.bold.copyWith(
+                                                  fontSize: 16,
+                                                  color:
+                                                      ColorConstant.redColor),
+                                            ))
+                                        : Text(
+                                            "Retry in 00:${_start.toString()}",
+                                            style: AppTextTheme.bold.copyWith(
+                                                fontSize: 16,
+                                                color: ColorConstant.redColor),
+                                          ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
+                    _dividerWidget(),
+                    _saloonAddress(
+                        onTap: () {
+                          Get.to(() => LocationPickPage(
+                                callback: () {
+                                  _address.text =
+                                      _authController.salonCurrentAddress;
+                                },
+                              ));
+                        },
+                        textEditingController: _address,
+                        hintText: "address",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.none,
+                        title: "Address"),
+                    PhoneFieldWidget(
+                        textEditingController: _ownerMobileNo,
+                        hintText: "Enter Here",
+                        textInputType: TextInputType.phone,
+                        textInputAction: TextInputAction.next,
+                        title: "Owner Mobile Number"),
+                    _dividerWidget(),
+                    _saloonAddress(
+                        onTap: () {},
+                        textEditingController: _description,
+                        hintText: "Enter Here",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.none,
+                        title: "Description"),
+                    _dividerWidget(),
+                    _homeService()
+                    /*Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "See Activity",
-                            style: AppTextTheme.bold.copyWith(
-                                fontSize: 16,
-                                color: ColorConstant.primaryColor),
+                            "Portfolio",
+                            style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.grayTextColor, fontSize: 16),
                           ),
-                          const SizedBox(width: 2),
-                          const Icon(
-                            CupertinoIcons.arrowshape_turn_up_right_fill,
-                            color: ColorConstant.primaryColor,
-                          )
+                          Row(
+                            children: [
+                              Text(
+                                "See Activity",
+                                style: AppTextTheme.bold.copyWith(
+                                    fontSize: 16,
+                                    color: ColorConstant.primaryColor),
+                              ),
+                              const SizedBox(width: 2),
+                              const Icon(
+                                CupertinoIcons.arrowshape_turn_up_right_fill,
+                                color: ColorConstant.primaryColor,
+                              )
+                            ],
+                          ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),*/
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           Padding(
@@ -206,6 +238,106 @@ class _EditProfileState extends State<EditProfile> {
                   doUpdateProfile();
                 }),
           ),
+        ],
+      ),
+    );
+  }
+
+/*------------ is Home Service --------------*/
+  bool isHomeServiceEnable = false;
+  _homeService() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Text(
+            "Home Service",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          height: 50,
+          width: Get.width,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: ColorConstant.borderColor,
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                "Is home service",
+                style: AppTextTheme.regular
+                    .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+              ),
+              CupertinoSwitch(
+                activeColor: ColorConstant.primaryColor,
+                value: isHomeServiceEnable,
+                onChanged: (value) {
+                  setState(() {
+                    isHomeServiceEnable =
+                        value; // Update the CupertinoSwitch state
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /*------------ Saloon Address TextField -----------*/
+  _saloonAddress({
+    required TextEditingController textEditingController,
+    required String hintText,
+    required String title,
+    required TextInputType textInputType,
+    required TextInputAction textInputAction,
+    required VoidCallback onTap,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          Container(
+              height: 110,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: ColorConstant.borderColor,
+                ),
+              ),
+              child: TextField(
+                onTap: onTap,
+                controller: textEditingController,
+                maxLines: 8,
+                keyboardType: textInputType,
+                textInputAction: textInputAction,
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 12, top: 15),
+                    border: InputBorder.none,
+                    hintText: hintText,
+                    hintStyle: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.grayColor, fontSize: 13)),
+              )),
         ],
       ),
     );
@@ -387,31 +519,13 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-  /*---------- Detail Widget ------------*/
-  _detailWidget({required String title, required String subTile}) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          title,
-          style: AppTextTheme.medium
-              .copyWith(color: ColorConstant.grayTextColor, fontSize: 16),
-        ),
-        Text(
-          subTile,
-          style: AppTextTheme.bold
-              .copyWith(fontSize: 16, color: ColorConstant.blackColor),
-        ),
-      ],
-    );
-  }
-
   /*--------------  Start Timer --------------*/
   startTimer() {
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_start == 0) {
         setState(() {
           isResendOTp = true;
+          timer.cancel();
         });
       } else {
         setState(() {
@@ -441,15 +555,37 @@ class _EditProfileState extends State<EditProfile> {
       if (!emailValid) {
         showMessage("Please enter valid email address");
         return;
-      } else if (_mobileNo.text.isEmpty) {
-        showMessage("Please enter Mobile No");
-        return;
-      } else if (_mobileNo.text.length != 10) {
-        showMessage("Please enter 10 Digit Mobile No");
-        return;
-      } else if (_ownerName.text.isEmpty) {
-        showMessage("Please enter Owner Name");
-        return;
+      } else if (isOTPField) {
+        if (_mobileNo.text.isEmpty) {
+          showMessage("Please enter Mobile No");
+          return;
+        } else if (_verificationCode.text.isEmpty) {
+          showMessage("Please enter Verification Code");
+          return;
+        } else if (_verificationCode.text.length != 6) {
+          showMessage("Please enter 6 Digit Verification Code");
+          return;
+        } else {
+          _authController.doUpdateSalonProfile(
+              name: _fullName.text,
+              email: _email.text,
+              countryCode: "91",
+              mobile: _mobileNo.text,
+              address: _address.text,
+              ownerCountryCode: "91",
+              ownerMobile: _ownerMobileNo.text,
+              verificationCode: _verificationCode.text,
+              image: imagePath.path.isEmpty ? null : File(imagePath.path),
+              geolocationLat: _authController.salonAddressLat.toString(),
+              geolocationLng: _authController.salonAddressLan.toString(),
+              description: _description.text,
+              homeService: isHomeServiceEnable,
+              callback: () {
+                _authController.doGetSalonProfile(callback: () {
+                  Navigator.pop(context);
+                });
+              });
+        }
       } else if (_ownerMobileNo.text.isEmpty) {
         showMessage("Please enter Owner Mobile No");
         return;
@@ -457,7 +593,25 @@ class _EditProfileState extends State<EditProfile> {
         showMessage("Please enter  10 Digit Owner Mobile No");
         return;
       } else {
-        Get.back();
+        _authController.doUpdateSalonProfile(
+            name: _fullName.text,
+            email: _email.text,
+            countryCode: "91",
+            mobile: "",
+            address: _address.text,
+            ownerCountryCode: "91",
+            ownerMobile: _ownerMobileNo.text,
+            verificationCode: "",
+            image: imagePath.path.isEmpty ? null : File(imagePath.path),
+            geolocationLat: _authController.salonAddressLat.toString(),
+            geolocationLng: _authController.salonAddressLan.toString(),
+            description: _description.text,
+            homeService: isHomeServiceEnable,
+            callback: () {
+              _authController.doGetSalonProfile(callback: () {
+                Navigator.pop(context);
+              });
+            });
       }
     }
   }

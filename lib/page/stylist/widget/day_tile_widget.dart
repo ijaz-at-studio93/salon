@@ -124,49 +124,49 @@ class _DayTileWidgetState extends State<DayTileWidget> {
                         if (widget.dayTitle == "Sunday") {
                           _homeController
                                   .getArtiestAvailabilityGetModel.data?.sunday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Monday") {
                           _homeController
                                   .getArtiestAvailabilityGetModel.data?.monday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "TuesDay") {
                           _homeController.getArtiestAvailabilityGetModel.data
                                   ?.tuesday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Wednesday") {
                           _homeController.getArtiestAvailabilityGetModel.data
                                   ?.wednesday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Thursday") {
                           _homeController.getArtiestAvailabilityGetModel.data
                                   ?.thursday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Friday") {
                           _homeController
                                   .getArtiestAvailabilityGetModel.data?.friday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
                         if (widget.dayTitle == "Saturday") {
                           _homeController.getArtiestAvailabilityGetModel.data
                                   ?.saturday =
-                              DayData(start: "9:00", end: "18:00", breaks: [
+                              DayData(start: "09:00", end: "18:00", breaks: [
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }

@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:salon/api/auth_api.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/model/artist_model/artist_login_model.dart';
+import 'package:salon/model/auth/app_update_model.dart';
 import 'package:salon/model/auth/otp_verify_model.dart';
 import 'package:salon/model/auth/salon_auth_model.dart';
+import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/page/auth/login_page.dart';
 import '../util/shared_prefs.dart';
 
@@ -64,6 +66,16 @@ class AuthController extends GetxController {
       _salonArtistResponseModel.value;
   set setSalonArtistResponseModel(val) => _salonResponseModel.value = val;
 
+  /*----------------------- Salon Profile --------------*/
+  final Rx<GetSalonProfile> _getSalonProfile = GetSalonProfile().obs;
+  GetSalonProfile get getGetSalonProfile => _getSalonProfile.value;
+  set setGetSalonProfile(val) => _getSalonProfile.value = val;
+
+  /*-------------  App  Update -------------*/
+  final Rx<AppUpdateModel> _appUpdateModel = AppUpdateModel().obs;
+  AppUpdateModel get getAppUpdateModel => _appUpdateModel.value;
+  set setAppUpdateModel(val) => _appUpdateModel.value = val;
+
   /*======================  Do  Register ===============*/
   doRegister({
     required String name,
@@ -111,6 +123,64 @@ class AuthController extends GetxController {
           description: description);
       if (_salonResponseModel.value.data?.id != null) {
         userDataStoreToSharedPrefs(_salonResponseModel.value);
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*================= Do Update Salon Profile ==========================*/
+  doUpdateSalonProfile({
+    required String name,
+    required String email,
+    required String countryCode,
+    required String mobile,
+    required String address,
+    required String ownerCountryCode,
+    required String ownerMobile,
+    required String verificationCode,
+    required File? image,
+    required String geolocationLat,
+    required String geolocationLng,
+    required String description,
+    required bool homeService,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await AuthAPI.salonUpdateProfile(
+          name: name,
+          email: email,
+          countryCode: countryCode,
+          mobile: mobile,
+          address: address,
+          ownerCountryCode: ownerCountryCode,
+          ownerMobile: ownerMobile,
+          verificationCode: verificationCode,
+          image: image,
+          geolocationLat: geolocationLat,
+          geolocationLng: geolocationLng,
+          isHomeService: homeService,
+          description: description);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------------  Get Salon Profile -------------------*/
+  doGetSalonProfile({required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      _getSalonProfile.value = await AuthAPI.getSalonProfile();
+      if (_getSalonProfile.value.data?.id?.isNotEmpty ?? false) {
         callback.call();
       }
     } catch (e) {
@@ -273,6 +343,21 @@ class AuthController extends GetxController {
     }
     await SharedPrefs.writeValue(PrefConstants.stylistModel, model.toJson());
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
+  }
+
+  /*------------  App  Update ------------------*/
+  doAppUpdate({required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      _appUpdateModel.value = await AuthAPI.appUpdate();
+      if (_appUpdateModel.value.statusCode == 200) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
   }
 
 /*------------------- RestAPP --------------*/

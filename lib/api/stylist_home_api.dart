@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:http_parser/http_parser.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
+import 'package:salon/model/artist_model/artiest_dashboard_model.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/allow_portfolio_upload_model.dart';
@@ -155,6 +156,19 @@ class StylistAPI {
     final response = await DioClient.client.get("artist/review/overall/list");
     if (response.isSuccess) {
       return OverallReviewListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------- get Artiest Model --------------------*/
+  static Future<ArtiestDashboardModel> getStylistDashBoard(
+      {required String distribution}) async {
+    final response = await DioClient.client.get("artist/dashboard/analytics",
+        queryParameters: {"distribution": distribution});
+
+    if (response.isSuccess) {
+      return ArtiestDashboardModel.fromJson(response.data);
     } else {
       throw response.data;
     }
