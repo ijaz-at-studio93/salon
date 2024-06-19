@@ -58,7 +58,8 @@ class _ScanPageState extends State<ScanPage> {
                       Colors.redAccent,
                     ],
                   ),
-                ), /*Positioned(
+                ),
+                /*Positioned(
                   bottom: Get.height * 0.14,
                   left: 0,
                   right: 0,
@@ -121,7 +122,6 @@ class _ScanPageState extends State<ScanPage> {
               : '';
       if (myQrCode != null && myQrCode.isNotEmpty) {
         manageQRData(myQrCode);
-        print(myQrCode);
         _stylistController.doScanQrcode(
             completionToken: myQrCode,
             callback: () {
@@ -134,23 +134,23 @@ class _ScanPageState extends State<ScanPage> {
                       return PortfolioPermissionDialog(
                         yes: () {
                           widget.callback.call();
-                          Get.back();
+                        Navigator.pop(context);
                           Get.to(() => UploadPhotoPage(
                                 appointmentId: widget.appointmentId,
                               ));
                         },
                         cancel: () {
                           widget.callback.call();
-                          Get.back();
-                          Get.back();
-                          Get.back();
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
                         },
                       );
                     });
               } else {
                 widget.callback.call();
-                Get.back();
-                Get.back();
+                Navigator.pop(context);
+                Navigator.pop(context);
               }
             });
       }

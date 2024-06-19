@@ -257,7 +257,8 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                           .data?.isHomeService ??
                                       false
                                   ? Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           "Address",
@@ -273,7 +274,6 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                                           children: [
                                             SizedBox(
                                               width: Get.width * 0.8,
-
                                               child: Text(
                                                 _stylistController
                                                         .getAppointmentsDetailsModel
@@ -436,7 +436,7 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                             appointmentId: widget.appointmentId,
                             status: "confirmed",
                             callback: () {
-                              Get.back();
+                             Navigator.pop(context);
                               widget.callback.call();
                             });
                       },
@@ -503,18 +503,26 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
 
   /*---------------- convertTime ------------*/
   String convertDate({required String date}) {
-    String dateTimeString = date;
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
-    return formattedTime;
+    if (date.isEmpty) {
+      return "";
+    } else {
+      String dateTimeString = date;
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      String formattedTime = DateFormat('hh:mm a').format(dateTime);
+      return formattedTime;
+    }
   }
 
   /*--------------  convert Final  Date -----------*/
   String convertFinalDate({required String date}) {
-    String dateTimeString = date;
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
-    String formattedTime = DateFormat('hh:mm a').format(dateTime);
-    return "$formattedDate $formattedTime";
+    if (date.isEmpty) {
+      return "";
+    } else {
+      String dateTimeString = date;
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      String formattedDate = DateFormat('yyyy-MM-dd').format(dateTime);
+      String formattedTime = DateFormat('hh:mm a').format(dateTime);
+      return "$formattedDate $formattedTime";
+    }
   }
 }

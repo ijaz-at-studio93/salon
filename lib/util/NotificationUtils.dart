@@ -1,7 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
 
+final _stylistController = Get.find<StylistController>();
 
 class NotificationUtils {
   static handleNotificationOnForeground(RemoteMessage remoteMessage) {
@@ -10,7 +12,7 @@ class NotificationUtils {
       String message =
           remoteMessage.data['message'] ?? "You have a new notification";
       debugPrint('Notification $remoteMessage');
-      // FlutterRingtonePlayer.playNotification();
+      _stylistController.doPendingAppointmentsListModel();
       Get.snackbar(title, message,
           snackPosition: SnackPosition.TOP,
           icon: const Icon(Icons.notifications, color: Colors.white),
@@ -48,7 +50,7 @@ class NotificationUtils {
       /*if (isAppKilled) {
         Get.to(() => SplashPage(remoteMessage: remoteMessage));
       } else {*/
-        navigateNotification(type, data);
+      navigateNotification(type, data);
       // }
     }
     return false;
@@ -56,7 +58,7 @@ class NotificationUtils {
 
   static void navigateNotification(String type, Map<String, dynamic> data) {
     switch (type) {
-     /* case '5':
+      /* case '5':
         Get.to(() => const ReferAndEarnPage(isNotificationClick: true));
         break;
       case '6':

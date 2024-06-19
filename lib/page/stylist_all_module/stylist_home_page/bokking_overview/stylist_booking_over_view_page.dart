@@ -55,7 +55,7 @@ class _StylistBookingOverViewPageState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                      /* const Padding(
+                          /* const Padding(
                             padding: EdgeInsets.symmetric(
                                 horizontal: 14, vertical: 10),
                             child: Row(
@@ -163,7 +163,8 @@ class _StylistBookingOverViewPageState
                                                               status:
                                                                   "salon_artist_rejected",
                                                               callback: () {
-                                                                Get.back();
+                                                                Navigator.pop(
+                                                                    context);
                                                                 _stylistController
                                                                     .doPendingAppointmentsListModel();
                                                               });

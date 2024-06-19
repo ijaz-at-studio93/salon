@@ -349,7 +349,7 @@ class _HomePage2State extends State<HomePage2> {
                         (index) => VBarChartModel(
                           index: index,
                           label: _stylistController.getArtiestDashboardModel
-                                  .data!.serviceWithReviewCount?[index].name ??
+                                  .data?.serviceWithReviewCount?[index].name ??
                               "",
                           colors: [
                             ColorConstant.skyBlueColor,
@@ -379,16 +379,23 @@ class _HomePage2State extends State<HomePage2> {
                         (index) => VBarChartModel(
                           index: index,
                           label: _stylistController.getArtiestDashboardModel
-                                  .data!.serviceWithReviewCount?[index].name ??
+                                  .data?.serviceWithReviewCount?[index].name ??
                               "",
                           colors: [ColorConstant.service, Colors.transparent],
-                          jumlah: double.parse(_stylistController
-                                  .getArtiestDashboardModel
-                                  .data
-                                  ?.serviceWithReviewCount?[index]
-                                  .count
-                                  .toString() ??
-                              ""),
+                          jumlah: _stylistController
+                                      .getArtiestDashboardModel
+                                      .data
+                                      ?.serviceWithReviewCount?[index]
+                                      .count ==
+                                  null
+                              ? 0
+                              : double.parse(_stylistController
+                                      .getArtiestDashboardModel
+                                      .data
+                                      ?.serviceWithReviewCount?[index]
+                                      .count
+                                      .toString() ??
+                                  ""),
                           tooltip: "",
                         ),
                       ),

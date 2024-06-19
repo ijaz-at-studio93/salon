@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'dart:math' as math;
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
@@ -25,6 +26,8 @@ class ServiceBreakdownWidget extends StatelessWidget {
           imageUrl,
           height: 52,
           width: 52,
+          color: Color((math.Random().nextDouble() * 0xFFFFFF).toInt())
+              .withOpacity(1.0),
         ),
         Positioned(
           bottom: -15,

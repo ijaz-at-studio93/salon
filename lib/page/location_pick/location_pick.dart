@@ -24,6 +24,10 @@ class _LocationPickPageState extends State<LocationPickPage> {
   final List<Marker> _marker = <Marker>[];
   final _authController = Get.find<AuthController>();
 
+  String address = "";
+  double lat = 0.0;
+  double lng = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -52,8 +56,14 @@ class _LocationPickPageState extends State<LocationPickPage> {
             IconButton(
               onPressed: () {
                 Get.back();
+                _authController.salonAddressLan = lng;
+                _authController.salonAddressLat = lat;
+                _authController.salonCurrentAddress = address;
               },
-              icon: const Icon(Icons.check_circle),
+              icon: const Icon(
+                Icons.check_circle,
+                color: ColorConstant.blackColor,
+              ),
             ),
           ],
           nameOfScreen: "Pick Your Location",
@@ -85,10 +95,11 @@ class _LocationPickPageState extends State<LocationPickPage> {
             ));
 
             setState(() {});
-            _authController.salonAddressLan = latLng.longitude;
-            _authController.salonAddressLat = latLng.latitude;
-            _authController.salonCurrentAddress =
+
+            address =
                 "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
+            lat = latLng.latitude;
+            lng = latLng.longitude;
           },
           initialCameraPosition: CameraPosition(
             target: initialPosition ?? const LatLng(22.303894, 70.802162),
@@ -152,10 +163,10 @@ class _LocationPickPageState extends State<LocationPickPage> {
         await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placeMarks[0];
 
-    _authController.salonAddressLan = position.longitude;
-    _authController.salonAddressLat = position.latitude;
-    _authController.salonCurrentAddress =
+    address =
         "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
+    lat = position.latitude;
+    lng = position.longitude;
   }
 
   bool _canPopNow = false;
