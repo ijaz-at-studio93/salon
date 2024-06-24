@@ -436,7 +436,7 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                             appointmentId: widget.appointmentId,
                             status: "confirmed",
                             callback: () {
-                             Navigator.pop(context);
+                              Navigator.pop(context);
                               widget.callback.call();
                             });
                       },

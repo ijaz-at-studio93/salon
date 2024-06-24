@@ -61,7 +61,7 @@ class StylistListTileWidget extends StatelessWidget {
                     style: AppTextTheme.medium.copyWith(
                         color: ColorConstant.blackColor, fontSize: 16),
                   ),
-                  Row(
+                /*  Row(
                     children: [
                       Text(
                         "Expert in",
@@ -75,7 +75,7 @@ class StylistListTileWidget extends StatelessWidget {
                             color: ColorConstant.primaryColor, fontSize: 13),
                       )
                     ],
-                  )
+                  )*/
                 ],
               )
             ],

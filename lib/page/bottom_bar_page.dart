@@ -45,17 +45,19 @@ class _BottomBarPageState extends State<BottomBarPage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            showModalBottomSheet(
-                isScrollControlled: true,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(32),
-                  topRight: Radius.circular(32),
-                )),
-                context: context,
-                builder: (context) {
-                  return const AddServiceBottomSheetPage();
-                });
+            if (_homeController.getEligibilityModel.data?.isApproved ?? false) {
+              showModalBottomSheet(
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  )),
+                  context: context,
+                  builder: (context) {
+                    return const AddServiceBottomSheetPage();
+                  });
+            }
           },
           backgroundColor: ColorConstant.primaryColor,
           child: const Center(

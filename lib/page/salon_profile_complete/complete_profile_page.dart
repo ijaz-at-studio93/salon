@@ -29,7 +29,7 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
             ? const ProgressBarView()
             : RefreshIndicator(
                 onRefresh: getTradLogData,
-                child: ListView.builder(
+                child:  _homeController.getSalonDocumentGetModel.data?.isEmpty ?? false   ? const SizedBox() :  ListView.builder(
                   shrinkWrap: true,
                   itemCount:
                       _homeController.getSalonDocumentGetModel.data?.length ??

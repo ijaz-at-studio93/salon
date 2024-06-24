@@ -44,8 +44,7 @@ class _StylistPageState extends State<StylistPage> {
       body: Obx(
         () => Column(
           children: [
-            const SizedBox(height: 20),
-            _searchAndService(),
+
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),

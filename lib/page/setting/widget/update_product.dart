@@ -32,7 +32,6 @@ class _UpdateProductState extends State<UpdateProduct> {
   @override
   void initState() {
     super.initState();
-
     _description.text = widget.product.description ?? "";
     _productName.text = widget.product.name ?? "";
     _price.text = widget.product.price.toString();

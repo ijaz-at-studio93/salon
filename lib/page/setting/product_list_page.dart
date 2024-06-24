@@ -34,7 +34,7 @@ class _ProductListPageState extends State<ProductListPage> {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
-        nameOfScreen: "Service",
+        nameOfScreen: "Product",
       ),
       body: Obx(
         () => _homeController.showProgress

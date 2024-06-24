@@ -43,7 +43,7 @@ class _DayTileWidgetState extends State<DayTileWidget> {
         _homeController
             .getArtiestAvailabilityGetModel.data?.monday?.isSwitchOn = isSwitch;
       }
-      if (widget.dayTitle == "TuesDay") {
+      if (widget.dayTitle == "Tuesday") {
         _homeController.getArtiestAvailabilityGetModel.data?.tuesday
             ?.isSwitchOn = isSwitch;
       }
@@ -96,7 +96,7 @@ class _DayTileWidgetState extends State<DayTileWidget> {
                         _homeController.getArtiestAvailabilityGetModel.data
                             ?.monday?.isSwitchOn = isSwitch;
                       }
-                      if (widget.dayTitle == "TuesDay") {
+                      if (widget.dayTitle == "Tuesday") {
                         _homeController.getArtiestAvailabilityGetModel.data
                             ?.tuesday?.isSwitchOn = isSwitch;
                       }
@@ -135,7 +135,7 @@ class _DayTileWidgetState extends State<DayTileWidget> {
                             Breaks(start: "14:30", end: "15:00")
                           ]);
                         }
-                        if (widget.dayTitle == "TuesDay") {
+                        if (widget.dayTitle == "Tuesday") {
                           _homeController.getArtiestAvailabilityGetModel.data
                                   ?.tuesday =
                               DayData(start: "09:00", end: "18:00", breaks: [

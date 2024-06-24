@@ -7,14 +7,11 @@ import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/accepted_booking_overview_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
-import 'package:salon/page/stylist_all_module/widget/service_count_row_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/status_bar_color_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
 import 'package:salon/util/reject_service_dialog.dart';
-import 'package:vertical_barchart/vertical-barchart.dart';
-import 'package:vertical_barchart/vertical-barchartmodel.dart';
 import 'booking_overview_widget.dart';
 
 class StylistBookingOverViewPage extends StatefulWidget {
@@ -55,31 +52,6 @@ class _StylistBookingOverViewPageState
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /* const Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: ServiceCountRowWidget(
-                                    image: AssetsConstant.topRatedDoneIcon,
-                                    title: "Average Rating",
-                                    titleValue: "4.1",
-                                  ),
-                                ),
-                                SizedBox(width: 5),
-                                Expanded(
-                                  child: ServiceCountRowWidget(
-                                    image: AssetsConstant.receiveDoneIcon,
-                                    title: "Top Rated ",
-                                    titleValue: "12",
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          _reportAnalytics(),*/
                           const SizedBox(height: 15),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -116,6 +88,12 @@ class _StylistBookingOverViewPageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: BookingOverviewWidget(
+                                            bookingId:  _stylistController
+                                                .getPendingAppointmentsListModel
+                                                .data?[index]
+                                                .appointment
+                                                ?.id ??
+                                                "" ,
                                             isHomeService: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
@@ -171,21 +149,7 @@ class _StylistBookingOverViewPageState
                                                     });
                                                   });
                                             },
-                                            tapViewAndAccept: () {
-                                              Get.to(() => ViewAcceptPage(
-                                                    appointmentId:
-                                                        _stylistController
-                                                                .getPendingAppointmentsListModel
-                                                                .data?[index]
-                                                                .appointment
-                                                                ?.id ??
-                                                            "",
-                                                    callback: () {
-                                                      _stylistController
-                                                          .doPendingAppointmentsListModel();
-                                                    },
-                                                  ));
-                                            },
+
                                           ),
                                         );
                                       })
@@ -392,133 +356,4 @@ class _StylistBookingOverViewPageState
           }),
     );
   }
-
-  /*----------------- Report Analytics --------------*/
-  _reportAnalytics() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      width: Get.width,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: ColorConstant.grayTextColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Reports Analytics",
-            textScaler: const TextScaler.linear(0.85),
-            style: AppTextTheme.bold
-                .copyWith(color: ColorConstant.blackColor, fontSize: 20),
-          ),
-          VerticalBarchart(
-            background: Colors.transparent,
-            maxX: 75,
-            data: bardata,
-            barSize: 11,
-            barStyle: BarStyle.DEFAULT,
-            showLegend: false,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.service,
-                        borderRadius: BorderRadius.circular(3)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    "Service Done",
-                    style: AppTextTheme.regular.copyWith(
-                        color: ColorConstant.grayTextColor, fontSize: 13),
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.skyBlueColor,
-                        borderRadius: BorderRadius.circular(3)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    "Ratings",
-                    style: AppTextTheme.regular.copyWith(
-                        color: ColorConstant.grayTextColor, fontSize: 13),
-                  )
-                ],
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  List<VBarChartModel> bardata = [
-    const VBarChartModel(
-      index: 0,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 1,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 2,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 4,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 20,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 5,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 6,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 50,
-      tooltip: "",
-    ),
-    const VBarChartModel(
-      index: 3,
-      label: "Akhil",
-      colors: [ColorConstant.service, Colors.transparent],
-      jumlah: 70,
-      tooltip: "",
-    ),
-  ];
 }

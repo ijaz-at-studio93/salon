@@ -8,6 +8,7 @@ import 'package:salon/page/review_rating/widget/service_rating_card_widget.dart'
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/NoItemsWidget.dart';
 
 class StylistReviewAndRatingPage extends StatefulWidget {
   const StylistReviewAndRatingPage({super.key});
@@ -53,40 +54,46 @@ class _StylistReviewAndRatingPageState
                               color: ColorConstant.primaryColor, fontSize: 18),
                         ),
                       ),
-                      ListView.separated(
-                          separatorBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                const SizedBox(height: 10),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  height: 1,
-                                  width: Get.width,
-                                  decoration: const BoxDecoration(
-                                      color: ColorConstant.grayTextColor),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 10),
-                          itemCount: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data
-                                  ?.artists
-                                  ?.length ??
-                              0,
-                          itemBuilder: (context, index) {
-                            return ArtiestRatingCardWidget(
-                              overAllArtists: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data!
-                                  .artists![index],
-                            );
-                          }),
+                      _stylistController.getOverallStylistReviewListModel.data
+                                  ?.artists?.isEmpty ??
+                              false
+                          ? const NoItemsWidget(
+                              text: "Artiest Review Not Found",
+                            )
+                          : ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      height: 1,
+                                      width: Get.width,
+                                      decoration: const BoxDecoration(
+                                          color: ColorConstant.grayTextColor),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.only(bottom: 10),
+                              itemCount: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data
+                                      ?.artists
+                                      ?.length ??
+                                  0,
+                              itemBuilder: (context, index) {
+                                return ArtiestRatingCardWidget(
+                                  overAllArtists: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data!
+                                      .artists![index],
+                                );
+                              }),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
@@ -96,40 +103,46 @@ class _StylistReviewAndRatingPageState
                               color: ColorConstant.primaryColor, fontSize: 18),
                         ),
                       ),
-                      ListView.separated(
-                          separatorBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                const SizedBox(height: 10),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  height: 1,
-                                  width: Get.width,
-                                  decoration: const BoxDecoration(
-                                      color: ColorConstant.grayTextColor),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 10),
-                          itemCount: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data
-                                  ?.products
-                                  ?.length ??
-                              0,
-                          itemBuilder: (context, index) {
-                            return ProductRatingCardWidget(
-                              overAllProducts: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data!
-                                  .products![index],
-                            );
-                          }),
+                      _stylistController.getOverallStylistReviewListModel.data
+                                  ?.products?.isEmpty ??
+                              false
+                          ? const NoItemsWidget(
+                              text: "Product Review Not Found",
+                            )
+                          : ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      height: 1,
+                                      width: Get.width,
+                                      decoration: const BoxDecoration(
+                                          color: ColorConstant.grayTextColor),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.only(bottom: 10),
+                              itemCount: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data
+                                      ?.products
+                                      ?.length ??
+                                  0,
+                              itemBuilder: (context, index) {
+                                return ProductRatingCardWidget(
+                                  overAllProducts: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data!
+                                      .products![index],
+                                );
+                              }),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 10),
@@ -139,40 +152,46 @@ class _StylistReviewAndRatingPageState
                               color: ColorConstant.primaryColor, fontSize: 18),
                         ),
                       ),
-                      ListView.separated(
-                          separatorBuilder: (context, index) {
-                            return Column(
-                              children: [
-                                const SizedBox(height: 10),
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  height: 1,
-                                  width: Get.width,
-                                  decoration: const BoxDecoration(
-                                      color: ColorConstant.grayTextColor),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          },
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          padding: const EdgeInsets.only(bottom: 10),
-                          itemCount: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data
-                                  ?.services
-                                  ?.length ??
-                              0,
-                          itemBuilder: (context, index) {
-                            return ServiceRatingCardWidget(
-                              overAllServices: _stylistController
-                                  .getOverallStylistReviewListModel
-                                  .data!
-                                  .services![index],
-                            );
-                          }),
+                      _stylistController.getOverallStylistReviewListModel.data
+                                  ?.services?.isEmpty ??
+                              false
+                          ? const NoItemsWidget(
+                              text: "Service Review Not Found",
+                            )
+                          : ListView.separated(
+                              separatorBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    const SizedBox(height: 10),
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      height: 1,
+                                      width: Get.width,
+                                      decoration: const BoxDecoration(
+                                          color: ColorConstant.grayTextColor),
+                                    ),
+                                    const SizedBox(height: 10),
+                                  ],
+                                );
+                              },
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.only(bottom: 10),
+                              itemCount: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data
+                                      ?.services
+                                      ?.length ??
+                                  0,
+                              itemBuilder: (context, index) {
+                                return ServiceRatingCardWidget(
+                                  overAllServices: _stylistController
+                                      .getOverallStylistReviewListModel
+                                      .data!
+                                      .services![index],
+                                );
+                              }),
                     ],
                   ),
                 ),

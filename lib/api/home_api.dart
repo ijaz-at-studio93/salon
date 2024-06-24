@@ -96,7 +96,7 @@ class HomeAPI {
   }) async {
     final formData = FormData.fromMap({
       "name": name,
-      "describe": description,
+      "description": description,
       "price": price,
     });
 

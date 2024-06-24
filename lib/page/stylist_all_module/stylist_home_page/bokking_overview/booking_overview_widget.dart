@@ -3,21 +3,18 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/model/stylist/pending_appointment.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
-
+import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-import 'view_accept_page.dart';
-
-class BookingOverviewWidget extends StatelessWidget {
+class BookingOverviewWidget extends StatefulWidget {
   final String startTime;
   final String endTime;
+  final String bookingId;
   final String id;
   final int price;
   final bool isHomeService;
   final VoidCallback tapReject;
-  final VoidCallback tapViewAndAccept;
 
   const BookingOverviewWidget({
     super.key,
@@ -25,11 +22,17 @@ class BookingOverviewWidget extends StatelessWidget {
     required this.endTime,
     required this.price,
     required this.tapReject,
-    required this.tapViewAndAccept,
     required this.id,
     required this.isHomeService,
+    required this.bookingId,
   });
 
+  @override
+  State<BookingOverviewWidget> createState() => _BookingOverviewWidgetState();
+}
+
+class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
+  final _stylistController = Get.find<StylistController>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,14 +52,14 @@ class BookingOverviewWidget extends StatelessWidget {
                         .copyWith(color: ColorConstant.idColor, fontSize: 16),
                   ),
                   Text(
-                    id,
+                    widget.id,
                     style: AppTextTheme.bold.copyWith(
                         color: ColorConstant.blackColor, fontSize: 16),
                   ),
                 ],
               ),
               Text(
-                "${convertDate(date: startTime)}- ${convertDate(date: endTime)}",
+                "${convertDate(date: widget.startTime)}- ${convertDate(date: widget.endTime)}",
                 style: AppTextTheme.regular
                     .copyWith(fontSize: 13, color: ColorConstant.grayTextColor),
               )
@@ -83,7 +86,7 @@ class BookingOverviewWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "₹$price/-",
+                    "₹${widget.price}/-",
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),
@@ -122,7 +125,7 @@ class BookingOverviewWidget extends StatelessWidget {
                         color: ColorConstant.blackColor,
                       ),
                       Text(
-                        isHomeService ? "Home" : "Salon",
+                        widget.isHomeService ? "Home" : "Salon",
                         style: AppTextTheme.bold.copyWith(
                             fontSize: 13, color: ColorConstant.blackColor),
                       ),
@@ -135,45 +138,48 @@ class BookingOverviewWidget extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: tapReject,
-                  child: Container(
-                    height: 50,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: ColorConstant.redColor,
-                      ),
+              GestureDetector(
+                onTap: widget.tapReject,
+                child: Container(
+                  height: 50,
+                  width: Get.width * 0.4,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: ColorConstant.redColor,
                     ),
-                    child: Center(
-                      child: Text(
-                        "Reject",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.redColor, fontSize: 14),
-                      ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Reject",
+                      style: AppTextTheme.regular.copyWith(
+                          color: ColorConstant.redColor, fontSize: 14),
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              Expanded(
-                child: GestureDetector(
-                  onTap: tapViewAndAccept,
-                  child: Container(
-                    height: 50,
-                    width: Get.width,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: ColorConstant.primaryColor,
-                    ),
-                    child: Center(
-                      child: Text(
-                        "View & Accept",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.whiteColor, fontSize: 14),
-                      ),
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => ViewAcceptPage(
+                        appointmentId: widget.bookingId,
+                        callback: () {
+                          _stylistController.doPendingAppointmentsListModel();
+                        },
+                      ));
+                },
+                child: Container(
+                  height: 50,
+                  width: Get.width * 0.4,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: ColorConstant.primaryColor,
+                  ),
+                  child: Center(
+                    child: Text(
+                      "View & Accept",
+                      style: AppTextTheme.regular.copyWith(
+                          color: ColorConstant.whiteColor, fontSize: 14),
                     ),
                   ),
                 ),

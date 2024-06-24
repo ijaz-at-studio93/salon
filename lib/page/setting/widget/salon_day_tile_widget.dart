@@ -33,36 +33,82 @@ class _SalonDayTileWidgetState extends State<SalonDayTileWidget> {
   @override
   void initState() {
     super.initState();
-    if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
-      isSwitch = true;
-
+    {
       if (widget.dayTitle == "Sunday") {
-        _homeController.getSalonAvailability.data?.sunday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.sunday?.isSwitchOn = true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.sunday?.isSwitchOn = false;
+          isSwitch = false;
+        }
       }
+
       if (widget.dayTitle == "Monday") {
-        _homeController.getSalonAvailability.data?.monday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.monday?.isSwitchOn = true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.monday?.isSwitchOn = false;
+          isSwitch = false;
+        }
       }
-      if (widget.dayTitle == "TuesDay") {
-        _homeController.getSalonAvailability.data?.tuesday?.isSwitchOn =
-            isSwitch;
+
+      if (widget.dayTitle == "Tuesday") {
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.tuesday?.isSwitchOn = true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.tuesday?.isSwitchOn =
+              false;
+          isSwitch = false;
+        }
       }
+
       if (widget.dayTitle == "Wednesday") {
-        _homeController.getSalonAvailability.data?.wednesday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.wednesday?.isSwitchOn =
+              true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.wednesday?.isSwitchOn =
+              false;
+          isSwitch = false;
+        }
       }
+
       if (widget.dayTitle == "Thursday") {
-        _homeController.getSalonAvailability.data?.thursday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.thursday?.isSwitchOn =
+              true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.thursday?.isSwitchOn =
+              false;
+          isSwitch = false;
+        }
       }
+
       if (widget.dayTitle == "Friday") {
-        _homeController.getSalonAvailability.data?.friday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.friday?.isSwitchOn = true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.friday?.isSwitchOn = false;
+          isSwitch = false;
+        }
       }
+
       if (widget.dayTitle == "Saturday") {
-        _homeController.getSalonAvailability.data?.saturday?.isSwitchOn =
-            isSwitch;
+        if (widget.startTime.isNotEmpty && widget.endTime.isNotEmpty) {
+          _homeController.getSalonAvailability.data?.saturday?.isSwitchOn =
+              true;
+          isSwitch = true;
+        } else {
+          _homeController.getSalonAvailability.data?.saturday?.isSwitchOn =
+              false;
+          isSwitch = false;
+        }
       }
     }
   }
@@ -97,7 +143,7 @@ class _SalonDayTileWidgetState extends State<SalonDayTileWidget> {
                         _homeController.getSalonAvailability.data?.monday
                             ?.isSwitchOn = isSwitch;
                       }
-                      if (widget.dayTitle == "TuesDay") {
+                      if (widget.dayTitle == "Tuesday") {
                         _homeController.getSalonAvailability.data?.tuesday
                             ?.isSwitchOn = isSwitch;
                       }
@@ -119,6 +165,7 @@ class _SalonDayTileWidgetState extends State<SalonDayTileWidget> {
                       }
 
                       if (isSwitch) {
+
                         widget.startTime = convertTimeTo12HourFormat("09:00");
                         widget.endTime = convertTimeTo12HourFormat("18:00");
 
@@ -134,7 +181,7 @@ class _SalonDayTileWidgetState extends State<SalonDayTileWidget> {
                             SalonBreaks(start: "14:30", end: "15:00")
                           ]);
                         }
-                        if (widget.dayTitle == "TuesDay") {
+                        if (widget.dayTitle == "Tuesday") {
                           _homeController.getSalonAvailability.data?.tuesday =
                               SalonDay(start: "09:00", end: "18:00", breaks: [
                             SalonBreaks(start: "14:30", end: "15:00")

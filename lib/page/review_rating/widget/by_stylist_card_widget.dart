@@ -54,21 +54,6 @@ class ByStylistCardWidget extends StatelessWidget {
                     style: AppTextTheme.medium.copyWith(
                         fontSize: 15, color: ColorConstant.blackColor),
                   ),
-                  const SizedBox(width: 10),
-                  Container(
-                    height: 26,
-                    width: 87,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(45),
-                        color: ColorConstant.primaryColor),
-                    child: Center(
-                      child: Text(
-                        "Most Rated",
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.whiteColor, fontSize: 13),
-                      ),
-                    ),
-                  )
                 ],
               ),
               const SizedBox(height: 12),
@@ -98,7 +83,7 @@ class ByStylistCardWidget extends StatelessWidget {
             itemBuilder: (context, i) {
               return Container(
                 width: Get.width,
-                margin: const EdgeInsets.symmetric(horizontal: 20,vertical: 5),
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(

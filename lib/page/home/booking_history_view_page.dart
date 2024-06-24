@@ -602,17 +602,25 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
   /*---------------- Convert Date tTime  ------------*/
   String convertDate({required String date}) {
-    String dateTimeString = date;
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedTime = DateFormat('h:mm a').format(dateTime);
-    return formattedTime;
+    if (date == "") {
+      return "";
+    } else {
+      String dateTimeString = date;
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      String formattedTime = DateFormat('h:mm a').format(dateTime);
+      return formattedTime;
+    }
   }
 
   /*------------------------ Convert Booking Date ---------------*/
   String convertBooingDateFormat({required String dateTime}) {
-    DateTime date = DateTime.parse(dateTime);
-    String formattedDate = DateFormat('dd/MM/yyyy').format(date);
-    return formattedDate;
+    if (dateTime == "") {
+      return "";
+    } else {
+      DateTime date = DateTime.parse(dateTime);
+      String formattedDate = DateFormat('dd/MM/yyyy').format(date);
+      return formattedDate;
+    }
   }
 
   /*------------- Customer Details Row Widget ---------------*/

@@ -78,22 +78,23 @@ class _AvailabilitySettingPageState extends State<AvailabilitySettingPage> {
                               .getSalonAvailability.data?.monday?.end,
                           breaks: _homeController
                               .getSalonAvailability.data?.monday?.breaks),
-                  tuesday: _homeController.getSalonAvailability.data
-                      ?.tuesday?.start ==
-                      null &&
-                      _homeController.getSalonAvailability.data
-                          ?.tuesday?.end ==
-                          null ||
-                      _homeController.getSalonAvailability.data?.tuesday
-                          ?.isSwitchOn ==
-                          false
-                      ? null : SalonDay(
-                      start: _homeController
-                          .getSalonAvailability.data?.thursday?.start,
-                      end: _homeController
-                          .getSalonAvailability.data?.thursday?.end,
-                      breaks: _homeController
-                          .getSalonAvailability.data?.tuesday?.breaks),
+                  tuesday: _homeController.getSalonAvailability.data?.tuesday
+                                      ?.start ==
+                                  null &&
+                              _homeController.getSalonAvailability.data?.tuesday
+                                      ?.end ==
+                                  null ||
+                          _homeController.getSalonAvailability.data?.tuesday
+                                  ?.isSwitchOn ==
+                              false
+                      ? null
+                      : SalonDay(
+                          start: _homeController
+                              .getSalonAvailability.data?.tuesday?.start,
+                          end: _homeController
+                              .getSalonAvailability.data?.tuesday?.end,
+                          breaks: _homeController
+                              .getSalonAvailability.data?.tuesday?.breaks),
                   wednesday: _homeController.getSalonAvailability.data
                                       ?.wednesday?.start ==
                                   null &&
@@ -164,6 +165,13 @@ class _AvailabilitySettingPageState extends State<AvailabilitySettingPage> {
                               .getSalonAvailability.data?.saturday?.breaks),
                 ),
               );
+
+
+
+              print( _homeController.getSalonAvailability.data?.tuesday?.isSwitchOn );
+              print( _homeController.getSalonAvailability.data?.tuesday?.start );
+              print( _homeController.getSalonAvailability.data?.tuesday?.end);
+              print("=======/*/*/*/*/*/*/*/* =============");
 
               String jsonStr = jsonEncode(salonWorkingPlanModel);
               Map<String, dynamic> data = jsonDecode(jsonStr);

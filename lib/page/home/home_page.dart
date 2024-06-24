@@ -59,7 +59,7 @@ class _HomepageState extends State<Homepage> {
                                         title: "Total Earning",
                                         subTitle: "",
                                         amount:
-                                            "₹${_homeController.getSalonDashboardModel.data?.totalEarnings}",
+                                            "₹ ${_homeController.getSalonDashboardModel.data?.totalEarnings}",
                                         callback: () {
                                           Get.to(() =>
                                               const CompleteProfilePage());
@@ -74,7 +74,7 @@ class _HomepageState extends State<Homepage> {
                                         title: "Rating",
                                         subTitle: "",
                                         amount:
-                                            "₹${_homeController.getSalonDashboardModel.data?.ratingReview?.rating}",
+                                            "✰ ${_homeController.getSalonDashboardModel.data?.ratingReview?.rating}",
                                       ),
                                     ),
                                   ],

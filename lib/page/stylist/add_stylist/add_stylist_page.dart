@@ -154,7 +154,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             textInputAction: TextInputAction.next,
                             title: "Whatsapp Number"),
                         const SizedBox(height: 20),
-                        SimpleTextFieldWidget(
+
+                        _panCard(
                             textEditingController: _panNumber,
                             hintText: "For eg. ABCDE1234F",
                             textInputType: TextInputType.text,
@@ -817,8 +818,58 @@ class _AddStylistPageState extends State<AddStylistPage> {
     );
   }
 
-  /*--------------- Minimum Experience ---------------*/
 
+
+  /*---------------  PAN CARD ------------*/
+  _panCard({
+
+    required TextEditingController textEditingController,
+    required String hintText,
+    required String title,
+    required TextInputType textInputType,
+    required TextInputAction textInputAction,
+}){
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          Container(
+              height: 50,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: ColorConstant.borderColor,
+                ),
+              ),
+              child: TextFormField(
+                textCapitalization: TextCapitalization.characters,
+                controller:textEditingController,
+                keyboardType: textInputType,
+                textInputAction: textInputAction,
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+                decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 12),
+                    border: InputBorder.none,
+                    hintText: hintText,
+                    hintStyle: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.grayColor, fontSize: 13)),
+              )),
+        ],
+      ),
+    );
+  }
+
+
+  /*--------------- Minimum Experience ---------------*/
   _minimumExperience({
     required TextEditingController textEditingController,
     required String hintText,

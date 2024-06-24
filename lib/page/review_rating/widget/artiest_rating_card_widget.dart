@@ -41,21 +41,7 @@ class _ArtiestRatingCardWidgetState extends State<ArtiestRatingCardWidget> {
                 style: AppTextTheme.medium
                     .copyWith(fontSize: 15, color: ColorConstant.blackColor),
               ),
-              const SizedBox(width: 10),
-              Container(
-                height: 26,
-                width: 87,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(45),
-                    color: ColorConstant.primaryColor),
-                child: Center(
-                  child: Text(
-                    "Most Rated",
-                    style: AppTextTheme.medium.copyWith(
-                        color: ColorConstant.whiteColor, fontSize: 13),
-                  ),
-                ),
-              )
+
             ],
           ),
         ),

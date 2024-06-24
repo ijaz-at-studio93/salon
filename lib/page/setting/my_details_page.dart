@@ -9,7 +9,6 @@ import 'package:salon/page/blog/Insights_home_page.dart';
 import 'package:salon/page/review_rating/review_and_rating_page.dart';
 import 'package:salon/page/setting/about_app_page.dart';
 import 'package:salon/page/setting/availability_setting_page.dart';
-import 'package:salon/page/setting/categoty_page.dart';
 import 'package:salon/page/setting/product_list_page.dart';
 import 'package:salon/page/setting/service_list_page.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
@@ -55,13 +54,13 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                     onTap: () {
                       Get.to(() => const AvailabilitySettingPage());
                     }),
-                _dividerCustom(),
+                /* _dividerCustom(),
                 _customRowWidget(
                     titleName: "Categories",
                     image: AssetsConstant.categories,
                     onTap: () {
                       Get.to(() => const CategoryPage());
-                    }),
+                    }),*/
                 _dividerCustom(),
                 _customRowWidget(
                     titleName: "Product",
@@ -109,7 +108,7 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                     titleName: "About Us",
                     image: AssetsConstant.info,
                     onTap: () {
-                      Get.to(()=> const AboutAppPage());
+                      Get.to(() => const AboutAppPage());
                     }),
                 _dividerCustom(),
                 _customRowWidget(

@@ -60,8 +60,7 @@ class HomeController extends GetxController {
   set setServiceReviewModel(val) => _serviceReviewModel.value = val;
 
   /*-------------------- Salon Service List Data Get --------------*/
-  final Rx<SalonServiceListModel> _salonServiceList =
-      SalonServiceListModel().obs;
+  final Rx<SalonServiceListModel> _salonServiceList = SalonServiceListModel().obs;
   SalonServiceListModel get getSalonServiceList => _salonServiceList.value;
   set setSalonServiceList(val) => _salonServiceList.value = val;
 
@@ -115,7 +114,6 @@ class HomeController extends GetxController {
       _salonReviewByArtiestModel.value = val;
 
   /*-------------------------- ArtiestAvailabilityGetModel  -----------------*/
-
   final Rx<ArtiestAvailabilityGetModel> _artiestAvailabilityGetModel =
       ArtiestAvailabilityGetModel().obs;
   ArtiestAvailabilityGetModel get getArtiestAvailabilityGetModel =>
@@ -518,7 +516,8 @@ class HomeController extends GetxController {
   doCompleteBookingData({required String distribution}) async {
     try {
       _showProgress.value = true;
-      _salonServedList.value = await HomeAPI.getServedAppointments(distribution: distribution);
+      _salonServedList.value =
+          await HomeAPI.getServedAppointments(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {

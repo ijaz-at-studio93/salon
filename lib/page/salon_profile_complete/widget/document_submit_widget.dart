@@ -49,7 +49,7 @@ class _DocumentSubmitWidgetState extends State<DocumentSubmitWidget> {
                           fontSize: 20, color: ColorConstant.redColor),
                     )
                   : const SizedBox(),
-              widget.documentListModel.submittedDocuments?[0].status ==
+              widget.documentListModel.submittedDocuments?.isEmpty ??  false ? const SizedBox(): widget.documentListModel.submittedDocuments?[0].status ==
                       "verified"
                   ? Image.asset(
                       AssetsConstant.markIcon,

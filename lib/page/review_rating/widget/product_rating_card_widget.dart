@@ -87,7 +87,7 @@ class ProductRatingCardWidget extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                "Posted on ${convertDateFormat(overAllProducts.updatedAt ?? "")}",
+                "Posted on  ${overAllProducts.updatedAt == null ? "" : convertDateFormat(overAllProducts.updatedAt ?? "")}",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
               )
