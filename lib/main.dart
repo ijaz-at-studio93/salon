@@ -19,7 +19,15 @@ import 'controller/auth_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioClient.init();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU',
+        appId: '1:9001451192:android:b378fec7894f8aea70fe4d',
+        messagingSenderId: '',
+        projectId: 'salon-534a7',
+        storageBucket: 'salon-534a7.appspot.com',
+      )
+  );
   Get.put(AuthController());
   Get.put(HomeController());
   Get.put(StylistController());

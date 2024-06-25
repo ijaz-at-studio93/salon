@@ -13,7 +13,7 @@ class PendingAppointmentsListModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
     message = json['message'];
@@ -46,16 +46,16 @@ class Data {
 
   Data(
       {this.orderAmount,
-        this.bookingOrderId,
-        this.idx,
-        this.orderStatus,
-        this.createdAt,
-        this.updatedAt,
-        this.finalizedAt,
-        this.paymentStatus,
-        this.isHomeService,
-        this.appointment,
-        this.user});
+      this.bookingOrderId,
+      this.idx,
+      this.orderStatus,
+      this.createdAt,
+      this.updatedAt,
+      this.finalizedAt,
+      this.paymentStatus,
+      this.isHomeService,
+      this.appointment,
+      this.user});
 
   Data.fromJson(Map<String, dynamic> json) {
     orderAmount = json['orderAmount'];
@@ -68,9 +68,9 @@ class Data {
     paymentStatus = json['paymentStatus'];
     isHomeService = json['isHomeService'];
     appointment = json['appointment'] != null
-        ? Appointment.fromJson(json['appointment'])
+        ? new Appointment.fromJson(json['appointment'])
         : null;
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    user = json['user'] != null ? new User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -120,13 +120,15 @@ class User {
   String? id;
   String? name;
   String? profileImage;
+  String? gender;
 
-  User({this.id, this.name, this.profileImage});
+  User({this.id, this.name, this.profileImage, this.gender});
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     profileImage = json['profileImage'];
+    gender = json['gender'];
   }
 
   Map<String, dynamic> toJson() {
@@ -134,7 +136,7 @@ class User {
     data['id'] = id;
     data['name'] = name;
     data['profileImage'] = profileImage;
+    data['gender'] = gender;
     return data;
   }
 }
-

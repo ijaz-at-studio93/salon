@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
@@ -88,12 +89,23 @@ class _StylistBookingOverViewPageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: BookingOverviewWidget(
-                                            bookingId:  _stylistController
-                                                .getPendingAppointmentsListModel
-                                                .data?[index]
-                                                .appointment
-                                                ?.id ??
-                                                "" ,
+                                            tapAccept: () {
+                                              _stylistController.doAppointmentsDetailsModel(
+                                                  appointmentId:  _stylistController
+                                                      .getPendingAppointmentsListModel
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.id ?? "");
+                                              Get.to(() => ViewAcceptPage(
+                                                    appointmentId:
+                                                        _stylistController
+                                                                .getPendingAppointmentsListModel
+                                                                .data?[index]
+                                                                .appointment
+                                                                ?.id ??
+                                                            "",
+                                                  ));
+                                            },
                                             isHomeService: _stylistController
                                                     .getPendingAppointmentsListModel
                                                     .data?[index]
@@ -149,7 +161,6 @@ class _StylistBookingOverViewPageState
                                                     });
                                                   });
                                             },
-
                                           ),
                                         );
                                       })
@@ -355,5 +366,13 @@ class _StylistBookingOverViewPageState
             }
           }),
     );
+  }
+
+  /*---------------- convertTime ------------*/
+  String convertDate({required String date}) {
+    String dateTimeString = date;
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    String formattedTime = DateFormat('h:mm a').format(dateTime);
+    return formattedTime;
   }
 }

@@ -3,18 +3,16 @@ import 'package:flutter_dash/flutter_dash.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/controller/stylist/stylist_controller.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class BookingOverviewWidget extends StatefulWidget {
   final String startTime;
   final String endTime;
-  final String bookingId;
   final String id;
   final int price;
   final bool isHomeService;
   final VoidCallback tapReject;
+  final VoidCallback tapAccept;
 
   const BookingOverviewWidget({
     super.key,
@@ -24,7 +22,7 @@ class BookingOverviewWidget extends StatefulWidget {
     required this.tapReject,
     required this.id,
     required this.isHomeService,
-    required this.bookingId,
+    required this.tapAccept,
   });
 
   @override
@@ -32,7 +30,6 @@ class BookingOverviewWidget extends StatefulWidget {
 }
 
 class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
-  final _stylistController = Get.find<StylistController>();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -137,6 +134,7 @@ class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
           ),
           const SizedBox(height: 20),
           Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               GestureDetector(
                 onTap: widget.tapReject,
@@ -160,14 +158,7 @@ class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
               ),
               const SizedBox(width: 8),
               GestureDetector(
-                onTap: () {
-                  Get.to(() => ViewAcceptPage(
-                        appointmentId: widget.bookingId,
-                        callback: () {
-                          _stylistController.doPendingAppointmentsListModel();
-                        },
-                      ));
-                },
+                onTap: widget.tapAccept,
                 child: Container(
                   height: 50,
                   width: Get.width * 0.4,
@@ -193,9 +184,13 @@ class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
 
   /*---------------- convertTime ------------*/
   String convertDate({required String date}) {
-    String dateTimeString = date;
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedTime = DateFormat('h:mm a').format(dateTime);
-    return formattedTime;
+    if (date.isEmpty) {
+      return "";
+    } else {
+      String dateTimeString = date;
+      DateTime dateTime = DateTime.parse(dateTimeString);
+      String formattedTime = DateFormat('h:mm a').format(dateTime);
+      return formattedTime;
+    }
   }
 }

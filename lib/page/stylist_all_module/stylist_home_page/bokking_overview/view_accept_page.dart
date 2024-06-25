@@ -4,19 +4,19 @@ import 'package:intl/intl.dart';
 import 'package:maps_launcher/maps_launcher.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
-
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
 import '../../../../constant/assetsconstant.dart';
 
 class ViewAcceptPage extends StatefulWidget {
   final String appointmentId;
-  final VoidCallback callback;
-  const ViewAcceptPage(
-      {super.key, required this.appointmentId, required this.callback});
+
+  const ViewAcceptPage({
+    super.key,
+    required this.appointmentId,
+  });
 
   @override
   State<ViewAcceptPage> createState() => _ViewAcceptPageState();
@@ -28,10 +28,7 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _stylistController.doAppointmentsDetailsModel(
-          appointmentId: widget.appointmentId);
-    });
+
   }
 
   @override
@@ -43,12 +40,12 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
         isBackIcon: true,
       ),
       body: Obx(
-        () => _stylistController.showProgress
-            ? const ProgressBarView()
-            : Column(
-                children: [
-                  Expanded(
-                    child: ListView(
+        () => Column(
+          children: [
+            Expanded(
+              child: _stylistController.showProgress
+                  ? const ProgressBarView()
+                  : ListView(
                       children: [
                         Container(
                           height: 50,
@@ -425,25 +422,24 @@ class _ViewAcceptPageState extends State<ViewAcceptPage> {
                             }),
                       ],
                     ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 15),
-                    child: ButtonWidget(
-                      buttonTitleText: "Accept ",
-                      onPress: () {
-                        _stylistController.doBookingApprove(
-                            appointmentId: widget.appointmentId,
-                            status: "confirmed",
-                            callback: () {
-                              Navigator.pop(context);
-                              widget.callback.call();
-                            });
-                      },
-                    ),
-                  )
-                ],
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+              child: ButtonWidget(
+                buttonTitleText: "Accept ",
+                onPress: () {
+                  _stylistController.doBookingApprove(
+                      appointmentId: widget.appointmentId,
+                      status: "confirmed",
+                      callback: () {
+                        Navigator.pop(context);
+                        _stylistController.doPendingAppointmentsListModel();
+                      });
+                },
               ),
+            )
+          ],
+        ),
       ),
     );
   }
