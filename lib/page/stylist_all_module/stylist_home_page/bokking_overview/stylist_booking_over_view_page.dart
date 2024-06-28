@@ -44,7 +44,7 @@ class _StylistBookingOverViewPageState
         children: [
           _headerWidget(),
           Container(height: 1, color: ColorConstant.bgColor),
-          /*---------------- Booking Overview --------------*/
+          /* ---------------- Booking Overview -------------- */
           Obx(
             () => Expanded(
               child: _stylistController.showProgress
@@ -179,8 +179,7 @@ class _StylistBookingOverViewPageState
                                               .data
                                               ?.length ??
                                           0,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
+                                      physics: const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
@@ -241,7 +240,7 @@ class _StylistBookingOverViewPageState
     );
   }
 
-  /*--------------- Header Widget ------------*/
+  /* --------------- Header Widget ------------ */
   _headerWidget() {
     return Container(
       height: 60,
@@ -318,10 +317,10 @@ class _StylistBookingOverViewPageState
     );
   }
 
-  /*----------- Tab Bar variable  ----------- */
+  /* --------------- Tab Bar variable  ---------------- */
   String? bookingOverView = "0";
 
-  /*------------------- Switch Tab Stylist & Salon -------------------*/
+  /* --------------------- Switch Tab Stylist & Salon ------------------- */
   _bookingOverView() {
     return Container(
       height: 81,
@@ -368,7 +367,7 @@ class _StylistBookingOverViewPageState
     );
   }
 
-  /*---------------- convertTime ------------*/
+  /* ---------------- convertTime -------------- */
   String convertDate({required String date}) {
     String dateTimeString = date;
     DateTime dateTime = DateTime.parse(dateTimeString);
