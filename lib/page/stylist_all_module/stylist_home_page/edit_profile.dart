@@ -193,7 +193,7 @@ class _EditProfileState extends State<EditProfile> {
                         textEditingController: _description,
                         hintText: "Enter Here",
                         textInputType: TextInputType.text,
-                        textInputAction: TextInputAction.none,
+                        textInputAction: Platform.isAndroid ?  TextInputAction.none : TextInputAction.done,
                         title: "Description"),
                     _dividerWidget(),
                     _homeService()

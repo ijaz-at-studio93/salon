@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +21,19 @@ import 'controller/auth_controller.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioClient.init();
-  await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: 'AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU',
-        appId: '1:9001451192:android:b378fec7894f8aea70fe4d',
-        messagingSenderId: '',
-        projectId: 'salon-534a7',
-        storageBucket: 'salon-534a7.appspot.com',
-      )
-  );
+  if (Platform.isAndroid) {
+    await Firebase.initializeApp(
+        options: const FirebaseOptions(
+      apiKey: 'AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU',
+      appId: '1:9001451192:android:b378fec7894f8aea70fe4d',
+      messagingSenderId: '',
+      projectId: 'salon-534a7',
+      storageBucket: 'salon-534a7.appspot.com',
+    ));
+  } else {
+    await Firebase.initializeApp();
+  }
+
   Get.put(AuthController());
   Get.put(HomeController());
   Get.put(StylistController());
