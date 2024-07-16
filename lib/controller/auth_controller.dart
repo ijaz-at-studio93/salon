@@ -368,4 +368,25 @@ class AuthController extends GetxController {
     SharedPrefs.writeValue(PrefConstants.isStylist, false);
     Get.offAll(() => const LoginPage());
   }
+
+  /*--------------------  Forgot Password --------------*/
+  doForGotPassword(
+      {required String mobileNo,
+      required String password,
+      required String otp,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool isResult = await AuthAPI.forgotPassword(
+          mobileNo: mobileNo, password: password, otp: otp);
+
+      if (isResult) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
 }

@@ -26,10 +26,11 @@ void main() async {
         options: const FirebaseOptions(
       apiKey: 'AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU',
       appId: '1:9001451192:android:b378fec7894f8aea70fe4d',
-      messagingSenderId: '',
+      messagingSenderId: '9001451192',
       projectId: 'salon-534a7',
       storageBucket: 'salon-534a7.appspot.com',
-    ));
+    )
+    );
   } else {
     await Firebase.initializeApp();
   }

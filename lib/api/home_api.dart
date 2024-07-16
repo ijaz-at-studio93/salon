@@ -598,4 +598,17 @@ class HomeAPI {
       throw response.data;
     }
   }
+
+
+  /*----------------  Transaction  history API --------------*/
+
+  /* static Future<ModelName> getTransactionHistory() async {
+    final response = await DioClient.client.get("APi");
+    if (response.isSuccess) {
+      return ModelName;
+    } else {
+      throw response.data;
+    }
+  } */
+
 }

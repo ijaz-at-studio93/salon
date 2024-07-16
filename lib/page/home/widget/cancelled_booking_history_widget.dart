@@ -109,7 +109,7 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
                       ),
                     ],
                   ),
-                  const SizedBox(width: 15),
+                  /*const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -127,8 +127,8 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
                             color: ColorConstant.blackColor, fontSize: 16),
                       ),
                     ],
-                  ),
-                  const SizedBox(width: 15),
+                  ),*/
+                  const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -29,19 +29,19 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         children: [
           const SizedBox(height: 10),
           _searchAndService(),
+          const SizedBox(height: 10),
           _stylistAndSalon(),
+          const SizedBox(height: 10),
           _downloadWidget(),
+          const SizedBox(height: 10),
           Expanded(
               child: ListView.separated(
             separatorBuilder: (context, index) {
               return const Divider(
-                color: ColorConstant.dividerColor,
-                indent: 40,
-                endIndent: 20,
-              );
+                  color: ColorConstant.dividerColor, indent: 40, endIndent: 20);
             },
             shrinkWrap: true,
-            itemCount: 15,
+            itemCount: 5,
             itemBuilder: (context, index) {
               return const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
@@ -110,10 +110,11 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           GestureDetector(
             onTap: () {},
             child: Container(
-              height: 34,
+              height: 50,
+              margin: const EdgeInsets.only(right: 20, left: 20),
               padding: const EdgeInsets.only(right: 20, left: 20),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: ColorConstant.dividerColor),
               ),
               child: Center(

@@ -168,25 +168,6 @@ class _HomepageState extends State<Homepage> {
                       shape: BoxShape.circle,
                       color: ColorConstant.primaryColor.withOpacity(0.2),
                     ),
-                    child: Center(
-                      child: Image.asset(
-                        AssetsConstant.search,
-                        height: 20,
-                        width: 20,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.primaryColor.withOpacity(0.2),
-                    ),
                     child: Stack(
                       children: [
                         Center(

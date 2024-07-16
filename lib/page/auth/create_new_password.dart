@@ -4,12 +4,17 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/page/auth/login_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/password_text_field.dart';
+import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../constant/color_constant.dart';
+import '../../controller/auth_controller.dart';
 
 class CreateNewPassword extends StatefulWidget {
-  const CreateNewPassword({super.key});
+  final String mobileNo;
+  final String otpNo;
+  const CreateNewPassword(
+      {super.key, required this.mobileNo, required this.otpNo});
 
   @override
   State<CreateNewPassword> createState() => _CreateNewPasswordState();
@@ -18,6 +23,7 @@ class CreateNewPassword extends StatefulWidget {
 class _CreateNewPasswordState extends State<CreateNewPassword> {
   final _newPasswordTextEditingController = TextEditingController();
   final _confirmPasswordTextEditingController = TextEditingController();
+  final _authController = Get.find<AuthController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,33 +31,41 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
       body: Column(
         children: [
           _headerWidget(),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  PasswordTextFieldWidget(
-                      textEditingController: _newPasswordTextEditingController,
-                      hintText: "**********",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      title: "Create a New Password"),
-                  const SizedBox(height: 15),
-                  PasswordTextFieldWidget(
-                      textEditingController: _confirmPasswordTextEditingController,
-                      hintText: "**********",
-                      textInputType: TextInputType.text,
-                      textInputAction: TextInputAction.done,
-                      title: "Confirm Password"),
-                  const SizedBox(height: 35),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: ButtonWidget(
-                        buttonTitleText: "Done",
-                        onPress: () {
-                          doChangePassword();
-                        }),
+          const SizedBox(height: 25),
+          Obx(
+            () => Expanded(
+              child: ProgressContainerView(
+                isProgressRunning: _authController.showProgress,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      PasswordTextFieldWidget(
+                          textEditingController:
+                              _newPasswordTextEditingController,
+                          hintText: "**********",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          title: "Create a New Password"),
+                      const SizedBox(height: 15),
+                      PasswordTextFieldWidget(
+                          textEditingController:
+                              _confirmPasswordTextEditingController,
+                          hintText: "**********",
+                          textInputType: TextInputType.text,
+                          textInputAction: TextInputAction.done,
+                          title: "Confirm Password"),
+                      const SizedBox(height: 35),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ButtonWidget(
+                            buttonTitleText: "Done",
+                            onPress: () {
+                              doChangePassword();
+                            }),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
@@ -64,8 +78,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
   _headerWidget() {
     return Container(
       width: Get.width,
-      height: Get.height * 0.23,
-      padding: const EdgeInsets.only(top: 45, left: 21, right: 21),
+      padding: const EdgeInsets.only(top: 45, left: 21, right: 21, bottom: 20),
       decoration: const BoxDecoration(color: ColorConstant.primaryColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,7 +112,7 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
           ),
           const SizedBox(height: 35),
           Text(
-            "Create \nYour Password",
+            "Create Your Password",
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.whiteColor, fontSize: 23),
           ),
@@ -118,7 +131,13 @@ class _CreateNewPasswordState extends State<CreateNewPassword> {
         _confirmPasswordTextEditingController.text) {
       showMessage("New password did`t match confirm-Password");
     } else {
-      Get.offAll(() => const LoginPage());
+      _authController.doForGotPassword(
+          mobileNo: widget.mobileNo,
+          password: _newPasswordTextEditingController.text,
+          otp: widget.otpNo,
+          callback: () {
+            Get.offAll(() => const LoginPage());
+          });
     }
   }
 }

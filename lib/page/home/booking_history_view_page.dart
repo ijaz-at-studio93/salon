@@ -36,517 +36,517 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ColorConstant.bgColor,
-      appBar: AppBarWidget(
-        nameOfScreen:
-            "ID: ${_homeController.getAppointmentDetailsModel.data?.idx ?? ""}",
-        isBackIcon: true,
-      ),
-      body: Obx(
-        () => _homeController.showProgress
+    return Obx(()=>
+      Scaffold(
+        backgroundColor: ColorConstant.bgColor,
+        appBar: AppBarWidget(
+          nameOfScreen:
+              "ID: ${_homeController.getAppointmentDetailsModel.data?.idx ?? ""}",
+          isBackIcon: true,
+        ),
+        body:  _homeController.showProgress
             ? const ProgressBarView()
             : SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                color: ColorConstant.whiteColor,
                 child: Column(
                   children: [
-                    Container(
-                      color: ColorConstant.whiteColor,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 10),
-                          _invoiceWidget(
-                              title: "Invoice total",
-                              subTitle: "Date",
-                              subtitleValue: convertBooingDateFormat(
-                                  dateTime: _homeController
-                                          .getAppointmentDetailsModel
-                                          .data
-                                          ?.finalizedAt ??
-                                      ""),
-                              subTitleValueColor: ColorConstant.blackColor,
-                              titleValue:
-                                  "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount ?? ""}"),
-                          const SizedBox(height: 20),
-                          _invoiceWidget(
-                              title: "Slot Time",
-                              subTitle: "Status",
-                              subtitleValue: widget.status,
-                              subTitleValueColor: ColorConstant.lightPisTaColor,
-                              titleValue:
-                                  "${convertDate(date: _homeController.getAppointmentDetailsModel.data?.appointment?.startsAt ?? "")} - ${convertDate(date: _homeController.getAppointmentDetailsModel.data?.appointment?.endsAt ?? "")}"),
-                          const SizedBox(height: 30),
-                        ],
+                    const SizedBox(height: 10),
+                    _invoiceWidget(
+                        title: "Invoice total",
+                        subTitle: "Date",
+                        subtitleValue: convertBooingDateFormat(
+                            dateTime: _homeController
+                                .getAppointmentDetailsModel
+                                .data
+                                ?.finalizedAt ??
+                                ""),
+                        subTitleValueColor: ColorConstant.blackColor,
+                        titleValue:
+                        "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount ?? ""}"),
+                    const SizedBox(height: 20),
+                    _invoiceWidget(
+                        title: "Slot Time",
+                        subTitle: "Status",
+                        subtitleValue: widget.status,
+                        subTitleValueColor: ColorConstant.lightPisTaColor,
+                        titleValue:
+                        "${convertDate(date: _homeController.getAppointmentDetailsModel.data?.appointment?.startsAt ?? "")} - ${convertDate(date: _homeController.getAppointmentDetailsModel.data?.appointment?.endsAt ?? "")}"),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 2),
+              Container(
+                color: ColorConstant.whiteColor,
+                width: Get.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
+                      child: Text(
+                        "Customer Details",
+                        style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.grayTextColor,
+                            fontSize: 13),
                       ),
                     ),
-                    const SizedBox(height: 2),
-                    Container(
-                      color: ColorConstant.whiteColor,
-                      width: Get.width,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 20),
-                            child: Text(
-                              "Customer Details",
-                              style: AppTextTheme.medium.copyWith(
-                                  color: ColorConstant.grayTextColor,
-                                  fontSize: 13),
-                            ),
-                          ),
-                          _customerDetails(
-                              titleName: "Name",
-                              titleValue: _homeController
-                                      .getAppointmentDetailsModel
-                                      .data
-                                      ?.user
-                                      ?.name ??
-                                  ""),
-                          const SizedBox(height: 10),
-                          _customerDetails(
-                              titleName: "Phone",
-                              titleValue: _homeController
-                                      .getAppointmentDetailsModel
-                                      .data
-                                      ?.user
-                                      ?.mobile ??
-                                  ""),
-                        ],
+                    _customerDetails(
+                        titleName: "Name",
+                        titleValue: _homeController
+                            .getAppointmentDetailsModel
+                            .data
+                            ?.user
+                            ?.name ??
+                            ""),
+                    const SizedBox(height: 10),
+                    _customerDetails(
+                        titleName: "Phone",
+                        titleValue: _homeController
+                            .getAppointmentDetailsModel
+                            .data
+                            ?.user
+                            ?.mobile ??
+                            ""),
+                  ],
+                ),
+              ),
+              Container(
+                color: ColorConstant.whiteColor,
+                width: Get.width,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                      child: Text(
+                        "Items",
+                        style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.grayTextColor,
+                            fontSize: 13),
                       ),
                     ),
-                    Container(
-                      color: ColorConstant.whiteColor,
-                      width: Get.width,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            child: Text(
-                              "Items",
-                              style: AppTextTheme.medium.copyWith(
-                                  color: ColorConstant.grayTextColor,
-                                  fontSize: 13),
-                            ),
-                          ),
-                          ListView.separated(
-                              padding: EdgeInsets.zero,
-                              separatorBuilder: (context, i) {
-                                return const Divider(
-                                  color: ColorConstant.dividerColor,
-                                  thickness: 1,
-                                );
-                              },
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: _homeController
-                                      .getAppointmentDetailsModel
-                                      .data
-                                      ?.items
-                                      ?.length ??
-                                  0,
-                              itemBuilder: (context, i) {
-                                return Column(
+                    ListView.separated(
+                        padding: EdgeInsets.zero,
+                        separatorBuilder: (context, i) {
+                          return const Divider(
+                            color: ColorConstant.dividerColor,
+                            thickness: 1,
+                          );
+                        },
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _homeController
+                            .getAppointmentDetailsModel
+                            .data
+                            ?.items
+                            ?.length ??
+                            0,
+                        itemBuilder: (context, i) {
+                          return Column(
+                            children: [
+                              _homeController.getAppointmentDetailsModel
+                                  .data?.items?[i].isService ??
+                                  false
+                                  ? Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 15),
+                                decoration: BoxDecoration(
+                                    color: ColorConstant.review,
+                                    borderRadius:
+                                    BorderRadius.circular(8)),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment
+                                      .spaceBetween,
                                   children: [
-                                    _homeController.getAppointmentDetailsModel
-                                                .data?.items?[i].isService ??
-                                            false
-                                        ? Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 10),
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            decoration: BoxDecoration(
-                                                color: ColorConstant.review,
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                    Row(
+                                      children: [
+                                        ClipRRect(
+                                          borderRadius:
+                                          BorderRadius.circular(
+                                              100),
+                                          child: CachedNetworkImage(
+                                            width: 50,
+                                            height: 50,
+                                            fit: BoxFit.cover,
+                                            imageUrl:
+                                            "${APIConstants.image}${_homeController.getAppointmentDetailsModel.data?.items?[i].service?.image ?? ""}",
+                                            placeholder:
+                                                (context, url) =>
+                                            const Image(
+                                              image: AssetImage(
+                                                  AssetsConstant
+                                                      .placeHolder),
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                            ),
+                                            errorWidget: (context,
+                                                url, error) =>
+                                            const Image(
+                                              image: AssetImage(
+                                                  AssetsConstant
+                                                      .placeHolder),
+                                              width: 50,
+                                              height: 50,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment
+                                              .start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Service Name : ",
+                                                  style: AppTextTheme
+                                                      .medium
+                                                      .copyWith(
+                                                      color: ColorConstant
+                                                          .grayTextColor,
+                                                      fontSize:
+                                                      13),
+                                                ),
+                                                Text(
+                                                  _homeController
+                                                      .getAppointmentDetailsModel
+                                                      .data
+                                                      ?.items?[
+                                                  i]
+                                                      .service
+                                                      ?.name ??
+                                                      "",
+                                                  textScaler:
+                                                  const TextScaler
+                                                      .linear(
+                                                      0.85),
+                                                  style: AppTextTheme
+                                                      .bold
+                                                      .copyWith(
+                                                      color: ColorConstant
+                                                          .blackColor,
+                                                      fontSize:
+                                                      16),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(
+                                                height: 5),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Service Price : ",
+                                                  style: AppTextTheme
+                                                      .medium
+                                                      .copyWith(
+                                                      color: ColorConstant
+                                                          .grayTextColor,
+                                                      fontSize:
+                                                      13),
+                                                ),
+                                                Text(
+                                                  _homeController
+                                                      .getAppointmentDetailsModel
+                                                      .data
+                                                      ?.items?[
+                                                  i]
+                                                      .service
+                                                      ?.price
+                                                      .toString() ??
+                                                      "",
+                                                  textScaler:
+                                                  const TextScaler
+                                                      .linear(
+                                                      0.85),
+                                                  style: AppTextTheme
+                                                      .bold
+                                                      .copyWith(
+                                                      color: ColorConstant
+                                                          .blackColor,
+                                                      fontSize:
+                                                      16),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "Duration : ",
+                                          style: AppTextTheme.medium
+                                              .copyWith(
+                                              color: ColorConstant
+                                                  .grayTextColor,
+                                              fontSize: 13),
+                                        ),
+                                        Text(
+                                          _homeController
+                                              .getAppointmentDetailsModel
+                                              .data
+                                              ?.items?[i]
+                                              .service
+                                              ?.duration
+                                              .toString() ??
+                                              "",
+                                          textScaler:
+                                          const TextScaler
+                                              .linear(0.85),
+                                          style: AppTextTheme.bold
+                                              .copyWith(
+                                              color: ColorConstant
+                                                  .blackColor,
+                                              fontSize: 16),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )
+                                  : Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 15),
+                                decoration: BoxDecoration(
+                                    color: ColorConstant.review,
+                                    borderRadius:
+                                    BorderRadius.circular(8)),
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Product",
+                                      style: AppTextTheme.medium
+                                          .copyWith(
+                                          color: ColorConstant
+                                              .grayTextColor,
+                                          fontSize: 13),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment
+                                          .spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius:
+                                              BorderRadius
+                                                  .circular(
+                                                  100),
+                                              child:
+                                              CachedNetworkImage(
+                                                width: 50,
+                                                height: 50,
+                                                fit: BoxFit.cover,
+                                                imageUrl:
+                                                "${APIConstants.image}${_homeController.getAppointmentDetailsModel.data?.items?[i].product?.image ?? ""}",
+                                                placeholder:
+                                                    (context,
+                                                    url) =>
+                                                const Image(
+                                                  image: AssetImage(
+                                                      AssetsConstant
+                                                          .placeHolder),
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                                errorWidget:
+                                                    (context, url,
+                                                    error) =>
+                                                const Image(
+                                                  image: AssetImage(
+                                                      AssetsConstant
+                                                          .placeHolder),
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                                width: 10),
+                                            Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment
+                                                  .start,
                                               children: [
                                                 Row(
                                                   children: [
-                                                    ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              100),
-                                                      child: CachedNetworkImage(
-                                                        width: 50,
-                                                        height: 50,
-                                                        fit: BoxFit.cover,
-                                                        imageUrl:
-                                                            "${APIConstants.image}${_homeController.getAppointmentDetailsModel.data?.items?[i].service?.image ?? ""}",
-                                                        placeholder:
-                                                            (context, url) =>
-                                                                const Image(
-                                                          image: AssetImage(
-                                                              AssetsConstant
-                                                                  .placeHolder),
-                                                          width: 50,
-                                                          height: 50,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                        errorWidget: (context,
-                                                                url, error) =>
-                                                            const Image(
-                                                          image: AssetImage(
-                                                              AssetsConstant
-                                                                  .placeHolder),
-                                                          width: 50,
-                                                          height: 50,
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 10),
-                                                    Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "Service Name : ",
-                                                              style: AppTextTheme
-                                                                  .medium
-                                                                  .copyWith(
-                                                                      color: ColorConstant
-                                                                          .grayTextColor,
-                                                                      fontSize:
-                                                                          13),
-                                                            ),
-                                                            Text(
-                                                              _homeController
-                                                                      .getAppointmentDetailsModel
-                                                                      .data
-                                                                      ?.items?[
-                                                                          i]
-                                                                      .service
-                                                                      ?.name ??
-                                                                  "",
-                                                              textScaler:
-                                                                  const TextScaler
-                                                                      .linear(
-                                                                      0.85),
-                                                              style: AppTextTheme
-                                                                  .bold
-                                                                  .copyWith(
-                                                                      color: ColorConstant
-                                                                          .blackColor,
-                                                                      fontSize:
-                                                                          16),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        const SizedBox(
-                                                            height: 5),
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              "Service Price : ",
-                                                              style: AppTextTheme
-                                                                  .medium
-                                                                  .copyWith(
-                                                                      color: ColorConstant
-                                                                          .grayTextColor,
-                                                                      fontSize:
-                                                                          13),
-                                                            ),
-                                                            Text(
-                                                              _homeController
-                                                                      .getAppointmentDetailsModel
-                                                                      .data
-                                                                      ?.items?[
-                                                                          i]
-                                                                      .service
-                                                                      ?.price
-                                                                      .toString() ??
-                                                                  "",
-                                                              textScaler:
-                                                                  const TextScaler
-                                                                      .linear(
-                                                                      0.85),
-                                                              style: AppTextTheme
-                                                                  .bold
-                                                                  .copyWith(
-                                                                      color: ColorConstant
-                                                                          .blackColor,
-                                                                      fontSize:
-                                                                          16),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                                Row(
-                                                  children: [
                                                     Text(
-                                                      "Duration : ",
-                                                      style: AppTextTheme.medium
+                                                      "Service Name : ",
+                                                      style: AppTextTheme
+                                                          .medium
                                                           .copyWith(
-                                                              color: ColorConstant
-                                                                  .grayTextColor,
-                                                              fontSize: 13),
+                                                          color: ColorConstant
+                                                              .grayTextColor,
+                                                          fontSize:
+                                                          13),
                                                     ),
                                                     Text(
                                                       _homeController
-                                                              .getAppointmentDetailsModel
-                                                              .data
-                                                              ?.items?[i]
-                                                              .service
-                                                              ?.duration
-                                                              .toString() ??
+                                                          .getAppointmentDetailsModel
+                                                          .data
+                                                          ?.items?[
+                                                      i]
+                                                          .product
+                                                          ?.name ??
                                                           "",
                                                       textScaler:
-                                                          const TextScaler
-                                                              .linear(0.85),
-                                                      style: AppTextTheme.bold
+                                                      const TextScaler
+                                                          .linear(
+                                                          0.85),
+                                                      style: AppTextTheme
+                                                          .bold
                                                           .copyWith(
-                                                              color: ColorConstant
-                                                                  .blackColor,
-                                                              fontSize: 16),
+                                                          color: ColorConstant
+                                                              .blackColor,
+                                                          fontSize:
+                                                          16),
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                            ),
-                                          )
-                                        : Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16, vertical: 10),
-                                            margin: const EdgeInsets.symmetric(
-                                                horizontal: 15),
-                                            decoration: BoxDecoration(
-                                                color: ColorConstant.review,
-                                                borderRadius:
-                                                    BorderRadius.circular(8)),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  "Product",
-                                                  style: AppTextTheme.medium
-                                                      .copyWith(
+                                                const SizedBox(
+                                                    height: 5),
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      "Service Price : ",
+                                                      style: AppTextTheme
+                                                          .medium
+                                                          .copyWith(
                                                           color: ColorConstant
                                                               .grayTextColor,
-                                                          fontSize: 13),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceBetween,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      100),
-                                                          child:
-                                                              CachedNetworkImage(
-                                                            width: 50,
-                                                            height: 50,
-                                                            fit: BoxFit.cover,
-                                                            imageUrl:
-                                                                "${APIConstants.image}${_homeController.getAppointmentDetailsModel.data?.items?[i].product?.image ?? ""}",
-                                                            placeholder:
-                                                                (context,
-                                                                        url) =>
-                                                                    const Image(
-                                                              image: AssetImage(
-                                                                  AssetsConstant
-                                                                      .placeHolder),
-                                                              width: 50,
-                                                              height: 50,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                            errorWidget:
-                                                                (context, url,
-                                                                        error) =>
-                                                                    const Image(
-                                                              image: AssetImage(
-                                                                  AssetsConstant
-                                                                      .placeHolder),
-                                                              width: 50,
-                                                              height: 50,
-                                                              fit: BoxFit.cover,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        const SizedBox(
-                                                            width: 10),
-                                                        Column(
-                                                          crossAxisAlignment:
-                                                              CrossAxisAlignment
-                                                                  .start,
-                                                          children: [
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  "Service Name : ",
-                                                                  style: AppTextTheme
-                                                                      .medium
-                                                                      .copyWith(
-                                                                          color: ColorConstant
-                                                                              .grayTextColor,
-                                                                          fontSize:
-                                                                              13),
-                                                                ),
-                                                                Text(
-                                                                  _homeController
-                                                                          .getAppointmentDetailsModel
-                                                                          .data
-                                                                          ?.items?[
-                                                                              i]
-                                                                          .product
-                                                                          ?.name ??
-                                                                      "",
-                                                                  textScaler:
-                                                                      const TextScaler
-                                                                          .linear(
-                                                                          0.85),
-                                                                  style: AppTextTheme
-                                                                      .bold
-                                                                      .copyWith(
-                                                                          color: ColorConstant
-                                                                              .blackColor,
-                                                                          fontSize:
-                                                                              16),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                            const SizedBox(
-                                                                height: 5),
-                                                            Row(
-                                                              children: [
-                                                                Text(
-                                                                  "Service Price : ",
-                                                                  style: AppTextTheme
-                                                                      .medium
-                                                                      .copyWith(
-                                                                          color: ColorConstant
-                                                                              .grayTextColor,
-                                                                          fontSize:
-                                                                              13),
-                                                                ),
-                                                                Text(
-                                                                  _homeController
-                                                                          .getAppointmentDetailsModel
-                                                                          .data
-                                                                          ?.items?[
-                                                                              i]
-                                                                          .product
-                                                                          ?.price
-                                                                          .toString() ??
-                                                                      "",
-                                                                  textScaler:
-                                                                      const TextScaler
-                                                                          .linear(
-                                                                          0.85),
-                                                                  style: AppTextTheme
-                                                                      .bold
-                                                                      .copyWith(
-                                                                          color: ColorConstant
-                                                                              .blackColor,
-                                                                          fontSize:
-                                                                              16),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        )
-                                                      ],
+                                                          fontSize:
+                                                          13),
+                                                    ),
+                                                    Text(
+                                                      _homeController
+                                                          .getAppointmentDetailsModel
+                                                          .data
+                                                          ?.items?[
+                                                      i]
+                                                          .product
+                                                          ?.price
+                                                          .toString() ??
+                                                          "",
+                                                      textScaler:
+                                                      const TextScaler
+                                                          .linear(
+                                                          0.85),
+                                                      style: AppTextTheme
+                                                          .bold
+                                                          .copyWith(
+                                                          color: ColorConstant
+                                                              .blackColor,
+                                                          fontSize:
+                                                          16),
                                                     ),
                                                   ],
                                                 ),
                                               ],
-                                            ),
-                                          )
+                                            )
+                                          ],
+                                        ),
+                                      ],
+                                    ),
                                   ],
-                                );
-                              }),
-                          const SizedBox(height: 15),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Dash(
-                              direction: Axis.horizontal,
-                              length: Get.width,
-                              dashLength: 2,
-                              dashColor: const Color(0xffCFCFCF),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _customerDetails(
-                              titleName: "Total",
-                              titleValue:
-                                  "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}"),
-                          const SizedBox(
-                              height:
-                                  10), /* _customerDetails(
-                              titleName: "Tax Applied (18%)",
-                              titleValue: "₹300.00"),
-                          const SizedBox(height: 10),*/
-                          /*   Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "Offers Applied",
-                                  style: AppTextTheme.medium.copyWith(
-                                      color: ColorConstant.grayTextColor,
-                                      fontSize: 13),
                                 ),
-                                Text(
-                                  "50% Off",
-                                  style: AppTextTheme.bold.copyWith(
-                                      color: ColorConstant.primaryColor,
-                                      fontSize: 13),
-                                ),
-                              ],
-                            ),
-                          ),*/
-                        ],
+                              )
+                            ],
+                          );
+                        }),
+                    const SizedBox(height: 15),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Dash(
+                        direction: Axis.horizontal,
+                        length: Get.width,
+                        dashLength: 2,
+                        dashColor: const Color(0xffCFCFCF),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Container(
-                      height: 45,
-                      width: Get.width,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      color: ColorConstant.primaryColor,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "Total Price",
-                            style: AppTextTheme.bold.copyWith(
-                              fontSize: 16,
-                              color: ColorConstant.whiteColor,
-                            ),
-                          ),
-                          Text(
-                            "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}",
-                            style: AppTextTheme.bold.copyWith(
-                              fontSize: 16,
-                              color: ColorConstant.whiteColor,
-                            ),
-                          ),
-                        ],
+                    _customerDetails(
+                        titleName: "Total",
+                        titleValue:
+                        "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}"),
+                    const SizedBox(
+                        height:
+                        10), /* _customerDetails(
+                                titleName: "Tax Applied (18%)",
+                                titleValue: "₹300.00"),
+                            const SizedBox(height: 10),*/
+                    /*   Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Offers Applied",
+                                    style: AppTextTheme.medium.copyWith(
+                                        color: ColorConstant.grayTextColor,
+                                        fontSize: 13),
+                                  ),
+                                  Text(
+                                    "50% Off",
+                                    style: AppTextTheme.bold.copyWith(
+                                        color: ColorConstant.primaryColor,
+                                        fontSize: 13),
+                                  ),
+                                ],
+                              ),
+                            ),*/
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                height: 45,
+                width: Get.width,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                color: ColorConstant.primaryColor,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Total Price",
+                      style: AppTextTheme.bold.copyWith(
+                        fontSize: 16,
+                        color: ColorConstant.whiteColor,
+                      ),
+                    ),
+                    Text(
+                      "₹${_homeController.getAppointmentDetailsModel.data?.orderAmount}",
+                      style: AppTextTheme.bold.copyWith(
+                        fontSize: 16,
+                        color: ColorConstant.whiteColor,
                       ),
                     ),
                   ],
                 ),
               ),
+            ],
+          ),
+        )
       ),
     );
   }

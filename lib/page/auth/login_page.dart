@@ -58,10 +58,8 @@ class _LoginPageState extends State<LoginPage> {
                           textInputType: TextInputType.text,
                           textInputAction: TextInputAction.done,
                           title: "Enter Password"),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 20,
-                        ),
+                      selectedStylistOrSalon == "1" ? Padding(
+                        padding: const EdgeInsets.only(right: 20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -78,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ],
                         ),
-                      ),
+                      ) :  const SizedBox(height: 15),
                       const SizedBox(height: 15),
                       selectedStylistOrSalon == "1"
                           ? Row(

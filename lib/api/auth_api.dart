@@ -25,6 +25,25 @@ class AuthAPI {
     }
   }
 
+  /*============================= ForGot Password ===============================*/
+  static Future<bool> forgotPassword(
+      {required String mobileNo,
+      required String password,
+      required String otp}) async {
+    final response = await DioClient.client.post("auth/salon/reset-password-otp",
+        data: {
+          "mobile": mobileNo,
+          "countryCode": "91",
+          "password": "12345678",
+          "otp": "123456"
+        });
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
   /*=============================== SALON ==================================*/
 
   /*--------------------- Login --------------------- */

@@ -227,17 +227,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               if (value == 'Today') {
                 _homeController.doCompleteBookingData(distribution: "today");
               } else if (value == 'yesterday') {
-                _homeController.doCompleteBookingData(
-                    distribution: "yesterday");
+                _homeController.doCompleteBookingData(distribution: "yesterday");
               } else if (value == 'This Week') {
-                _homeController.doCompleteBookingData(
-                    distribution: "this_week");
+                _homeController.doCompleteBookingData(distribution: "this_week");
               } else if (value == 'This Month') {
-                _homeController.doCompleteBookingData(
-                    distribution: "this_month");
+                _homeController.doCompleteBookingData(distribution: "this_month");
               } else if (value == 'This year') {
-                _homeController.doCompleteBookingData(
-                    distribution: "this_year");
+                _homeController.doCompleteBookingData(distribution: "this_year");
               }
             }
           },

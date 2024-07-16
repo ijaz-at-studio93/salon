@@ -60,7 +60,8 @@ class HomeController extends GetxController {
   set setServiceReviewModel(val) => _serviceReviewModel.value = val;
 
   /*-------------------- Salon Service List Data Get --------------*/
-  final Rx<SalonServiceListModel> _salonServiceList = SalonServiceListModel().obs;
+  final Rx<SalonServiceListModel> _salonServiceList =
+      SalonServiceListModel().obs;
   SalonServiceListModel get getSalonServiceList => _salonServiceList.value;
   set setSalonServiceList(val) => _salonServiceList.value = val;
 
@@ -702,6 +703,18 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       _salonDashboardModel.value =
           await HomeAPI.getSalonDashBoard(distribution: distribution);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------  Transaction History -------------------------*/
+  doGetTransactionHistory() async {
+    try {
+      _showProgress.value = true;
+
     } catch (e) {
       showError(e);
     } finally {

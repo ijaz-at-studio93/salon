@@ -106,7 +106,7 @@ class CompleteHistoryWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(width: 15),
+                 /* const SizedBox(width: 15),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -124,8 +124,8 @@ class CompleteHistoryWidget extends StatelessWidget {
                             color: ColorConstant.blackColor, fontSize: 16),
                       ),
                     ],
-                  ),
-                  const SizedBox(width: 15),
+                  ),*/
+                  const SizedBox(width: 20),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

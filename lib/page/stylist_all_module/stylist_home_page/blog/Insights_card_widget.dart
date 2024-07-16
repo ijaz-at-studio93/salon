@@ -32,91 +32,93 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: ColorConstant.grayColor)),
-                    child: CachedNetworkImage(
-                      width: Get.width,
-                      height: Get.height * 0.25,
-                      fit: BoxFit.fitWidth,
-                      imageUrl: "${APIConstants.image}${widget.blogData.image}",
-                      placeholder: (context, url) => Image(
-                        image: const AssetImage(AssetsConstant.placeHolder),
-                        width: Get.width,
-                        height: Get.height * 0.25,
-                        fit: BoxFit.fitWidth,
-                      ),
-                      errorWidget: (context, url, error) => Image(
-                        image: const AssetImage(AssetsConstant.placeHolder),
-                        width: Get.width,
-                        height: Get.height * 0.25,
-                        fit: BoxFit.fitWidth,
-                      ),
-                    ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(color: ColorConstant.grayColor)),
+                child: CachedNetworkImage(
+                  width: Get.width,
+                  height: Get.height * 0.25,
+                  fit: BoxFit.fitWidth,
+                  imageUrl: "${APIConstants.image}${widget.blogData.image}",
+                  placeholder: (context, url) => Image(
+                    image: const AssetImage(AssetsConstant.placeHolder),
+                    width: Get.width,
+                    height: Get.height * 0.25,
+                    fit: BoxFit.fitWidth,
                   ),
-                ],
+                  errorWidget: (context, url, error) => Image(
+                    image: const AssetImage(AssetsConstant.placeHolder),
+                    width: Get.width,
+                    height: Get.height * 0.25,
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),
               ),
               const SizedBox(height: 20),
-              Text(
-                widget.blogData.title ?? "",
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.blackColor, fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.only(left: 5),
+                child: Text(
+                  widget.blogData.title ?? "",
+                  style: AppTextTheme.medium
+                      .copyWith(color: ColorConstant.blackColor, fontSize: 16),
+                ),
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(),
-                  /*  Row(
-                    children: [
-                      const Icon(
-                        Icons.remove_red_eye,
-                        color: ColorConstant.grayTextColor,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "708 Views",
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.grayTextColor, fontSize: 13),
-                      ),
-                    ],
-                  ),*/
-                  Row(
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(100),
-                        child: CachedNetworkImage(
-                          height: 25,
-                          width: 25,
-                          fit: BoxFit.cover,
-                          imageUrl:
-                              "${APIConstants.image}${widget.blogData.artist?.profileImage ?? ""}",
-                          placeholder: (context, url) => const Image(
-                            image: AssetImage(AssetsConstant.placeHolder),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0,bottom: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(),
+                    /*  Row(
+                      children: [
+                        const Icon(
+                          Icons.remove_red_eye,
+                          color: ColorConstant.grayTextColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "708 Views",
+                          style: AppTextTheme.medium.copyWith(
+                              color: ColorConstant.grayTextColor, fontSize: 13),
+                        ),
+                      ],
+                    ),*/
+                    Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(100),
+                          child: CachedNetworkImage(
                             height: 25,
                             width: 25,
                             fit: BoxFit.cover,
-                          ),
-                          errorWidget: (context, url, error) => const Image(
-                            image: AssetImage(AssetsConstant.placeHolder),
-                            height: 25,
-                            width: 25,
-                            fit: BoxFit.cover,
+                            imageUrl:
+                                "${APIConstants.image}${widget.blogData.artist?.profileImage ?? ""}",
+                            placeholder: (context, url) => const Image(
+                              image: AssetImage(AssetsConstant.placeHolder),
+                              height: 25,
+                              width: 25,
+                              fit: BoxFit.cover,
+                            ),
+                            errorWidget: (context, url, error) => const Image(
+                              image: AssetImage(AssetsConstant.placeHolder),
+                              height: 25,
+                              width: 25,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        widget.blogData.artist?.name ?? "",
-                        style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 12),
-                      ),
-                    ],
-                  )
-                ],
+                        const SizedBox(width: 4),
+                        Text(
+                          widget.blogData.artist?.name ?? "",
+                          style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.blackColor, fontSize: 12),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               )
             ],
           ),
