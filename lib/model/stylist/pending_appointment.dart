@@ -13,7 +13,7 @@ class PendingAppointmentsListModel {
     if (json['data'] != null) {
       data = <Data>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(Data.fromJson(v));
       });
     }
     message = json['message'];
@@ -68,9 +68,9 @@ class Data {
     paymentStatus = json['paymentStatus'];
     isHomeService = json['isHomeService'];
     appointment = json['appointment'] != null
-        ? new Appointment.fromJson(json['appointment'])
+        ? Appointment.fromJson(json['appointment'])
         : null;
-    user = json['user'] != null ? new User.fromJson(json['user']) : null;
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
   }
 
   Map<String, dynamic> toJson() {

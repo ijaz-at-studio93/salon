@@ -1,4 +1,4 @@
-import 'package:dotted_border/dotted_border.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,7 +10,7 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-import 'adding_service/add_new_service_page.dart';
+
 
 class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});

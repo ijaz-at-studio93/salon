@@ -175,9 +175,9 @@ class _AvailabilitySettingPageState extends State<AvailabilitySettingPage> {
 
               String jsonStr = jsonEncode(salonWorkingPlanModel);
               Map<String, dynamic> data = jsonDecode(jsonStr);
-              Map<String, dynamic> newJsonStr = data;
 
-              print(data);
+
+
               _homeController.doUpdateSalonAvailability(
                   availability: data,
                   callback: () {

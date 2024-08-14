@@ -20,6 +20,7 @@ import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
+import 'package:salon/model/translation/translation_history_model.dart';
 
 class HomeAPI {
   /*=================== eligibility =====================*/ static Future<
@@ -599,16 +600,28 @@ class HomeAPI {
     }
   }
 
-
   /*----------------  Transaction  history API --------------*/
-
-  /* static Future<ModelName> getTransactionHistory() async {
-    final response = await DioClient.client.get("APi");
+  static Future<TransactionsHistoryModel> getTransactionHistory(
+      {required String distribution}) async {
+    final response = await DioClient.client.get("salon/transactions/settled",
+        queryParameters: {"distribution": distribution});
     if (response.isSuccess) {
-      return ModelName;
+      return TransactionsHistoryModel.fromJson(response.data);
     } else {
       throw response.data;
     }
-  } */
+  }
+  /*----------------------  TransactionUnsettledHistory -----------------------*/
+  static Future<TransactionsHistoryModel> getTransactionUnsettledHistory(
+      {required String distribution}) async {
+    final response = await DioClient.client.get("salon/transactions/unsettled",
+        queryParameters: {"distribution": distribution});
+    if (response.isSuccess) {
+      return TransactionsHistoryModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
 
 }

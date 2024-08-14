@@ -5,6 +5,7 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/blog/offline_video_widget.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -95,14 +96,15 @@ class _PostBlogPageState extends State<PostBlogPage> {
       showMessage("Please Enter Short Description");
     } else if (_body.text.isEmpty) {
       showMessage("Please Enter body Text");
-    } else if (imagePath.path == "") {
-      showMessage("Please Choose Image");
+    } else if (imagePath.path == "" && videoPath.path == "") {
+      showMessage("Please Choose Image or Video");
     } else {
       _stylistController.doCreateBlog(
           title: _titleForBlog.text,
           body: _shortDescription.text,
           description: _body.text,
           image: imagePath,
+          video: videoPath,
           callback: () {
             Get.back();
             Get.to(() => const SocialPage());
@@ -160,6 +162,7 @@ class _PostBlogPageState extends State<PostBlogPage> {
 
   /*----------------- Service Image --------------*/
   File imagePath = File("");
+  File videoPath = File("");
   _serviceImage() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -167,41 +170,86 @@ class _PostBlogPageState extends State<PostBlogPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Product Image ",
+            "Service Image or Video",
             style: AppTextTheme.regular
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
           const SizedBox(height: 12),
           GestureDetector(
             onTap: () {
-              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
-                setState(() {
-                  imagePath = file;
-                });
-              });
-            },
-            child: Container(
-              height: 165,
-              width: Get.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: ColorConstant.borderColor,
-                ),
-              ),
-              child: imagePath.path.isEmpty
-                  ? Center(
-                      child: Image.asset(
-                        AssetsConstant.uploadIcon,
-                        height: 24,
-                        width: 24,
+              Get.dialog(Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20),
                       ),
-                    )
-                  : Image.file(
-                      imagePath,
-                      fit: BoxFit.fitHeight,
                     ),
-            ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(50.0),
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                              FileUtils.openPlatformImagePicker(
+                                  onSelectImage: (file) {
+                                setState(() {
+                                  imagePath = file;
+                                  videoPath = File("");
+                                });
+                              });
+                            },
+                            child: const Text("Photo"),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Get.back();
+                              FileUtils.openPlatformVideoPicker(
+                                  onSelectVideo: (file) {
+                                setState(() {
+                                  videoPath = file;
+                                  imagePath = File("");
+                                });
+                              });
+                            },
+                            child: const Text("Video"),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ));
+            },
+            child: videoPath.path.isNotEmpty
+                ? OfflineVideoWidget(videoString: videoPath.path)
+                : Container(
+                    height: 165,
+                    width: Get.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: ColorConstant.borderColor,
+                      ),
+                    ),
+                    child: imagePath.path.isEmpty && videoPath.path.isEmpty
+                        ? Center(
+                            child: Image.asset(
+                              AssetsConstant.uploadIcon,
+                              height: 24,
+                              width: 24,
+                            ),
+                          )
+                        : imagePath.path.isNotEmpty
+                            ? Image.file(
+                                imagePath,
+                                fit: BoxFit.fitHeight,
+                              )
+                            : OfflineVideoWidget(videoString: videoPath.path),
+                  ),
           )
         ],
       ),

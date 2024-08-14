@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
-import 'package:salon/api/dio_client.dart';
+
 import 'package:salon/constant/api_constant.dart';
-import 'package:salon/constant/assetsconstant.dart';
+
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/setting/adding_service/widget/category_list_tile_widget.dart';
 import 'package:salon/page/setting/adding_service/widget/reset_and_add_row_widget.dart';
 import 'package:salon/page/setting/adding_service/widget/review_product_list_tile_widget.dart';
-import 'package:salon/project_specific/button_widget.dart';
+
 import 'package:salon/project_specific/progressbar_view.dart';
 
 import '../../../project_specific/text_theme.dart';

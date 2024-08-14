@@ -1,13 +1,16 @@
-import 'package:dotted_border/dotted_border.dart';
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:get/get.dart';
-import 'package:readmore/readmore.dart';
-import 'package:salon/page/stylist/widget/review_and_ratings_widget.dart';
+import 'package:salon/constant/api_constant.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist/widget/stylist_about_widget.dart';
 import 'package:salon/page/stylist/widget/service_offered_list_tile_widget.dart';
 import 'package:salon/page/stylist/widget/stylist_portfolio_gird_view.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
-
+import 'package:salon/util/pick_image.dart';
 import '../../constant/assetsconstant.dart';
 import '../../constant/color_constant.dart';
 import '../../project_specific/status_bar_color_appbar.dart';
@@ -20,106 +23,111 @@ class StylistAboutPage extends StatefulWidget {
 }
 
 class _StylistAboutPageState extends State<StylistAboutPage> {
+  final _stylistController = Get.find<StylistController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _stylistController.doGetArtistPortfolio();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: statusBarTheme(context),
       backgroundColor: ColorConstant.bgColor,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _imageHeaderWidget(),
-            _nameContainColum(),
-            _tabBarView(),
-            isSelectedTab == 1
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 19, vertical: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "5 Service",
-                          style: AppTextTheme.regular.copyWith(
-                              color: ColorConstant.grayTextColor, fontSize: 15),
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: DottedBorder(
-                            borderType: BorderType.RRect,
-                            color: ColorConstant.primaryColor,
-                            radius: const Radius.circular(66),
-                            padding: const EdgeInsets.all(4),
-                            child: ClipRRect(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(12)),
-                              child: Container(
-                                height: 30,
-                                width: 100,
-                                color: ColorConstant.lightColor,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(
-                                      Icons.add,
-                                      color: ColorConstant.primaryColor,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      "Add New",
-                                      style: AppTextTheme.regular.copyWith(
-                                          color: ColorConstant.primaryColor,
-                                          fontSize: 14),
-                                    )
-                                  ],
-                                ),
+      body: Obx(
+        () => _stylistController.showProgress
+            ? const ProgressBarView()
+            : SingleChildScrollView(
+                child: Column(
+                  children: [
+                    _imageHeaderWidget(),
+                    _nameContainColum(),
+                    _tabBarView(),
+                    isSelectedTab == 1
+                        ? ListView.separated(
+                            separatorBuilder: (context, index) {
+                              return const Divider(
+                                endIndent: 20,
+                                indent: 20,
+                                color: ColorConstant.grayTextColor,
+                              );
+                            },
+                            itemCount: _stylistController
+                                    .getArtistPortfolioModel
+                                    .data
+                                    ?.services
+                                    ?.length ??
+                                0,
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 12),
+                                  child: ServiceOfferedListTileWidget(
+                                    image:
+                                        "${APIConstants.image}${_stylistController.getArtistPortfolioModel.data?.services?[index].image}",
+                                    name: _stylistController
+                                            .getArtistPortfolioModel
+                                            .data
+                                            ?.services?[index]
+                                            .name ??
+                                        "",
+                                    description: _stylistController
+                                            .getArtistPortfolioModel
+                                            .data
+                                            ?.services?[index]
+                                            .description ??
+                                        "",
+                                    onPress: () {},
+                                  ));
+                            })
+                        : isSelectedTab == 2
+                            ? StylistPortfolioGridview(
+                                portfolio:
+                                    _stylistController.getArtistPortfolioModel,
+                              )
+                            : StylistAbout(
+                                artistPortfolioModel:
+                                    _stylistController.getArtistPortfolioModel,
                               ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : const SizedBox(),
-            isSelectedTab == 1
-                ? ListView.separated(
-                    separatorBuilder: (context, index) {
-                      return const Divider(
-                        endIndent: 20,
-                        indent: 20,
-                        color: ColorConstant.grayTextColor,
-                      );
-                    },
-                    itemCount: 5,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      return Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 12),
-                          child: ServiceOfferedListTileWidget(
-                            onPress: () {},
-                          ));
-                    })
-                : isSelectedTab == 2
-                    ? const StylistPortfolioGridview()
-                    : const ReviewAndRating(),
-          ],
-        ),
+                  ],
+                ),
+              ),
       ),
     );
   }
 
   /*-------------- Image header Widget ------------*/
+
+  File profileImage = File("");
+
   _imageHeaderWidget() {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Image.network(
-          'https://images.unsplash.com/photo-1485686531765-ba63b07845a7?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bGFrbWUlMjBzYWxvb258ZW58MHx8MHx8fDA%3D',
+        CachedNetworkImage(
           width: Get.width,
           height: Get.height * 0.28,
           fit: BoxFit.fitWidth,
+          imageUrl:
+              "${APIConstants.image}${_stylistController.getArtistPortfolioModel.data?.salon?.image ?? ""}",
+          placeholder: (context, url) => Image(
+            image: const AssetImage(AssetsConstant.placeHolder),
+            width: Get.width,
+            height: Get.height * 0.28,
+            fit: BoxFit.fitWidth,
+          ),
+          errorWidget: (context, url, error) => Image(
+            image: const AssetImage(AssetsConstant.placeHolder),
+            width: Get.width,
+            height: Get.height * 0.28,
+            fit: BoxFit.fitWidth,
+          ),
         ),
         Positioned(
             child: Container(
@@ -155,20 +163,85 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
           bottom: -50,
           left: 0,
           right: 0,
-          child: Container(
-            width: 110,
-            height: 110,
-            decoration: const BoxDecoration(
-              color: ColorConstant.bgColor,
-              shape: BoxShape.circle,
+          child: GestureDetector(
+            onTap: () {
+              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
+                setState(() {
+                  profileImage = file;
+                });
+              });
+            },
+            child: Container(
+              width: 110,
+              height: 110,
+              decoration: const BoxDecoration(
+                color: ColorConstant.bgColor,
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: profileImage.path == ""
+                      ? CachedNetworkImage(
+                          height: 100,
+                          width: 100,
+                          fit: BoxFit.cover,
+                          imageUrl:
+                              "${APIConstants.image}${_stylistController.getArtistPortfolioModel.data?.profileImage ?? ""}",
+                          placeholder: (context, url) => const Image(
+                            image: AssetImage(AssetsConstant.placeHolder),
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => const Image(
+                            image: AssetImage(AssetsConstant.placeHolder),
+                            height: 100,
+                            width: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Image.file(
+                          profileImage,
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              ),
             ),
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  "https://www.iwmbuzz.com/wp-content/uploads/2020/08/neha-kakkar-hairstyle-take-hair-styling-tips-for-curly-hair-for-girls-4.jpg",
-                  height: 100,
-                  width: 100,
+          ),
+        ),
+        Positioned(
+          bottom: -40,
+          left: Get.width * 0.2,
+          right: 0,
+          child: GestureDetector(
+            onTap: () {
+              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
+                setState(() {
+                  profileImage = file;
+                });
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.all(5),
+              width: 35,
+              height: 35,
+              decoration: const BoxDecoration(
+                  shape: BoxShape.circle, color: ColorConstant.whiteColor),
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ColorConstant.editButtonColor),
+                child: Center(
+                  child: Image.asset(
+                    AssetsConstant.editIcon,
+                    width: 10,
+                    height: 10,
+                  ),
                 ),
               ),
             ),
@@ -210,27 +283,24 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
       children: [
         SizedBox(height: Get.height * 0.07),
         Text(
-          "Neha Kakkar",
+          _stylistController.getArtistPortfolioModel.data?.name ?? "",
           style: AppTextTheme.bold
               .copyWith(color: ColorConstant.blackColor, fontSize: 19),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          "Barber at RedBox Hair Saloon",
-          style: AppTextTheme.medium
-              .copyWith(fontSize: 13, color: ColorConstant.grayTextColor),
         ),
         const SizedBox(height: 5),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             RatingBar.builder(
-              initialRating: 3.5,
+              initialRating:
+                  _stylistController.getArtistPortfolioModel.data?.rating ??
+                      0.0,
               minRating: 1,
               direction: Axis.horizontal,
               allowHalfRating: true,
               itemCount: 5,
               itemSize: 25.0,
+              unratedColor: ColorConstant.editButtonColor,
               ignoreGestures: true,
               itemBuilder: (context, _) => const Icon(
                 Icons.star,
@@ -240,26 +310,11 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
               onRatingUpdate: (rating) {},
             ),
             Text(
-              "(125 Reviews)",
+              "(${_stylistController.getArtistPortfolioModel.data?.reviewCount} Reviews)",
               style: AppTextTheme.medium
                   .copyWith(fontSize: 13, color: ColorConstant.grayTextColor),
             ),
           ],
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          child: ReadMoreText(
-            'n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a....',
-            trimMode: TrimMode.Line,
-            style: AppTextTheme.medium.copyWith(
-                height: 1.5, color: ColorConstant.grayTextColor, fontSize: 14),
-            trimLines: 2,
-            colorClickableText: ColorConstant.primaryColor,
-            trimCollapsedText: 'more',
-            trimExpandedText: 'Show less',
-            moreStyle: AppTextTheme.medium
-                .copyWith(fontSize: 15, color: ColorConstant.primaryColor),
-          ),
         ),
       ],
     );
@@ -346,7 +401,7 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
                 child: Column(
                   children: [
                     Text(
-                      "Review & ratings",
+                      "About",
                       style: isSelectedTab == 3
                           ? AppTextTheme.bold.copyWith(
                               fontSize: 16, color: ColorConstant.primaryColor)

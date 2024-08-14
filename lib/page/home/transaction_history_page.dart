@@ -2,11 +2,16 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:salon/constant/assetsconstant.dart';
+
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/home/widget/transaction_history_widget.dart';
+import 'package:salon/page/home/widget/unsetted_history_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/NoItemsWidget.dart';
+
+import '../../controller/home_controller.dart';
 
 class TransactionHistoryPage extends StatefulWidget {
   const TransactionHistoryPage({super.key});
@@ -16,7 +21,16 @@ class TransactionHistoryPage extends StatefulWidget {
 }
 
 class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
-  final _historyTextEditingController = TextEditingController();
+  final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.doGetTransactionHistory(distribution: "all_time");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,28 +41,80 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 10),
-          _searchAndService(),
+          /* _searchAndService(),*/
           const SizedBox(height: 10),
           _stylistAndSalon(),
           const SizedBox(height: 10),
           _downloadWidget(),
           const SizedBox(height: 10),
-          Expanded(
-              child: ListView.separated(
-            separatorBuilder: (context, index) {
-              return const Divider(
-                  color: ColorConstant.dividerColor, indent: 40, endIndent: 20);
-            },
-            shrinkWrap: true,
-            itemCount: 5,
-            itemBuilder: (context, index) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                child: TransactionHistoryWidget(),
-              );
-            },
-          ))
+          Obx(
+            () => Expanded(
+                child: _homeController.showProgress
+                    ? const ProgressBarView()
+                    : overall == "0"
+                        ? _homeController.getTransactionsHistoryModel.data
+                                    ?.isEmpty ??
+                                false
+                            ? const NoItemsWidget(
+                                text: "No Settled Data Found",
+                              )
+                            : ListView.separated(
+                                separatorBuilder: (context, index) {
+                                  return const Divider(
+                                      color: ColorConstant.dividerColor,
+                                      indent: 40,
+                                      endIndent: 20);
+                                },
+                                shrinkWrap: true,
+                                itemCount: _homeController
+                                        .getTransactionsHistoryModel
+                                        .data
+                                        ?.length ??
+                                    0,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 5),
+                                    child: TransactionHistoryWidget(
+                                      transactionData: _homeController
+                                          .getTransactionsHistoryModel
+                                          .data![index],
+                                    ),
+                                  );
+                                },
+                              )
+                        : _homeController.getTransactionsUnsettleHistoryModel
+                                    .data?.isEmpty ??
+                                false
+                            ? const NoItemsWidget(
+                                text: "No Unsettled Data Found",
+                              )
+                            : ListView.separated(
+                                separatorBuilder: (context, index) {
+                                  return const Divider(
+                                      color: ColorConstant.dividerColor,
+                                      indent: 40,
+                                      endIndent: 20);
+                                },
+                                shrinkWrap: true,
+                                itemCount: _homeController
+                                        .getTransactionsUnsettleHistoryModel
+                                        .data
+                                        ?.length ??
+                                    0,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 5),
+                                    child: UnsettedHistoryWidget(
+                                      transactionData: _homeController
+                                          .getTransactionsUnsettleHistoryModel
+                                          .data![index],
+                                    ),
+                                  );
+                                },
+                              )),
+          )
         ],
       ),
     );
@@ -93,9 +159,18 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
             ),
           },
           onValueChanged: (dynamic value) {
-            setState(() {
-              overall = value;
-            });
+            overall = value;
+            if (overall == "0") {
+              setState(() {
+                _homeController.doGetTransactionHistory(
+                    distribution: "all_time");
+              });
+            } else {
+              setState(() {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "all_time");
+              });
+            }
           }),
     );
   }
@@ -105,9 +180,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     return SizedBox(
       height: 60,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          GestureDetector(
+          /*GestureDetector(
             onTap: () {},
             child: Container(
               height: 50,
@@ -125,7 +200,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ),
               ),
             ),
-          ),
+          ),*/
           _dropDownButtonForFilter(),
         ],
       ),
@@ -134,6 +209,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
   /*--------------- Dummy Data ---------*/
   final List<String> dataList = [
+    'All',
     'Today',
     'yesterday',
     'This Week',
@@ -157,7 +233,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
             ),
           ),
           hint: Text(
-            'Today',
+            'All',
             style: AppTextTheme.medium
                 .copyWith(color: ColorConstant.grayColor, fontSize: 13),
           ),
@@ -171,16 +247,53 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
               .toList(),
           validator: (value) {
             if (value == null) {
-              return 'Today';
+              return value;
             }
             return null;
           },
           onChanged: (value) {
-            //Do something when selected item is changed.
+            if (overall == "0") {
+              if (value == 'All') {
+                _homeController.doGetTransactionHistory(
+                    distribution: "all_time");
+              } else if (value == 'Today') {
+                _homeController.doGetTransactionHistory(distribution: "today");
+              } else if (value == 'yesterday') {
+                _homeController.doGetTransactionHistory(
+                    distribution: "yesterday");
+              } else if (value == 'This Week') {
+                _homeController.doGetTransactionHistory(
+                    distribution: "this_week");
+              } else if (value == 'This Month') {
+                _homeController.doGetTransactionHistory(
+                    distribution: "this_month");
+              } else if (value == 'This year') {
+                _homeController.doGetTransactionHistory(
+                    distribution: "this_year");
+              }
+            } else {
+              if (value == 'All') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "all_time");
+              } else if (value == 'Today') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "today");
+              } else if (value == 'yesterday') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "yesterday");
+              } else if (value == 'This Week') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "this_week");
+              } else if (value == 'This Month') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "this_month");
+              } else if (value == 'This year') {
+                _homeController.doGetTransactionUnsettledHistory(
+                    distribution: "this_year");
+              }
+            }
           },
-          onSaved: (value) {
-            /* selectedValue = value.toString();*/
-          },
+          onSaved: (value) {},
           buttonStyleData: const ButtonStyleData(
             padding: EdgeInsets.only(right: 8),
           ),
@@ -204,8 +317,8 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     );
   }
 
-  /*------------------ Search and Service ---------------*/
-  _searchAndService() {
+/*------------------ Search and Service ---------------*/
+/*  _searchAndService() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: ShapeDecoration(
@@ -238,5 +351,5 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         ],
       ),
     );
-  }
+  }*/
 }

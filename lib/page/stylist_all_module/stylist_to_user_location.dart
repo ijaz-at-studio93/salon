@@ -181,7 +181,6 @@ class _StylistToUserLocationState extends State<StylistToUserLocation> {
     )
         .then((value) {
       for (var point in value.points) {
-        print(point);
         polylineCoordinates.add(LatLng(point.latitude, point.longitude));
       }
     }).then((value) {

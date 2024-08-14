@@ -12,6 +12,7 @@ import 'package:salon/project_specific/logout_dialog.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import '../../setting/about_app_page.dart';
+import 'edit_profile_stylist_page.dart';
 
 class StylistProfilePage extends StatefulWidget {
   const StylistProfilePage({super.key});
@@ -121,13 +122,46 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
             ),
           ),
           const SizedBox(width: 20),
-          Text(
-            _authController
-                    .getSalonArtistResponseModel.data?.salonArtistData?.name ??
-                "",
-            textScaler: const TextScaler.linear(0.85),
-            style: AppTextTheme.bold
-                .copyWith(color: ColorConstant.blackColor, fontSize: 20),
+          Column(
+            children: [
+              Text(
+                _authController.getSalonArtistResponseModel.data
+                        ?.salonArtistData?.name ??
+                    "",
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.bold
+                    .copyWith(color: ColorConstant.blackColor, fontSize: 20),
+              ),
+              const SizedBox(height: 5),
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => const EditProfileStylistPage());
+                },
+                child: Container(
+                  height: 30,
+                  width: 106,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: ColorConstant.primaryColor)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        AssetsConstant.editIcon,
+                        width: 14,
+                        height: 14,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        "Edit Details",
+                        style: AppTextTheme.regular.copyWith(
+                            color: ColorConstant.primaryColor, fontSize: 13),
+                      )
+                    ],
+                  ),
+                ),
+              )
+            ],
           ),
         ],
       ),

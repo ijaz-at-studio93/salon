@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,8 +10,16 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class ServiceOfferedListTileWidget extends StatelessWidget {
-  final  VoidCallback onPress;
-  const ServiceOfferedListTileWidget({super.key, required this.onPress});
+  final VoidCallback onPress;
+  final String name;
+  final String description;
+  final String image;
+  const ServiceOfferedListTileWidget(
+      {super.key,
+      required this.onPress,
+      required this.name,
+      required this.description,
+      required this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +34,7 @@ class ServiceOfferedListTileWidget extends StatelessWidget {
               SizedBox(
                 width: Get.width * 0.6,
                 child: Text(
-                  "Low Fade Hair Cut ",
+                  name,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   style: AppTextTheme.bold
@@ -43,7 +52,7 @@ class ServiceOfferedListTileWidget extends StatelessWidget {
               SizedBox(
                 width: Get.width * 0.6,
                 child: ReadMoreText(
-                  'n publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate the visual form of a document or a....',
+                  description,
                   trimMode: TrimMode.Line,
                   style: AppTextTheme.medium.copyWith(
                       height: 1.5,
@@ -53,44 +62,33 @@ class ServiceOfferedListTileWidget extends StatelessWidget {
                   colorClickableText: ColorConstant.primaryColor,
                   trimCollapsedText: 'more',
                   trimExpandedText: 'Show less',
-                  moreStyle: AppTextTheme.medium
-                      .copyWith(fontSize: 15, color: ColorConstant.primaryColor),
+                  moreStyle: AppTextTheme.medium.copyWith(
+                      fontSize: 15, color: ColorConstant.primaryColor),
                 ),
               ),
-              const SizedBox(height: 10),
-              Container(
-                padding:
-                    const EdgeInsets.only(top: 8, bottom: 8, right: 11, left: 11),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: ColorConstant.lightColor,
-                ),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      AssetsConstant.editIcon,
-                      height: 14,
-                      width: 12,
-                    ),
-                    Text(
-                      "Edit",
-                      style: AppTextTheme.regular.copyWith(
-                          color: ColorConstant.primaryColor, fontSize: 13),
-                    ),
-                  ],
-                ),
-              )
             ],
           ),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              "https://images.unsplash.com/photo-1525299374597-911581e1bdef?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            child: CachedNetworkImage(
               width: 108,
-              height: 123,
+              height: 115,
               fit: BoxFit.cover,
+              imageUrl: image,
+              placeholder: (context, url) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 108,
+                height: 115,
+                fit: BoxFit.cover,
+              ),
+              errorWidget: (context, url, error) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 108,
+                height: 115,
+                fit: BoxFit.cover,
+              ),
             ),
-          )
+          ),
         ],
       ),
     );

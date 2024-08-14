@@ -7,8 +7,6 @@ import 'package:salon/page/stylist/availiblity_stylist_page.dart';
 import 'package:salon/page/stylist/widget/stylist_edit_bottom_sheet.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-import '../add_stylist/add_stylist_page.dart';
-
 class StylistListTileWidget extends StatelessWidget {
   final VoidCallback onPress;
   final String image;

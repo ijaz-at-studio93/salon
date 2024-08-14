@@ -1,25 +1,34 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:readmore/readmore.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/blog/network_video_view_widget.dart';
 
 import '../../constant/assetsconstant.dart';
 import '../../constant/color_constant.dart';
 import '../../project_specific/text_theme.dart';
 
-
 class InsightsDetailPage extends StatefulWidget {
   final String image;
-  final String  title;
-  final String  subTitle;
-  final String  body;
-  const InsightsDetailPage({super.key, required this.image, required this.title, required this.subTitle, required this.body});
+  final String video;
+  final String title;
+  final String subTitle;
+  final String body;
+  const InsightsDetailPage(
+      {super.key,
+      required this.image,
+      required this.title,
+      required this.subTitle,
+      required this.body,
+      required this.video});
 
   @override
   State<InsightsDetailPage> createState() => _InsightsDetailPageState();
 }
 
 class _InsightsDetailPageState extends State<InsightsDetailPage> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,33 +55,33 @@ class _InsightsDetailPageState extends State<InsightsDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CachedNetworkImage(
-              width: Get.width,
-              height: Get.height * 0.3,
-              fit: BoxFit.cover,
-              imageUrl: widget.image,
-              placeholder: (context, url) => Image(
-                image: const AssetImage(AssetsConstant.placeHolder),
-                width: Get.width,
-                height: Get.height * 0.3,
-                fit: BoxFit.cover,
-              ),
-              errorWidget: (context, url, error) => Image(
-                image: const AssetImage(AssetsConstant.placeHolder),
-                width: Get.width,
-                height: Get.height * 0.3,
-                fit: BoxFit.cover,
-              ),
-            ),
+            widget.video.isEmpty
+                ? CachedNetworkImage(
+                    width: Get.width,
+                    height: Get.height * 0.3,
+                    fit: BoxFit.cover,
+                    imageUrl: widget.image,
+                    placeholder: (context, url) => Image(
+                      image: const AssetImage(AssetsConstant.placeHolder),
+                      width: Get.width,
+                      height: Get.height * 0.3,
+                      fit: BoxFit.cover,
+                    ),
+                    errorWidget: (context, url, error) => Image(
+                      image: const AssetImage(AssetsConstant.placeHolder),
+                      width: Get.width,
+                      height: Get.height * 0.3,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : NetworkVideoViewWidget(videoString: widget.video),
             const SizedBox(height: 18),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Text(
                 widget.title,
-                style: AppTextTheme.medium.copyWith(
-                    color:
-                        ColorConstant.primaryColor,
-                    fontSize: 14),
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.primaryColor, fontSize: 14),
               ),
             ),
             Padding(
@@ -91,14 +100,12 @@ class _InsightsDetailPageState extends State<InsightsDetailPage> {
                 style: AppTextTheme.medium.copyWith(
                     height: 1.5, color: ColorConstant.blackColor, fontSize: 14),
                 trimLines: 6,
-                colorClickableText:
-                    ColorConstant.primaryColor,
+                colorClickableText: ColorConstant.primaryColor,
                 trimCollapsedText: 'more',
                 trimExpandedText: 'Show less',
                 moreStyle: AppTextTheme.medium.copyWith(
                   fontSize: 15,
-                  color:
-                      ColorConstant.primaryColor,
+                  color: ColorConstant.primaryColor,
                 ),
               ),
             ),

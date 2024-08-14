@@ -2,10 +2,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/api_constant.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/page/stylist/stylist_about_page.dart';
-import 'package:salon/page/stylist/widget/filter_tile.dart';
 import 'package:salon/page/stylist/widget/stylist_list_tile_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -21,8 +18,6 @@ class StylistPage extends StatefulWidget {
 }
 
 class _StylistPageState extends State<StylistPage> {
-  final _stylistTextEditingController = TextEditingController();
-
   final _homeController = Get.find<HomeController>();
 
   @override
@@ -44,7 +39,6 @@ class _StylistPageState extends State<StylistPage> {
       body: Obx(
         () => Column(
           children: [
-
             const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -133,9 +127,7 @@ class _StylistPageState extends State<StylistPage> {
                                             .data?[index]
                                             .name ??
                                         "",
-                                    onPress: () {
-                                      /* Get.to(() => const StylistAboutPage());*/
-                                    },
+                                    onPress: () {},
                                   ),
                                 );
                               }),
@@ -145,42 +137,6 @@ class _StylistPageState extends State<StylistPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  /*------------------ Search and Service ---------------*/
-  _searchAndService() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: ShapeDecoration(
-        color: ColorConstant.whiteColor,
-        shape: RoundedRectangleBorder(
-          side: const BorderSide(width: 1, color: Color(0xFFE1E1E1)),
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Row(
-        children: [
-          const SizedBox(width: 10),
-          Image.asset(
-            AssetsConstant.search,
-            width: 24,
-            height: 24,
-          ),
-          const SizedBox(width: 5),
-          SizedBox(
-            width: Get.width * 0.6,
-            child: TextField(
-              controller: _stylistTextEditingController,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Search and add service",
-                  hintStyle: AppTextTheme.regular.copyWith(
-                      fontSize: 16, color: ColorConstant.grayTextColor)),
-            ),
-          ),
-        ],
       ),
     );
   }

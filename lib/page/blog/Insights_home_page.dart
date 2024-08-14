@@ -10,7 +10,7 @@ import '../stylist_all_module/stylist_home_page/blog/Insights_card_widget.dart';
 import 'insights_detail_page.dart';
 
 class InsightsHomePage extends StatefulWidget {
-  final  String url;
+  final String url;
   const InsightsHomePage({super.key, required this.url});
 
   @override
@@ -24,7 +24,9 @@ class _InsightsHomePageState extends State<InsightsHomePage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doGetSalonBlogData(url: widget.url,);
+      _homeController.doGetSalonBlogData(
+        url: widget.url,
+      );
     });
   }
 
@@ -56,7 +58,7 @@ class _InsightsHomePageState extends State<InsightsHomePage> {
             ? const ProgressBarView()
             : _homeController.getBlogDataGetModel.data?.isEmpty ??
                     false || _homeController.getBlogDataGetModel.data == null
-                ? const NoItemsWidget(text: "No Blog Data Found")
+                ? const NoItemsWidget(text: "No blog data available.")
                 : ListView.separated(
                     separatorBuilder: (context, i) {
                       return const Divider(
@@ -76,6 +78,11 @@ class _InsightsHomePageState extends State<InsightsHomePage> {
                         blogData: _homeController.getBlogDataGetModel.data![i],
                         onPress: () {
                           Get.to(() => InsightsDetailPage(
+                                video: _homeController.getBlogDataGetModel
+                                            .data?[i].video?.isEmpty ??
+                                        false
+                                    ? ""
+                                    : "${APIConstants.image}${_homeController.getBlogDataGetModel.data?[i].video ?? ""}",
                                 body: _homeController.getBlogDataGetModel
                                         .data?[i].description ??
                                     "",
@@ -85,8 +92,11 @@ class _InsightsHomePageState extends State<InsightsHomePage> {
                                 subTitle: _homeController
                                         .getBlogDataGetModel.data?[i].body ??
                                     "",
-                                image:
-                                    "${APIConstants.image}${_homeController.getBlogDataGetModel.data?[i].image ?? ""}",
+                                image: _homeController.getBlogDataGetModel
+                                            .data?[i].image?.isEmpty ??
+                                        false
+                                    ? ""
+                                    : "${APIConstants.image}${_homeController.getBlogDataGetModel.data?[i].image ?? ""}",
                               ));
                         },
                       );

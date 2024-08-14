@@ -7,6 +7,7 @@ import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/allow_portfolio_upload_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
+import '../model/stylist/artist_portfolio_model.dart';
 import '../model/stylist/pending_appointment.dart';
 import 'dio_client.dart';
 
@@ -83,9 +84,11 @@ class StylistAPI {
   }
 
   /*-------------------- Upload Image -------------------------*/
-  static Future<String> uploadImage(
-      {required String appointmentId,
-      required List<String> multiplePath}) async {
+  static Future<String> uploadImage({
+    required String appointmentId,
+    required List<String> multiplePath,
+    required List<String> multipleVideo,
+  }) async {
     final formData = FormData.fromMap({});
 
     if (multiplePath.isNotEmpty) {
@@ -93,10 +96,18 @@ class StylistAPI {
         final mimeTypeData =
             lookupMimeType(multiplePath[i], headerBytes: [0xFF, 0xD8])
                 ?.split('/');
-        final multipartFile = await MultipartFile.fromFile(
-            multiplePath[i] ?? "",
+        final multipartFile = await MultipartFile.fromFile(multiplePath[i],
             contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
         formData.files.add(MapEntry('images', multipartFile));
+      }
+    }
+
+    if (multipleVideo.isNotEmpty) {
+      for (int i = 0; i < multipleVideo.length; i++) {
+        final mimeTypeData = lookupMimeType(multipleVideo[i])?.split('/');
+        final multipartFile = await MultipartFile.fromFile(multipleVideo[i],
+            contentType: MediaType(mimeTypeData![0], multipleVideo[1]));
+        formData.files.add(MapEntry('videos', multipartFile));
       }
     }
 
@@ -116,6 +127,7 @@ class StylistAPI {
     required String body,
     required String description,
     required File image,
+    required File video,
   }) async {
     final formData = FormData.fromMap(
         {"title": title, "body": body, "description": description});
@@ -126,6 +138,13 @@ class StylistAPI {
       final multipartFile = await MultipartFile.fromFile(image.path,
           contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
       formData.files.add(MapEntry('image', multipartFile));
+    }
+
+    if (video.path.isNotEmpty) {
+      final mimeTypeData = lookupMimeType(video.path)?.split('/');
+      final multipartFile = await MultipartFile.fromFile(video.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('video', multipartFile));
     }
 
     final response = await DioClient.client.post(
@@ -150,7 +169,6 @@ class StylistAPI {
     }
   }
 
-
   /*-------------- Get Over all Stylist Review --------------*/
   static Future<OverallReviewListModel> getOverAllStylistReview() async {
     final response = await DioClient.client.get("artist/review/overall/list");
@@ -174,6 +192,67 @@ class StylistAPI {
     }
   }
 
+  /*-----------------  get  Artiest  Portfolio ------------------------*/
+  static Future<ArtistPortfolioModel> getArtiestPortfolio() async {
+    final response = await DioClient.client.get(
+      "artist/portfolio/",
+    );
 
+    if (response.isSuccess) {
+      return ArtistPortfolioModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
 
+  /*-------------------  Update  PortFolio ------------------*/
+  static Future<bool> updatePortFolio({
+    required String portfolioId,
+    required bool isImage,
+    required File image,
+    required File video,
+  }) async {
+    final formData = FormData.fromMap({});
+
+    print(
+        "isImage $isImage  video ${video.path}  image Path ${image.path} ID ${portfolioId}");
+
+    if (isImage) {
+      print("Image Path ${image.path}");
+      final mimeTypeData =
+          lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(image.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('image', multipartFile));
+    } else {
+      print("Video Path ${video.path}");
+      final mimeTypeData = lookupMimeType(video.path, headerBytes: [
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x66,
+        0x74,
+        0x79,
+        0x70,
+        0x61,
+        0x76,
+        0x63,
+        0x31
+      ])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(video.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('video', multipartFile));
+    }
+
+    final response = await DioClient.client.patch(
+      "artist/portfolio/$portfolioId",
+    );
+
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
 }

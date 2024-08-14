@@ -4,8 +4,6 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
-
-import '../../../../project_specific/text_theme.dart';
 import 'Insights_card_widget.dart';
 
 class SocialPage extends StatefulWidget {

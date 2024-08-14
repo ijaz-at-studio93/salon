@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
-import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/model/translation/translation_history_model.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import '../../../model/translation/translation_history_model.dart';
+import '../../../constant/assetsconstant.dart';
+import '../../../project_specific/text_theme.dart';
 
-class TransactionHistoryWidget extends StatelessWidget {
+class UnsettedHistoryWidget extends StatefulWidget {
   final TransactionData transactionData;
-  const TransactionHistoryWidget({super.key, required this.transactionData});
+  const UnsettedHistoryWidget({super.key, required this.transactionData});
 
+  @override
+  State<UnsettedHistoryWidget> createState() => _UnsettedHistoryWidgetState();
+}
+
+class _UnsettedHistoryWidgetState extends State<UnsettedHistoryWidget> {
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -25,7 +30,7 @@ class TransactionHistoryWidget extends StatelessWidget {
               ),
               child: Center(
                 child: Image.asset(
-                  AssetsConstant.receivedIcon,
+                  AssetsConstant.unsetted,
                   width: 24,
                   height: 24,
                 ),
@@ -41,7 +46,7 @@ class TransactionHistoryWidget extends StatelessWidget {
                       .copyWith(color: ColorConstant.blackColor, fontSize: 13),
                 ),
                 Text(
-                  transactionData.user?.name ?? "",
+                  widget.transactionData.user?.name ?? "",
                   style: AppTextTheme.medium.copyWith(
                       fontSize: 16, color: ColorConstant.grayTextColor),
                 ),
@@ -53,13 +58,16 @@ class TransactionHistoryWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             Text(
-              "₹${transactionData.orderAmount}",
+              "₹${widget.transactionData.orderAmount}",
               textScaler: const TextScaler.linear(0.85),
               style: AppTextTheme.bold
                   .copyWith(color: ColorConstant.blackColor, fontSize: 16),
             ),
             Text(
-              timeago.format(DateTime.parse(transactionData.createdAt ?? ""), locale: 'en'),
+              timeago.format(
+                  DateTime.parse(widget.transactionData.createdAt ?? ""),
+                  locale: 'en',
+              ),
               textScaler: const TextScaler.linear(0.85),
               style: AppTextTheme.medium
                   .copyWith(color: ColorConstant.grayTextColor, fontSize: 16),

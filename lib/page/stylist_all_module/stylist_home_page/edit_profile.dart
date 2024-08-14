@@ -366,7 +366,7 @@ class _EditProfileState extends State<EditProfile> {
                     height: 100,
                     fit: BoxFit.cover,
                     imageUrl:
-                        "${APIConstants.image}${_authController.salonResponseModel.data?.salonData?.image ?? ""}",
+                        "${APIConstants.image}${_authController.getGetSalonProfile.data?.image ?? ""}",
                     placeholder: (context, url) => const Image(
                       image: AssetImage(AssetsConstant.placeHolder),
                       width: 100,

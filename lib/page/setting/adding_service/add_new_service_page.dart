@@ -5,13 +5,12 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
-import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/page/setting/adding_service/create_new_service_page.dart';
 import 'package:salon/page/setting/adding_service/service_list_tile_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import '../widget/category_list_tile_widget.dart';
+
 
 class AddNewServicePage extends StatefulWidget {
   const AddNewServicePage({super.key});

@@ -21,6 +21,7 @@ class UploadPhotoPage extends StatefulWidget {
 
 class _UploadPhotoPageState extends State<UploadPhotoPage> {
   List gridImages = [];
+  List gridVideo = [];
   final _stylistController = Get.find<StylistController>();
   @override
   Widget build(BuildContext context) {
@@ -33,12 +34,76 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
       body: Obx(
         () => ProgressContainerView(
           isProgressRunning: _stylistController.showProgress,
-          child: Column(
-            children: [
-              Expanded(
-                child: gridImages.isEmpty
-                    ? _clickMorePhoto()
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                gridVideo.isEmpty && gridImages.isEmpty
+                    ? Column(
+                        children: [
+                          SizedBox(height: Get.height * 0.3),
+                          Center(
+                            child: _clickMorePhoto(),
+                          ),
+                        ],
+                      )
+                    : gridImages.isEmpty
+                        ? const SizedBox()
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 15),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 2,
+                              crossAxisSpacing: 2,
+                            ),
+                            itemCount: gridImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                    child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(17),
+                                  child: Stack(
+                                    children: [
+                                      Image.file(
+                                        File(gridImages[index]),
+                                        width: Get.width,
+                                        height: Get.height,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Positioned(
+                                        right: 7,
+                                        bottom: 3,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              gridImages.removeAt(index);
+                                            });
+                                          },
+                                          child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Image.asset(
+                                                AssetsConstant.crossSign,
+                                                width: 25,
+                                                height: 25,
+                                              )),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              );
+                            },
+                          ),
+                gridVideo.isEmpty
+                    ? const SizedBox()
                     : GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 15),
                         gridDelegate:
@@ -47,7 +112,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                           mainAxisSpacing: 2,
                           crossAxisSpacing: 2,
                         ),
-                        itemCount: gridImages.length,
+                        itemCount: gridVideo.length,
                         itemBuilder: (context, index) {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -56,11 +121,17 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                               borderRadius: BorderRadius.circular(17),
                               child: Stack(
                                 children: [
-                                  Image.file(
-                                    File(gridImages[index]),
+                                  Container(
                                     width: Get.width,
                                     height: Get.height,
-                                    fit: BoxFit.cover,
+                                    color: ColorConstant.editButtonColor,
+                                    child: Center(
+                                      child: Image.asset(
+                                        AssetsConstant.playIcon,
+                                        height: 40,
+                                        width: 40,
+                                      ),
+                                    ),
                                   ),
                                   Positioned(
                                     right: 7,
@@ -68,7 +139,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          gridImages.removeAt(index);
+                                          gridVideo.removeAt(index);
                                         });
                                       },
                                       child: Container(
@@ -86,74 +157,170 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                           );
                         },
                       ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              ],
+            ),
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Get.dialog(Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (gridImages.isNotEmpty) {
-                          List<String> data = [];
-
-                          for (int i = 0; i < gridImages.length; i++) {
-                            data.add(gridImages[i]);
-                          }
-
-                          _stylistController.doUploadImage(
-                              appointmentId: widget.appointmentId,
-                              multiplePath: data,
-                              callback: () {
-                                Get.offAll(() => const StylistBottomBarPage());
-                              });
-                        } else {
-                          showMessage("Please Select Image");
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: const BoxDecoration(
-                            color: ColorConstant.primaryColor,
-                            shape: BoxShape.circle),
-                        child: const Center(
-                          child: Icon(
-                            Icons.cloud_upload,
-                            color: ColorConstant.whiteColor,
-                          ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20),
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        FileUtils.openPlatformImagePicker(
-                            onSelectImage: (file) {
-                          setState(() {
-                            gridImages.add(file.path);
-                          });
-                        });
-                      },
-                      child: Container(
-                        height: 50,
-                        width: 50,
-                        decoration: const BoxDecoration(
-                            color: ColorConstant.primaryColor,
-                            shape: BoxShape.circle),
-                        child: const Center(
-                          child: Icon(
-                            Icons.photo,
-                            color: ColorConstant.whiteColor,
-                          ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(50.0),
+                        child: Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                FileUtils.openPlatformImagePicker(
+                                    onSelectImage: (file) {
+                                  setState(() {
+                                    gridImages.add(file.path);
+                                  });
+                                });
+                              },
+                              child: const Text("Photo"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                FileUtils.openPlatformVideoPicker(
+                                    onSelectVideo: (file) {
+                                  setState(() {
+                                    gridVideo.add(file.path);
+                                  });
+                                });
+                              },
+                              child: const Text("Video"),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ],
+                ));
+              },
+              child: Container(
+                height: 60,
+                width: 60,
+                decoration: const BoxDecoration(
+                    color: ColorConstant.primaryColor, shape: BoxShape.circle),
+                child: const Center(
+                  child: Icon(
+                    Icons.photo,
+                    color: ColorConstant.whiteColor,
+                  ),
                 ),
-              )
-            ],
-          ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                if (gridImages.isEmpty && gridVideo.isEmpty) {
+                  showMessage(
+                      "Please Choose Image or Video Or Capture Image or Video");
+                } else if (gridImages.isNotEmpty && gridVideo.isNotEmpty) {
+                  List<String> data = [];
+                  List<String> videoData = [];
+
+                  for (int i = 0; i < gridImages.length; i++) {
+                    data.add(gridImages[i]);
+                  }
+
+                  for (int i = 0; i < gridVideo.length; i++) {
+                    videoData.add(gridVideo[i]);
+                  }
+
+                  _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: data,
+                      multiplePathVideo: videoData,
+                      callback: () {
+                        Get.offAll(() => const StylistBottomBarPage());
+                      });
+                } else if (gridImages.isNotEmpty) {
+                  print("  Images");
+                  List<String> data = [];
+
+                  for (int i = 0; i < gridImages.length; i++) {
+                    data.add(gridImages[i]);
+                  }
+
+                  _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: data,
+                      multiplePathVideo: [],
+                      callback: () {
+                        Get.offAll(() => const StylistBottomBarPage());
+                      });
+                } else if (gridVideo.isNotEmpty) {
+                  print("Video  ");
+                  List<String> videoData = [];
+
+                  for (int i = 0; i < gridVideo.length; i++) {
+                    videoData.add(gridVideo[i]);
+                  }
+
+                  _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: [],
+                      multiplePathVideo: videoData,
+                      callback: () {
+                        Get.offAll(() => const StylistBottomBarPage());
+                      });
+                }
+
+                /*if (gridImages.isNotEmpty && gridVideo.isNotEmpty) {
+                  List<String> data = [];
+                  List<String> videoData = [];
+
+                  for (int i = 0; i < gridImages.length; i++) {
+                    data.add(gridImages[i]);
+                  }
+
+                  for (int i = 0; i < gridVideo.length; i++) {
+                    videoData.add(gridVideo[i]);
+                  }
+
+                  _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: data,
+                      multiplePathVideo: videoData,
+                      callback: () {
+                        Get.offAll(() => const StylistBottomBarPage());
+                      });
+                } else {
+
+                }*/
+              },
+              child: Container(
+                height: 60,
+                width: 60,
+                decoration: const BoxDecoration(
+                    color: ColorConstant.primaryColor, shape: BoxShape.circle),
+                child: const Center(
+                  child: Icon(
+                    Icons.cloud_upload,
+                    color: ColorConstant.whiteColor,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -166,13 +333,14 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(
-            Icons.camera_alt,
-            color: ColorConstant.grayTextColor,
+            Icons.photo,
+            color: ColorConstant.primaryColor,
             size: 60,
           ),
           const SizedBox(height: 8),
-          Text('Please Choose Or Capture Image',
-              style: AppTextTheme.bold
+          Text('Please Choose Image or Video \n Or \n Capture Image or Video',
+              textAlign: TextAlign.center,
+              style: AppTextTheme.medium
                   .copyWith(fontSize: 18, color: ColorConstant.grayTextColor)),
         ],
       ),

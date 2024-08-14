@@ -58,7 +58,7 @@ class _StylistReviewAndRatingPageState
                                   ?.artists?.isEmpty ??
                               false
                           ? const NoItemsWidget(
-                              text: "Artiest Review Not Found",
+                              text: "Artist reviews not found.",
                             )
                           : ListView.separated(
                               separatorBuilder: (context, index) {
@@ -107,7 +107,7 @@ class _StylistReviewAndRatingPageState
                                   ?.products?.isEmpty ??
                               false
                           ? const NoItemsWidget(
-                              text: "Product Review Not Found",
+                              text: "Product reviews not found.",
                             )
                           : ListView.separated(
                               separatorBuilder: (context, index) {
@@ -156,7 +156,7 @@ class _StylistReviewAndRatingPageState
                                   ?.services?.isEmpty ??
                               false
                           ? const NoItemsWidget(
-                              text: "Service Review Not Found",
+                              text: "Service reviews not found.",
                             )
                           : ListView.separated(
                               separatorBuilder: (context, index) {

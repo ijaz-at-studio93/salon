@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/page/bank_account/add_bank_account_page.dart';
-import 'package:salon/page/home/booking_history_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';

@@ -27,34 +27,46 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(5),
-            color: ColorConstant.grayColor.withOpacity(0.2),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                decoration: BoxDecoration(
+                  decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(5),
-                    border: Border.all(color: ColorConstant.grayColor)),
-                child: CachedNetworkImage(
-                  width: Get.width,
-                  height: Get.height * 0.25,
-                  fit: BoxFit.fitWidth,
-                  imageUrl: "${APIConstants.image}${widget.blogData.image}",
-                  placeholder: (context, url) => Image(
-                    image: const AssetImage(AssetsConstant.placeHolder),
-                    width: Get.width,
-                    height: Get.height * 0.25,
-                    fit: BoxFit.fitWidth,
                   ),
-                  errorWidget: (context, url, error) => Image(
-                    image: const AssetImage(AssetsConstant.placeHolder),
-                    width: Get.width,
-                    height: Get.height * 0.25,
-                    fit: BoxFit.fitWidth,
-                  ),
-                ),
-              ),
+                  child: widget.blogData.image?.isEmpty ?? false
+                      ? Container(
+                          width: Get.width,
+                          height: Get.height * 0.22,
+                          color: ColorConstant.editButtonColor,
+                          child: Center(
+                            child: Image.asset(
+                              AssetsConstant.playIcon,
+                              width: 45,
+                              height: 45,
+                            ),
+                          ),
+                        )
+                      : CachedNetworkImage(
+                          width: Get.width,
+                          height: Get.height * 0.22,
+                          fit: BoxFit.cover,
+                          imageUrl:
+                              "${APIConstants.image}${widget.blogData.image}",
+                          placeholder: (context, url) => Image(
+                            image: const AssetImage(AssetsConstant.placeHolder),
+                            width: Get.width,
+                            height: Get.height * 0.22,
+                            fit: BoxFit.cover,
+                          ),
+                          errorWidget: (context, url, error) => Image(
+                            image: const AssetImage(AssetsConstant.placeHolder),
+                            width: Get.width,
+                            height: Get.height * 0.22,
+                            fit: BoxFit.cover,
+                          ),
+                        )),
               const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.only(left: 5),
@@ -66,12 +78,11 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
               ),
               const SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.only(right: 8.0,bottom: 5),
+                padding: const EdgeInsets.only(right: 8.0, bottom: 5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(),
-                    /*  Row(
+                    Row(
                       children: [
                         const Icon(
                           Icons.remove_red_eye,
@@ -79,12 +90,12 @@ class _InsightsCardWidgetState extends State<InsightsCardWidget> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          "708 Views",
+                          "${widget.blogData.viewCount} Views",
                           style: AppTextTheme.medium.copyWith(
                               color: ColorConstant.grayTextColor, fontSize: 13),
                         ),
                       ],
-                    ),*/
+                    ),
                     Row(
                       children: [
                         ClipRRect(

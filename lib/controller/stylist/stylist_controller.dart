@@ -9,6 +9,7 @@ import 'package:salon/model/artist_model/artiest_dashboard_model.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/salon_review_model/salon_overall_review_model.dart';
 import 'package:salon/model/stylist/appoimrnt_details_model.dart';
+import 'package:salon/model/stylist/artist_portfolio_model.dart';
 import 'package:salon/model/stylist/pending_appointment.dart';
 import '../../model/stylist/allow_portfolio_upload_model.dart';
 
@@ -75,6 +76,14 @@ class StylistController extends GetxController {
   OverallReviewListModel get getOverallStylistReviewListModel =>
       _overallStylistReviewListModel.value;
   set setOverallStylistReviewListModel(val) =>
+      _overallStylistReviewListModel.value = val;
+
+/*----------------------  Store  Artist Portfolio ---------------*/
+  final Rx<ArtistPortfolioModel> _artistPortfolioModel =
+      ArtistPortfolioModel().obs;
+  ArtistPortfolioModel get getArtistPortfolioModel =>
+      _artistPortfolioModel.value;
+  set setArtistPortfolioModel(val) =>
       _overallStylistReviewListModel.value = val;
 
   /*---------------------- Get PendingAppointmentsListModel --------------------*/
@@ -171,16 +180,20 @@ class StylistController extends GetxController {
   doUploadImage(
       {required String appointmentId,
       required List<String> multiplePath,
+      required List<String> multiplePathVideo,
       required VoidCallback callback}) async {
     try {
       _showProgress.value = true;
       String result = await StylistAPI.uploadImage(
-          appointmentId: appointmentId, multiplePath: multiplePath);
+          appointmentId: appointmentId,
+          multiplePath: multiplePath,
+          multipleVideo: multiplePathVideo);
       if (result != "") {
         callback.call();
       }
     } catch (e) {
       showError(e);
+      print("Error Data Show new ${e.toString()}");
     } finally {
       _showProgress.value = false;
     }
@@ -192,16 +205,22 @@ class StylistController extends GetxController {
     required String body,
     required String description,
     required File image,
+    required File video,
     required VoidCallback callback,
   }) async {
     try {
       _showProgress.value = true;
       bool result = await StylistAPI.addArtiestBlog(
-          title: title, body: body, description: description, image: image);
+          title: title,
+          body: body,
+          description: description,
+          image: image,
+          video: video);
       if (result) {
         callback.call();
       }
     } catch (e) {
+      print(e.toString());
       showError(e);
     } finally {
       _showProgress.value = false;
@@ -239,6 +258,44 @@ class StylistController extends GetxController {
       _showProgress.value = true;
       _artiestDashboardModel.value =
           await StylistAPI.getStylistDashBoard(distribution: distribution);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*---------------------  Do get ArtistPortfolio -------------------*/
+  doGetArtistPortfolio() async {
+    try {
+      _showProgress.value = true;
+      _artistPortfolioModel.value = await StylistAPI.getArtiestPortfolio();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------  Update PortFolio  For Stylist  --------------*/
+  doUpdatePostFolio({
+    required String portfolioId,
+    required bool isImage,
+    required File image,
+    required File video,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      bool result = await StylistAPI.updatePortFolio(
+          portfolioId: portfolioId,
+          isImage: isImage,
+          image: image,
+          video: video);
+
+      if (result) {
+        callback.call();
+      }
     } catch (e) {
       showError(e);
     } finally {

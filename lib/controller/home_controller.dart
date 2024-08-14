@@ -26,6 +26,8 @@ import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 
+import '../model/translation/translation_history_model.dart';
+
 class HomeController extends GetxController {
   /*---------------  Show Progressbar --------------*/
   final Rx<bool> _showProgress = false.obs;
@@ -150,6 +152,21 @@ class HomeController extends GetxController {
       SalonDashboardModel().obs;
   SalonDashboardModel get getSalonDashboardModel => _salonDashboardModel.value;
   set setSalonDashboardModel(val) => _salonDashboardModel.value = val;
+
+  /*----------------------  TransactionsHistoryModel --------------*/
+  final Rx<TransactionsHistoryModel> _transactionsHistoryModel =
+      TransactionsHistoryModel().obs;
+  TransactionsHistoryModel get getTransactionsHistoryModel =>
+      _transactionsHistoryModel.value;
+  set setTransactionsHistoryModel(val) => _transactionsHistoryModel.value = val;
+
+  /*------------------- TransactionsHistoryUnsettledModel  ---------------------*/
+  final Rx<TransactionsHistoryModel> _transactionsHistoryUnsettledModel =
+      TransactionsHistoryModel().obs;
+  TransactionsHistoryModel get getTransactionsUnsettleHistoryModel =>
+      _transactionsHistoryUnsettledModel.value;
+  set setTransactionsUnsettleHistoryModel(val) => _transactionsHistoryUnsettledModel.value = val;
+
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -710,15 +727,31 @@ class HomeController extends GetxController {
     }
   }
 
-  /*--------------------  Transaction History -------------------------*/
-  doGetTransactionHistory() async {
+  /* -------------------- Transaction History -------------------- */
+  doGetTransactionHistory({required String distribution}) async {
     try {
       _showProgress.value = true;
-
+      _transactionsHistoryModel.value =
+          await HomeAPI.getTransactionHistory(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {
       _showProgress.value = false;
     }
   }
+
+  /*--------------------- Transaction Unsettled ------------------ */
+  doGetTransactionUnsettledHistory({required String distribution}) async {
+    try {
+      _showProgress.value = true;
+      _transactionsHistoryUnsettledModel.value =
+      await HomeAPI.getTransactionUnsettledHistory(distribution: distribution);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+
 }

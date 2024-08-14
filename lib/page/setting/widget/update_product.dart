@@ -11,7 +11,6 @@ import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
-
 import '../../../constant/api_constant.dart';
 import '../../../model/service_model/product_list_data_model.dart';
 

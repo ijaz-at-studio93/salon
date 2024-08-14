@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/widget/booking_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import 'package:vertical_barchart/vertical-barchart.dart';
-import 'package:vertical_barchart/vertical-barchartmodel.dart';
+import 'package:salon/util/NoItemsWidget.dart';
 import '../salon_profile_complete/complete_profile_page.dart';
 import '../salon_profile_complete/document_submitted_page.dart';
 import 'widget/earning_widget.dart';
@@ -296,54 +296,89 @@ class _HomepageState extends State<Homepage> {
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.blackColor, fontSize: 20),
           ),
-          VerticalBarchart(
-            background: Colors.transparent,
-            maxX: 75,
-            data: List.generate(
-              _homeController.getSalonDashboardModel.data
-                      ?.distributedArtistAnalytics?.length ??
-                  0,
-              (index) => VBarChartModel(
-                index: index,
-                label: _homeController.getSalonDashboardModel.data
-                        ?.distributedArtistAnalytics?[index].name ??
-                    "",
-                colors: [ColorConstant.service, Colors.transparent],
-                jumlah: double.parse(_homeController.getSalonDashboardModel.data
-                        ?.distributedArtistAnalytics?[index].serviceDone
-                        .toString() ??
-                    ""),
-                tooltip: "",
+          const SizedBox(height: 15),
+          _homeController.getSalonDashboardModel.data
+                      ?.distributedArtistAnalytics?.isEmpty ??
+                  false
+              ? const NoItemsWidget(text: "No analytics reports were found.")
+              : ListView.builder(
+                  itemCount: _homeController.getSalonDashboardModel.data
+                          ?.distributedArtistAnalytics?.length ??
+                      0,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, i) {
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: Get.width * 0.2,
+                          child: Text(
+                            _homeController.getSalonDashboardModel.data
+                                    ?.distributedArtistAnalytics?[i].name ??
+                                "",
+                            style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.grayTextColor,
+                                fontSize: 13),
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GFProgressBar(
+                                  lineHeight: 11,
+                                  circleWidth: 0,
+                                  isDragable: false,
+                                  percentage: double.parse(_homeController
+                                              .getSalonDashboardModel
+                                              .data
+                                              ?.distributedArtistAnalytics?[i]
+                                              .rating
+                                              .toString() ??
+                                          "") /
+                                      100,
+                                  backgroundColor: Colors.transparent,
+                                  progressBarColor: const Color(0xff2178FC)),
+                              const SizedBox(height: 4),
+                              GFProgressBar(
+                                  lineHeight: 11,
+                                  circleWidth: 0,
+                                  isDragable: false,
+                                  percentage: double.parse(_homeController
+                                              .getSalonDashboardModel
+                                              .data
+                                              ?.distributedArtistAnalytics?[i]
+                                              .serviceDone
+                                              .toString() ??
+                                          "") /
+                                      100,
+                                  backgroundColor: Colors.transparent,
+                                  progressBarColor: ColorConstant.service),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  }),
+          const Divider(
+            color: ColorConstant.dividerColor,
+            indent: 60.0,
+            endIndent: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(
+              data.length,
+                  (index) => Center(
+                child: Text(
+                  "${data[index]}",
+                  style: AppTextTheme.medium.copyWith(
+                      color: ColorConstant.grayTextColor, fontSize: 13),
+                ),
               ),
             ),
-            barSize: 12,
-            barStyle: BarStyle.DEFAULT,
-            showLegend: false,
           ),
-          VerticalBarchart(
-            background: Colors.transparent,
-            maxX: 75,
-            data: List.generate(
-              _homeController.getSalonDashboardModel.data
-                      ?.distributedArtistAnalytics?.length ??
-                  0,
-              (index) => VBarChartModel(
-                index: index,
-                label: _homeController.getSalonDashboardModel.data
-                        ?.distributedArtistAnalytics?[index].name ??
-                    "",
-                colors: [ColorConstant.primaryColor, Colors.transparent],
-                jumlah: double.parse(_homeController.getSalonDashboardModel.data
-                        ?.distributedArtistAnalytics?[index].rating
-                        .toString() ??
-                    ""),
-                tooltip: "",
-              ),
-            ),
-            barSize: 12,
-            barStyle: BarStyle.DEFAULT,
-            showLegend: false,
-          ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -370,7 +405,7 @@ class _HomepageState extends State<Homepage> {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                        color: ColorConstant.primaryColor,
+                        color: const Color(0xff2178FC),
                         borderRadius: BorderRadius.circular(3)),
                   ),
                   const SizedBox(width: 12),
@@ -387,4 +422,13 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
+  List data = [
+    "0",
+    "2",
+    "4",
+    "6",
+    "8",
+    "10",
+    "12",
+  ];
 }

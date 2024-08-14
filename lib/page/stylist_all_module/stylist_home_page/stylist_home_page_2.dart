@@ -1,14 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_service_row_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/service_breakdown_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/util/NoItemsWidget.dart';
-import 'package:vertical_barchart/vertical-barchart.dart';
-import 'package:vertical_barchart/vertical-barchartmodel.dart';
+
 import '../../../constant/assetsconstant.dart';
 import '../../../project_specific/status_bar_color_appbar.dart';
 import '../../../project_specific/text_theme.dart';
@@ -101,7 +101,7 @@ class _HomePage2State extends State<HomePage2> {
                                           ?.isEmpty ??
                                       false
                                   ? const NoItemsWidget(
-                                      text: "No Any BreakDownService Found",
+                                      text: "No breakdown services found.",
                                     )
                                   : GridView.builder(
                                       shrinkWrap: true,
@@ -331,80 +331,97 @@ class _HomePage2State extends State<HomePage2> {
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.blackColor, fontSize: 20),
           ),
+          const SizedBox(height: 20),
           _stylistController.getArtiestDashboardModel.data
                       ?.serviceWithReviewCount?.isEmpty ??
                   false
               ? const NoItemsWidget(
-                  text: "No DataFound Report Analytics",
-                )
-              : Column(
-                  children: [
-                    VerticalBarchart(
-                      background: Colors.transparent,
-                      maxX: 75,
-                      data: List.generate(
-                        _stylistController.getArtiestDashboardModel.data!
-                                .serviceWithReviewCount?.length ??
-                            0,
-                        (index) => VBarChartModel(
-                          index: index,
-                          label: _stylistController.getArtiestDashboardModel
-                                  .data?.serviceWithReviewCount?[index].name ??
-                              "",
-                          colors: [
-                            ColorConstant.skyBlueColor,
-                            Colors.transparent
-                          ],
-                          jumlah: double.parse(_stylistController
-                                  .getArtiestDashboardModel
-                                  .data
-                                  ?.serviceWithReviewCount?[index]
-                                  .rating
-                                  .toString() ??
-                              ""),
-                          tooltip: "",
+                  text: "No data is available for report analytics.")
+              : ListView.builder(
+                  itemCount: _stylistController.getArtiestDashboardModel.data!
+                          .serviceWithReviewCount?.length ??
+                      0,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, i) {
+                    return Row(
+                      children: [
+                        SizedBox(
+                          width: Get.width * 0.2,
+                          child: Text(
+                            _stylistController.getArtiestDashboardModel.data!
+                                    .serviceWithReviewCount?[i].name ??
+                                "",
+                            style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.grayTextColor,
+                                fontSize: 13),
+                          ),
                         ),
-                      ),
-                      barSize: 11,
-                      barStyle: BarStyle.DEFAULT,
-                      showLegend: false,
-                    ),
-                    VerticalBarchart(
-                      background: Colors.transparent,
-                      maxX: 75,
-                      data: List.generate(
-                        _stylistController.getArtiestDashboardModel.data!
-                                .serviceWithReviewCount?.length ??
-                            0,
-                        (index) => VBarChartModel(
-                          index: index,
-                          label: _stylistController.getArtiestDashboardModel
-                                  .data?.serviceWithReviewCount?[index].name ??
-                              "",
-                          colors: [ColorConstant.service, Colors.transparent],
-                          jumlah: _stylistController
-                                      .getArtiestDashboardModel
-                                      .data
-                                      ?.serviceWithReviewCount?[index]
-                                      .count ==
-                                  null
-                              ? 0
-                              : double.parse(_stylistController
-                                      .getArtiestDashboardModel
-                                      .data
-                                      ?.serviceWithReviewCount?[index]
-                                      .count
-                                      .toString() ??
-                                  ""),
-                          tooltip: "",
+                        Expanded(
+                          child: Column(
+                            children: [
+                              GFProgressBar(
+                                  lineHeight: 11,
+                                  circleWidth: 0,
+                                  isDragable: false,
+                                  percentage: double.parse(_stylistController
+                                              .getArtiestDashboardModel
+                                              .data
+                                              ?.serviceWithReviewCount?[i]
+                                              .rating
+                                              .toString() ??
+                                          "") /
+                                      100,
+                                  backgroundColor: Colors.transparent,
+                                  progressBarColor: const Color(0xff2178FC)),
+                              const SizedBox(height: 4),
+                              GFProgressBar(
+                                  lineHeight: 11,
+                                  circleWidth: 0,
+                                  isDragable: false,
+                                  percentage: _stylistController
+                                              .getArtiestDashboardModel
+                                              .data
+                                              ?.serviceWithReviewCount?[i]
+                                              .count ==
+                                          null
+                                      ? 0.0
+                                      : double.parse(_stylistController
+                                                  .getArtiestDashboardModel
+                                                  .data
+                                                  ?.serviceWithReviewCount?[i]
+                                                  .count
+                                                  .toString() ??
+                                              "") /
+                                          100,
+                                  backgroundColor: Colors.transparent,
+                                  progressBarColor: ColorConstant.service),
+                              const SizedBox(height: 10),
+                            ],
+                          ),
                         ),
-                      ),
-                      barSize: 11,
-                      barStyle: BarStyle.DEFAULT,
-                      showLegend: false,
-                    )
-                  ],
+                      ],
+                    );
+                  }),
+          const Divider(
+            color: ColorConstant.dividerColor,
+            indent: 60.0,
+            endIndent: 10,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: List.generate(
+              data.length,
+              (index) => Center(
+                child: Text(
+                  "${data[index]}",
+                  style: AppTextTheme.medium.copyWith(
+                      color: ColorConstant.grayTextColor, fontSize: 13),
                 ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
@@ -448,4 +465,14 @@ class _HomePage2State extends State<HomePage2> {
       ),
     );
   }
+
+  List data = [
+    "0",
+    "2",
+    "4",
+    "6",
+    "8",
+    "10",
+    "12",
+  ];
 }

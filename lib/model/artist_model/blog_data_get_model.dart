@@ -35,8 +35,10 @@ class BlogData {
   String? title;
   String? description;
   String? image;
+  String? video;
   String? createdAt;
   String? body;
+  int? viewCount;
   Artist? artist;
 
   BlogData(
@@ -44,6 +46,7 @@ class BlogData {
       this.title,
       this.description,
       this.image,
+      this.video,
       this.createdAt,
       this.body,
       this.artist});
@@ -53,8 +56,10 @@ class BlogData {
     title = json['title'];
     description = json['description'];
     image = json['image'];
+    video = json['video'];
     createdAt = json['createdAt'];
     body = json['body'];
+    viewCount = json['viewCount'];
     artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
   }
 
@@ -64,8 +69,10 @@ class BlogData {
     data['title'] = title;
     data['description'] = description;
     data['image'] = image;
+    data['video'] = video;
     data['createdAt'] = createdAt;
     data['body'] = body;
+    data['viewCount'] = viewCount;
     if (artist != null) {
       data['artist'] = artist!.toJson();
     }

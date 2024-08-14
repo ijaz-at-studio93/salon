@@ -5,6 +5,7 @@ class AssetsConstant {
   static const String warningIcon = "assets/icon/warning.png";
   static const String callIcon = "assets/icon/call.png";
   static const String editIcon = "assets/icon/edit.png";
+  static const String editIconWhite = "assets/icon/edit_white.png";
   static const String dotVertical = "assets/icon/dot_vertical.png";
   static const String slotIcon = "assets/icon/slot.png";
   static const String backArrow = "assets/icon/back_arrow.png";
@@ -25,6 +26,7 @@ class AssetsConstant {
   static const String playIcon = "assets/icon/play_Icon.png";
   static const String crossSign = "assets/icon/cross_sign.png";
   static const String insights = "assets/icon/Insights.png";
+  static const String arrowShare = "assets/icon/arrow_share.png";
 
   /*----------- Bottom Bar -------------*/
   static const String home = "assets/icon/home.png";
@@ -49,6 +51,7 @@ class AssetsConstant {
   static const String salonIcon = "assets/images/hair-salon.png";
 
   static const String placeHolder = "assets/images/place_holder.jpg";
+  static const String unsetted = "assets/images/unsettled.png";
 
   /*---------------------- Profile -----------------*/
   static const String accountDetails = "assets/profile/accountdetails.png";

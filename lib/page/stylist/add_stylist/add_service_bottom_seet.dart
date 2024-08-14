@@ -193,7 +193,7 @@ class _AddServicesForStylistPageState extends State<AddServicesForStylistPage> {
           i < _homeController.getSalonServiceList.data!.length;
           i++) {
         if (_homeController.getSalonServiceList.data?[i].id == serviceId) {
-          print(serviceId);
+
           _homeController.getSalonServiceList.data?[i].isSelectService = true;
         }
       }

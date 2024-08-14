@@ -73,7 +73,7 @@ class _StylistBookingOverViewPageState
                                           ?.isEmpty ??
                                       false
                                   ? const NoItemsWidget(
-                                      text: "No Any Upcoming Booking",
+                                      text: "No upcoming bookings found.",
                                     )
                                   : ListView.builder(
                                       shrinkWrap: true,
@@ -170,7 +170,7 @@ class _StylistBookingOverViewPageState
                                           ?.isEmpty ??
                                       false
                                   ? const NoItemsWidget(
-                                      text: "No Any Accepted Booking",
+                                      text: "No accepted bookings available.",
                                     )
                                   : ListView.builder(
                                       shrinkWrap: true,
