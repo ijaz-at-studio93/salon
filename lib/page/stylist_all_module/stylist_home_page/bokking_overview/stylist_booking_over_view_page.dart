@@ -86,16 +86,23 @@ class _StylistBookingOverViewPageState
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 5),
+                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                                           child: BookingOverviewWidget(
+                                            serviceCount: _stylistController
+                                                    .getPendingAppointmentsListModel
+                                                    .data?[index]
+                                                    .serviceCount ??
+                                                0,
                                             tapAccept: () {
-                                              _stylistController.doAppointmentsDetailsModel(
-                                                  appointmentId:  _stylistController
-                                                      .getPendingAppointmentsListModel
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.id ?? "");
+                                              _stylistController
+                                                  .doAppointmentsDetailsModel(
+                                                      appointmentId:
+                                                          _stylistController
+                                                                  .getPendingAppointmentsListModel
+                                                                  .data?[index]
+                                                                  .appointment
+                                                                  ?.id ??
+                                                              "");
                                               Get.to(() => ViewAcceptPage(
                                                     appointmentId:
                                                         _stylistController
@@ -179,12 +186,18 @@ class _StylistBookingOverViewPageState
                                               .data
                                               ?.length ??
                                           0,
-                                      physics: const NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: AcceptBookingOverViewWidget(
+                                            serviceCount: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .serviceCount ??
+                                                0,
                                             isHomeService: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]

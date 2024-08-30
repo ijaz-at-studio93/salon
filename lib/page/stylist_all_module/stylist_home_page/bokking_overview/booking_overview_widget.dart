@@ -10,6 +10,7 @@ class BookingOverviewWidget extends StatefulWidget {
   final String endTime;
   final String id;
   final int price;
+  final int serviceCount;
   final bool isHomeService;
   final VoidCallback tapReject;
   final VoidCallback tapAccept;
@@ -22,7 +23,7 @@ class BookingOverviewWidget extends StatefulWidget {
     required this.tapReject,
     required this.id,
     required this.isHomeService,
-    required this.tapAccept,
+    required this.tapAccept, required this.serviceCount,
   });
 
   @override
@@ -99,7 +100,7 @@ class _BookingOverviewWidgetState extends State<BookingOverviewWidget> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "1",
+                    widget.serviceCount.toString() ,
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),

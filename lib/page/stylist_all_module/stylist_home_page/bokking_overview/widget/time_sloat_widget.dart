@@ -4,9 +4,10 @@ import 'package:salon/project_specific/text_theme.dart';
 
 class TimeSlotWidget extends StatefulWidget {
   final bool isSelected;
+  final  String  timeSlot;
   final VoidCallback onPress;
   const TimeSlotWidget(
-      {super.key, required this.isSelected, required this.onPress});
+      {super.key, required this.isSelected, required this.onPress, required this.timeSlot});
 
   @override
   State<TimeSlotWidget> createState() => _TimeSlotWidgetState();
@@ -28,7 +29,7 @@ class _TimeSlotWidgetState extends State<TimeSlotWidget> {
         ),
         child: Center(
           child: Text(
-            "+15 Min",
+            "${widget.timeSlot} Min",
             style: AppTextTheme.medium.copyWith(
                 fontSize: 13,
                 color: widget.isSelected
@@ -39,4 +40,5 @@ class _TimeSlotWidgetState extends State<TimeSlotWidget> {
       ),
     );
   }
+
 }

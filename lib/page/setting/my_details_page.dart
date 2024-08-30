@@ -17,6 +17,7 @@ import 'package:salon/project_specific/text_theme.dart';
 import '../../project_specific/logout_dialog.dart';
 import '../bank_account/add_new_fresh_account_page.dart';
 import '../stylist_all_module/stylist_home_page/edit_profile.dart';
+import 'category/categoty_page.dart';
 
 class MyDetailsPage extends StatefulWidget {
   const MyDetailsPage({super.key});
@@ -54,13 +55,13 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                     onTap: () {
                       Get.to(() => const AvailabilitySettingPage());
                     }),
-                /* _dividerCustom(),
+                 _dividerCustom(),
                 _customRowWidget(
                     titleName: "Categories",
                     image: AssetsConstant.categories,
                     onTap: () {
                       Get.to(() => const CategoryPage());
-                    }),*/
+                    }),
                 _dividerCustom(),
                 _customRowWidget(
                     titleName: "Product",

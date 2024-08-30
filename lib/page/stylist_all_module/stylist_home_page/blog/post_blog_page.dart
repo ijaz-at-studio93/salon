@@ -26,6 +26,7 @@ class _PostBlogPageState extends State<PostBlogPage> {
   final _titleForBlog = TextEditingController();
   final _shortDescription = TextEditingController();
   final _body = TextEditingController();
+  final _website = TextEditingController();
 
   final _stylistController = Get.find<StylistController>();
 
@@ -59,6 +60,13 @@ class _PostBlogPageState extends State<PostBlogPage> {
                         textInputType: TextInputType.text,
                         textInputAction: TextInputAction.next,
                         title: "Short Description"),
+                    const SizedBox(height: 16),
+                    SimpleTextFieldWidget(
+                        textEditingController: _website,
+                        hintText: "Ex: www.example.com",
+                        textInputType: TextInputType.text,
+                        textInputAction: TextInputAction.next,
+                        title: "Website"),
                     const SizedBox(height: 16),
                     _addressField(
                         textEditingController: _body,
@@ -100,6 +108,7 @@ class _PostBlogPageState extends State<PostBlogPage> {
       showMessage("Please Choose Image or Video");
     } else {
       _stylistController.doCreateBlog(
+          externalLink: _website.text,
           title: _titleForBlog.text,
           body: _shortDescription.text,
           description: _body.text,

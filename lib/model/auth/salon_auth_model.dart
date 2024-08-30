@@ -87,7 +87,7 @@ class SalonData {
   String? createdAt;
   String? updatedAt;
   int? reviewCount;
-  bool? homeService;
+  String? homeService;
 
   SalonData(
       {this.rating,

@@ -123,10 +123,7 @@ class StylistListTileWidget extends StatelessWidget {
                         );
                       });
 
-                  /*Get.to(() => AddStylistPage(
-                        isEdit: true,
-                        artistId: id,
-                      ));*/
+
                 },
                 itemBuilder: (BuildContext context) {
                   return {'Edit'}.map((String choice) {

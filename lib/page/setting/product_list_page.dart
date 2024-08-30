@@ -10,6 +10,7 @@ import 'package:salon/page/setting/widget/update_product.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import '../../project_specific/progressbar_view.dart';
 import '../../project_specific/text_theme.dart';
+import '../../util/NoItemsWidget.dart';
 
 class ProductListPage extends StatefulWidget {
   const ProductListPage({super.key});
@@ -39,198 +40,208 @@ class _ProductListPageState extends State<ProductListPage> {
       body: Obx(
         () => _homeController.showProgress
             ? const ProgressBarView()
-            : ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 15),
-                separatorBuilder: (context, i) {
-                  return const Divider(
-
-                    indent: 1,
-                    color: ColorConstant.blackColor,
-                  );
-                },
-                shrinkWrap: true,
-                itemCount:
-                    _homeController.getProductListModel.productList?.length ??
+            : _homeController.getProductListModel.productList?.isEmpty ?? false
+                ? const NoItemsWidget(text: "Product Not Detected.")
+                : ListView.separated(
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    separatorBuilder: (context, i) {
+                      return const Divider(
+                        indent: 1,
+                        color: ColorConstant.blackColor,
+                      );
+                    },
+                    shrinkWrap: true,
+                    itemCount: _homeController
+                            .getProductListModel.productList?.length ??
                         0,
-                itemBuilder: (context, i) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 12),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                    itemBuilder: (context, i) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Product Name : ",
-                                  style: AppTextTheme.medium.copyWith(
-                                      fontSize: 13,
-                                      color: ColorConstant.blackColor),
-                                ),
-                                Text(
-                                  _homeController.getProductListModel
-                                          .productList?[i].name ??
-                                      "",
-                                  style: AppTextTheme.regular.copyWith(
-                                      fontSize: 13,
-                                      color: ColorConstant.blackColor),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Text(
-                                  "Review Rating : ",
-                                  style: AppTextTheme.medium.copyWith(
-                                      fontSize: 13,
-                                      color: ColorConstant.blackColor),
-                                ),
                                 Row(
                                   children: [
-                                    const Icon(
-                                      Icons.star,
-                                      size: 20,
+                                    Text(
+                                      "Product Name : ",
+                                      style: AppTextTheme.medium.copyWith(
+                                          fontSize: 13,
+                                          color: ColorConstant.blackColor),
                                     ),
                                     Text(
-                                      "${_homeController.getProductListModel.productList?[i].rating}",
+                                      _homeController.getProductListModel
+                                              .productList?[i].name ??
+                                          "",
                                       style: AppTextTheme.regular.copyWith(
                                           fontSize: 13,
                                           color: ColorConstant.blackColor),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 5),
-                            Row(
-                              children: [
-                                Text(
-                                  "Service Price : ",
-                                  style: AppTextTheme.medium.copyWith(
-                                      fontSize: 13,
-                                      color: ColorConstant.blackColor),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Review Rating : ",
+                                      style: AppTextTheme.medium.copyWith(
+                                          fontSize: 13,
+                                          color: ColorConstant.blackColor),
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Icon(
+                                          Icons.star,
+                                          size: 20,
+                                        ),
+                                        Text(
+                                          "${_homeController.getProductListModel.productList?[i].rating}",
+                                          style: AppTextTheme.regular.copyWith(
+                                              fontSize: 13,
+                                              color: ColorConstant.blackColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  "₹${_homeController.getProductListModel.productList?[i].price}",
-                                  style: AppTextTheme.regular.copyWith(
-                                      fontSize: 13,
-                                      color: ColorConstant.blackColor),
+                                const SizedBox(height: 5),
+                                Row(
+                                  children: [
+                                    Text(
+                                      "Service Price : ",
+                                      style: AppTextTheme.medium.copyWith(
+                                          fontSize: 13,
+                                          color: ColorConstant.blackColor),
+                                    ),
+                                    Text(
+                                      "₹${_homeController.getProductListModel.productList?[i].price}",
+                                      style: AppTextTheme.regular.copyWith(
+                                          fontSize: 13,
+                                          color: ColorConstant.blackColor),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            SizedBox(
-                              width: Get.width * 0.6,
-                              child: ReadMoreText(
-                                _homeController.getProductListModel
-                                        .productList?[i].description ??
-                                    "",
-                                trimMode: TrimMode.Line,
-                                style: AppTextTheme.medium.copyWith(
-                                    height: 1.5,
-                                    color: ColorConstant.grayTextColor,
-                                    fontSize: 14),
-                                trimLines: 2,
-                                colorClickableText: ColorConstant.primaryColor,
-                                trimCollapsedText: 'more',
-                                trimExpandedText: 'Show less',
-                                moreStyle: AppTextTheme.medium.copyWith(
-                                    fontSize: 15,
-                                    color: ColorConstant.primaryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Stack(
-                          clipBehavior: Clip.none,
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(5),
-                              child: CachedNetworkImage(
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
-                                imageUrl:
-                                    "${APIConstants.image}${_homeController.getProductListModel.productList?[i].image}",
-                                placeholder: (context, url) => const Image(
-                                  image: AssetImage(AssetsConstant.placeHolder),
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                                errorWidget: (context, url, error) =>
-                                    const Image(
-                                  image: AssetImage(AssetsConstant.placeHolder),
-                                  width: 100,
-                                  height: 100,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: -15,
-                              left: 4,
-                              child: GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                      isScrollControlled: true,
-                                      shape: const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(32),
-                                        topRight: Radius.circular(32),
-                                      )),
-                                      context: context,
-                                      builder: (context) {
-                                        return Padding(
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom),
-                                          child: UpdateProduct(
-                                            product: _homeController
-                                                .getProductListModel
-                                                .productList![i],
-                                          ),
-                                        );
-                                      });
-                                },
-                                child: Container(
-                                  height: 40,
-                                  width: 90,
-                                  decoration: BoxDecoration(
-                                      color: ColorConstant.reviewCardColor,
-                                      borderRadius: BorderRadius.circular(5),
-                                      border: Border.all(
-                                          color: ColorConstant.primaryColor)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Image.asset(
-                                        AssetsConstant.editIcon,
-                                        color: ColorConstant.primaryColor,
-                                        height: 15,
-                                        width: 15,
-                                      ),
-                                      const SizedBox(width: 5),
-                                      Text(
-                                        "Edit",
-                                        style: AppTextTheme.regular.copyWith(
-                                            color: ColorConstant.primaryColor),
-                                      )
-                                    ],
+                                const SizedBox(height: 2),
+                                SizedBox(
+                                  width: Get.width * 0.6,
+                                  child: ReadMoreText(
+                                    _homeController.getProductListModel
+                                            .productList?[i].description ??
+                                        "",
+                                    trimMode: TrimMode.Line,
+                                    style: AppTextTheme.medium.copyWith(
+                                        height: 1.5,
+                                        color: ColorConstant.grayTextColor,
+                                        fontSize: 14),
+                                    trimLines: 2,
+                                    colorClickableText:
+                                        ColorConstant.primaryColor,
+                                    trimCollapsedText: 'more',
+                                    trimExpandedText: 'Show less',
+                                    moreStyle: AppTextTheme.medium.copyWith(
+                                        fontSize: 15,
+                                        color: ColorConstant.primaryColor),
                                   ),
                                 ),
-                              ),
-                            )
+                              ],
+                            ),
+                            Stack(
+                              clipBehavior: Clip.none,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(5),
+                                  child: CachedNetworkImage(
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    imageUrl:
+                                        "${APIConstants.image}${_homeController.getProductListModel.productList?[i].image}",
+                                    placeholder: (context, url) => const Image(
+                                      image: AssetImage(
+                                          AssetsConstant.placeHolder),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                    errorWidget: (context, url, error) =>
+                                        const Image(
+                                      image: AssetImage(
+                                          AssetsConstant.placeHolder),
+                                      width: 100,
+                                      height: 100,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Positioned(
+                                  bottom: -15,
+                                  left: 4,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(32),
+                                            topRight: Radius.circular(32),
+                                          )),
+                                          context: context,
+                                          builder: (context) {
+                                            return Padding(
+                                              padding: EdgeInsets.only(
+                                                  bottom: MediaQuery.of(context)
+                                                      .viewInsets
+                                                      .bottom),
+                                              child: UpdateProduct(
+                                                product: _homeController
+                                                    .getProductListModel
+                                                    .productList![i],
+                                              ),
+                                            );
+                                          });
+                                    },
+                                    child: Container(
+                                      height: 40,
+                                      width: 90,
+                                      decoration: BoxDecoration(
+                                          color: ColorConstant.reviewCardColor,
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                          border: Border.all(
+                                              color:
+                                                  ColorConstant.primaryColor)),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            AssetsConstant.editIcon,
+                                            color: ColorConstant.primaryColor,
+                                            height: 15,
+                                            width: 15,
+                                          ),
+                                          const SizedBox(width: 5),
+                                          Text(
+                                            "Edit",
+                                            style: AppTextTheme.regular
+                                                .copyWith(
+                                                    color: ColorConstant
+                                                        .primaryColor),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ],
                         ),
-                      ],
-                    ),
-                  );
-                }),
+                      );
+                    }),
       ),
     );
   }

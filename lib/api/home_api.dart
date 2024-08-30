@@ -6,6 +6,9 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
+import 'package:salon/model/bank_account/salon_bank_account.dart';
+import 'package:salon/model/master/master_api.dart';
+import 'package:salon/model/salon_category/salon_category_model.dart';
 import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
 import 'package:salon/model/salon_document_model/salon_document_get_model.dart';
@@ -18,6 +21,7 @@ import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
+import 'package:salon/model/service_model/setting_salon_service_list_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 import 'package:salon/model/translation/translation_history_model.dart';
@@ -611,6 +615,7 @@ class HomeAPI {
       throw response.data;
     }
   }
+
   /*----------------------  TransactionUnsettledHistory -----------------------*/
   static Future<TransactionsHistoryModel> getTransactionUnsettledHistory(
       {required String distribution}) async {
@@ -623,5 +628,168 @@ class HomeAPI {
     }
   }
 
+  /*------------------  My Details page  Salon  Service By  Category -------------------*/
+  static Future<SettingSalonServiceListModel>
+      getSalonServiceByCategory() async {
+    final response = await DioClient.client.get(
+      "salon/service/categorized-list",
+    );
+    if (response.isSuccess) {
+      return SettingSalonServiceListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*===============================  Salon Category ===============================*/
+  static Future<SalonCategoryListModel> getSalonCategory() async {
+    final response = await DioClient.client.get(
+      "salon/category/list",
+    );
+    if (response.isSuccess) {
+      return SalonCategoryListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------- Add Category ---------------- */
+  static Future<bool> addSalonCategory({
+    required String name,
+    required String description,
+    required String serviceableGender,
+    required File? maleImage,
+    required File? femaleImage,
+  }) async {
+    final formData = FormData.fromMap({
+      "name": name,
+      "description": description,
+      "serviceableGender": serviceableGender
+    });
+
+    if (maleImage != null) {
+      final mimeTypeData =
+          lookupMimeType(maleImage.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(maleImage.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('imageMale', multipartFile));
+    }
+
+    if (femaleImage != null) {
+      final mimeTypeData =
+          lookupMimeType(femaleImage.path, headerBytes: [0xFF, 0xD8])
+              ?.split('/');
+      final multipartFile = await MultipartFile.fromFile(femaleImage.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('imageFemale', multipartFile));
+    }
+
+    final response =
+        await DioClient.client.post("salon/category/create", data: formData);
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*----------------------- Delete Salon Category -----------------*/
+  static Future<bool> deleteSalonCategory(
+      {required String salonCategoryId}) async {
+    final response =
+        await DioClient.client.delete("salon/category/$salonCategoryId/delete");
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*--------------------- Do Update Category ---------------*/
+  static Future<bool> salonUpdateCategory({
+    required String name,
+    required String description,
+    required String serviceableGender,
+    required String salonCategoryId,
+    required File? maleImage,
+    required File? femaleImage,
+  }) async {
+    final formData = FormData.fromMap({
+      "name": name,
+      "description": description,
+      "serviceableGender": serviceableGender
+    });
+
+    if (maleImage != null) {
+      final mimeTypeData =
+          lookupMimeType(maleImage.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(maleImage.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('imageMale', multipartFile));
+    }
+
+    if (femaleImage != null) {
+      final mimeTypeData =
+          lookupMimeType(femaleImage.path, headerBytes: [0xFF, 0xD8])
+              ?.split('/');
+      final multipartFile = await MultipartFile.fromFile(femaleImage.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('imageFemale', multipartFile));
+    }
+
+    final response = await DioClient.client
+        .patch("salon/category/$salonCategoryId/update", data: formData);
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------------- Master List All Bank -----------------------*/
+  static Future<List<ListAllBankModel>> getListBankListData() async {
+    final response = await DioClient.client.get('common/bank/list-all-bank');
+    if (response.isSuccess) {
+      return response.data['data']
+          .map<ListAllBankModel>((e) => ListAllBankModel.fromJson(e))
+          .toList();
+    } else {
+      throw response.data;
+    }
+  }
+
+
+  /*-------------------  get Salon  bank Account -------------------*/
+  static Future<SalonBankAccountList> getSalonBankAccount()async{
+    final response = await DioClient.client.get("salon/account");
+    if (response.isSuccess) {
+      return SalonBankAccountList.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+
+  }
+
+
+  /*--------------------- Create Add Bank Account ------------------------*/
+  static Future<bool> salonAccountCreate({required Map account}) async {
+    final response = await DioClient.client.post('salon/account', data: account);
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*-------------------------  Delete Account ------------------*/
+  static  Future<bool>  deleteBankAccount({required String accountId}) async{
+    final response = await DioClient.client.delete('salon/account/$accountId');
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+
+  }
 
 }

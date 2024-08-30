@@ -30,13 +30,13 @@ class AuthAPI {
       {required String mobileNo,
       required String password,
       required String otp}) async {
-    final response = await DioClient.client.post("auth/salon/reset-password-otp",
-        data: {
-          "mobile": mobileNo,
-          "countryCode": "91",
-          "password": "12345678",
-          "otp": "123456"
-        });
+    final response = await DioClient.client
+        .post("auth/salon/reset-password-otp", data: {
+      "mobile": mobileNo,
+      "countryCode": "91",
+      "password": "12345678",
+      "otp": "123456"
+    });
     if (response.isSuccess) {
       return true;
     } else {
@@ -67,7 +67,8 @@ class AuthAPI {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
-    required bool isHomeService,
+    required String isHomeService,
+    required String serviceGender,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
@@ -90,6 +91,7 @@ class AuthAPI {
       "geolocationLng": geolocationLng,
       "description": description,
       "homeService": isHomeService,
+      "serviceGender": serviceGender,
     });
     if (image != null) {
       final mimeTypeData =
@@ -98,6 +100,7 @@ class AuthAPI {
           contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
       formData.files.add(MapEntry('image', multipartFile));
     }
+
     final response = await DioClient.client.post(
       APIEndPoint.salonRegister,
       data: formData,
@@ -118,7 +121,7 @@ class AuthAPI {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
-    required bool isHomeService,
+    required String isHomeService,
     required String mobile,
     required String verificationCode,
     required String countryCode,
@@ -245,6 +248,40 @@ class AuthAPI {
     });
     if (response.isSuccess) {
       return SalonArtistResponseModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*===================== Artist Send Verification  ============================*/
+  static Future<bool> artistSendVerification({
+    required String mobileNo,
+  }) async {
+    final response = await DioClient.client
+        .post("auth/artist/send/verification-code", data: {
+      "mobile": mobileNo,
+      "countryCode": 91,
+    });
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*========================= authArtistVerifyVerificationCode ===================== */
+  static Future<bool> artistOtpVerification({
+    required String mobileNo,
+    required String otp,
+  }) async {
+    final response = await DioClient.client
+        .post("auth/artist/verify/verification-code", data: {
+      "mobile": mobileNo,
+      "countryCode": 91,
+      "verificationCode": otp,
+    });
+    if (response.isSuccess) {
+      return true;
     } else {
       throw response.data;
     }

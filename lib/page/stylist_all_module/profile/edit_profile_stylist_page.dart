@@ -1,17 +1,12 @@
 import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-
-import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import 'package:salon/util/pick_image.dart';
-
 import '../../../constant/assetsconstant.dart';
 import '../../stylist/stylist_about_page.dart';
 
@@ -40,7 +35,10 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                   _stylistProfilePhoto(),
                   SizedBox(height: Get.height * 0.05),
                   _profileRowWidget(
-                      title: "Full Name", subTitle: _authController.getSalonArtistResponseModel.data?.salonArtistData?.name ?? ""),
+                      title: "Full Name",
+                      subTitle: _authController.getSalonArtistResponseModel.data
+                              ?.salonArtistData?.name ??
+                          ""),
                   const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
@@ -48,21 +46,28 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                     indent: 20,
                   ),
                   _profileRowWidget(
-                      title: "Email", subTitle: _authController.getSalonArtistResponseModel.data?.salonArtistData?.email ?? ""),
+                      title: "Email",
+                      subTitle: _authController.getSalonArtistResponseModel.data
+                              ?.salonArtistData?.email ??
+                          ""),
                   const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
                     endIndent: 20,
                     indent: 20,
                   ),
-                  _profileRowWidget(title: "Gender", subTitle: _authController.getSalonArtistResponseModel.data?.salonArtistData?.gender ?? ""),
+                  _profileRowWidget(
+                      title: "Gender",
+                      subTitle: _authController.getSalonArtistResponseModel.data
+                              ?.salonArtistData?.gender ??
+                          ""),
                   const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
                     endIndent: 20,
                     indent: 20,
                   ),
-                 /* _profileRowWidget(
+                  /* _profileRowWidget(
                       title: "Date Of Birth", subTitle: _authController.getSalonArtistResponseModel.data?.salonArtistData?.),
                   const Divider(
                     height: 30,
@@ -71,7 +76,9 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                     indent: 20,
                   ),*/
                   _profileRowWidget(
-                      title: "Mobile Number", subTitle: "+91 ${_authController.getSalonArtistResponseModel.data?.salonArtistData?.mobile}"),
+                      title: "Mobile Number",
+                      subTitle:
+                          "+91 ${_authController.getSalonArtistResponseModel.data?.salonArtistData?.mobile}"),
                   const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
@@ -79,15 +86,18 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                     indent: 20,
                   ),
                   _profileRowWidget(
-                      title: "Portfolio Video", subTitle: "12/05/2001"),
-                  const Divider(
+                      title: "Date Of Birth",
+                      subTitle: _authController.getSalonArtistResponseModel.data
+                              ?.salonArtistData?.dob ??
+                          ""),
+                  /* const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
                     endIndent: 20,
                     indent: 20,
                   ),
                   _profileRowWidget(
-                      title: "Can Do", subTitle: "Both In Home and Saloon"),
+                      title: "Can Do", subTitle: "${_authController.getSalonArtistResponseModel.data?.salonArtistData?.homeService}"),*/
                   const Divider(
                     height: 30,
                     color: ColorConstant.grayTextColor,
@@ -106,12 +116,12 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                               fontSize: 16, color: ColorConstant.grayTextColor),
                         ),
                         GestureDetector(
-                          onTap: (){
-                            Get.to(()=> const StylistAboutPage());
+                          onTap: () {
+                            Get.to(() => const StylistAboutPage());
                           },
                           child: Container(
                             color: Colors.transparent,
-                             padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             child: Row(
                               children: [
                                 Text(
@@ -138,10 +148,10 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
               ),
             ),
           ),
-          Padding(
+         /* Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: ButtonWidget(buttonTitleText: "Save", onPress: () {}),
-          )
+          )*/
         ],
       ),
     );
@@ -150,7 +160,29 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
   /*----------- Profile Photo -------------*/
   File imagePath = File("");
   _stylistProfilePhoto() {
-    return GestureDetector(
+    return   ClipRRect(
+      borderRadius: BorderRadius.circular(100),
+      child: CachedNetworkImage(
+        width: 100,
+        height: 100,
+        fit: BoxFit.cover,
+        imageUrl:
+        "${APIConstants.image}${_authController.getSalonArtistResponseModel.data?.salonArtistData?.profileImage ?? ""}",
+        placeholder: (context, url) => const Image(
+          image: AssetImage(AssetsConstant.placeHolder),
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+        ),
+        errorWidget: (context, url, error) => const Image(
+          image: AssetImage(AssetsConstant.placeHolder),
+          width: 100,
+          height: 100,
+          fit: BoxFit.cover,
+        ),
+      ),
+    ) ;
+    /*GestureDetector(
       onTap: () {
         FileUtils.openPlatformImagePicker(onSelectImage: (file) {
           setState(() {
@@ -164,37 +196,28 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
         children: [
           imagePath.path == ""
               ? ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: CachedNetworkImage(
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                    imageUrl:
-                        "${APIConstants.image}${_authController.getSalonArtistResponseModel.data?.salonArtistData?.profileImage ?? ""}",
-                    placeholder: (context, url) => const Image(
-                      image: AssetImage(AssetsConstant.placeHolder),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                    errorWidget: (context, url, error) => const Image(
-                      image: AssetImage(AssetsConstant.placeHolder),
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                )
-              : ClipRRect(
-                  borderRadius: BorderRadius.circular(100),
-                  child: Image.file(
-                    imagePath,
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-          Positioned(
+            borderRadius: BorderRadius.circular(100),
+            child: CachedNetworkImage(
+              width: 100,
+              height: 100,
+              fit: BoxFit.cover,
+              imageUrl:
+              "${APIConstants.image}${_authController.getSalonArtistResponseModel.data?.salonArtistData?.profileImage ?? ""}",
+              placeholder: (context, url) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+              errorWidget: (context, url, error) => const Image(
+                image: AssetImage(AssetsConstant.placeHolder),
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+          )
+              : Positioned(
             bottom: -5,
             left: 70,
             right: 0,
@@ -203,7 +226,8 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
               height: 38,
               padding: const EdgeInsets.all(5),
               decoration: const BoxDecoration(
-                  color: ColorConstant.whiteColor, shape: BoxShape.circle),
+                  color: ColorConstant.whiteColor,
+                  shape: BoxShape.circle),
               child: Container(
                 width: 36,
                 height: 36,
@@ -222,7 +246,7 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
           ),
         ],
       ),
-    );
+    )*/
   }
 
   /*---------------------  Widget For Data  For Row Widget ---------------*/

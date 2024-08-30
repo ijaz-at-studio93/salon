@@ -124,7 +124,7 @@ class ByStylistCardWidget extends StatelessWidget {
                               color: ColorConstant.grayTextColor, fontSize: 13),
                         ),
                         const SizedBox(height: 10),
-                        Row(
+                        /*Row(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(100),
@@ -159,7 +159,7 @@ class ByStylistCardWidget extends StatelessWidget {
                                   fontSize: 13),
                             ),
                           ],
-                        )
+                        )*/
                       ],
                     )
                   ],

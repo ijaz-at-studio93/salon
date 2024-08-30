@@ -16,7 +16,8 @@ class SimpleTextFieldWidget extends StatefulWidget {
       required this.hintText,
       required this.textInputType,
       required this.textInputAction,
-      required this.title, this.onChanged});
+      required this.title,
+      this.onChanged});
 
   @override
   State<SimpleTextFieldWidget> createState() => _SimpleTextFieldWidgetState();

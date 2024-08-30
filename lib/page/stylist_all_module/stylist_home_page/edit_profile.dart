@@ -11,12 +11,10 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
-
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
-
 import '../../../project_specific/phone_field_widget.dart';
 import '../../location_pick/location_pick.dart';
 
@@ -56,8 +54,12 @@ class _EditProfileState extends State<EditProfile> {
         _address.text = _authController.getGetSalonProfile.data?.address ?? "";
         _description.text =
             _authController.getGetSalonProfile.data?.description ?? "";
-        isHomeServiceEnable =
-            _authController.getGetSalonProfile.data?.homeService ?? false;
+        serviceSelect = _authController.getGetSalonProfile.data?.homeService ==
+                "home"
+            ? 0
+            : _authController.getGetSalonProfile.data?.homeService == "salon"
+                ? 1
+                : 2;
       });
     });
   }
@@ -193,7 +195,9 @@ class _EditProfileState extends State<EditProfile> {
                         textEditingController: _description,
                         hintText: "Enter Here",
                         textInputType: TextInputType.text,
-                        textInputAction: Platform.isAndroid ?  TextInputAction.none : TextInputAction.done,
+                        textInputAction: Platform.isAndroid
+                            ? TextInputAction.none
+                            : TextInputAction.done,
                         title: "Description"),
                     _dividerWidget(),
                     _homeService()
@@ -244,7 +248,7 @@ class _EditProfileState extends State<EditProfile> {
   }
 
 /*------------ is Home Service --------------*/
-  bool isHomeServiceEnable = false;
+  int serviceSelect = 0;
   _homeService() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +256,7 @@ class _EditProfileState extends State<EditProfile> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Home Service",
+            "Provide Service",
             style: AppTextTheme.regular
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
@@ -263,7 +267,135 @@ class _EditProfileState extends State<EditProfile> {
           padding: const EdgeInsets.symmetric(horizontal: 10),
           height: 50,
           width: Get.width,
-          decoration: BoxDecoration(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 0;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 0
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Home",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 1;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 1
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Salon",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 2;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 2
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Both",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          /*decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: ColorConstant.borderColor,
@@ -272,7 +404,7 @@ class _EditProfileState extends State<EditProfile> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              */ /*Text(
                 "Is home service",
                 style: AppTextTheme.regular
                     .copyWith(fontSize: 13, color: ColorConstant.blackColor),
@@ -286,9 +418,9 @@ class _EditProfileState extends State<EditProfile> {
                         value; // Update the CupertinoSwitch state
                   });
                 },
-              ),
+              ),*/ /*
             ],
-          ),
+          ),*/
         ),
       ],
     );
@@ -579,7 +711,11 @@ class _EditProfileState extends State<EditProfile> {
               geolocationLat: _authController.salonAddressLat.toString(),
               geolocationLng: _authController.salonAddressLan.toString(),
               description: _description.text,
-              homeService: isHomeServiceEnable,
+              homeService: serviceSelect == 0
+                  ? "home"
+                  : serviceSelect == 1
+                      ? "salon"
+                      : "both",
               callback: () {
                 _authController.doGetSalonProfile(callback: () {
                   Navigator.pop(context);
@@ -606,7 +742,11 @@ class _EditProfileState extends State<EditProfile> {
             geolocationLat: _authController.salonAddressLat.toString(),
             geolocationLng: _authController.salonAddressLan.toString(),
             description: _description.text,
-            homeService: isHomeServiceEnable,
+            homeService: serviceSelect == 0
+                ? "home"
+                : serviceSelect == 1
+                    ? "salon"
+                    : "both",
             callback: () {
               _authController.doGetSalonProfile(callback: () {
                 Navigator.pop(context);

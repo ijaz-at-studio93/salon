@@ -42,6 +42,7 @@ class TransactionHistoryWidget extends StatelessWidget {
                 ),
                 Text(
                   transactionData.user?.name ?? "",
+                  textScaler: const TextScaler.linear(0.85),
                   style: AppTextTheme.medium.copyWith(
                       fontSize: 16, color: ColorConstant.grayTextColor),
                 ),

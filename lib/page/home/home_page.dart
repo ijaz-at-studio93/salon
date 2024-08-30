@@ -60,10 +60,7 @@ class _HomepageState extends State<Homepage> {
                                         subTitle: "",
                                         amount:
                                             "₹ ${_homeController.getSalonDashboardModel.data?.totalEarnings}",
-                                        callback: () {
-                                          Get.to(() =>
-                                              const CompleteProfilePage());
-                                        },
+                                        callback: () {},
                                       ),
                                     ),
                                     const SizedBox(width: 16),
@@ -369,7 +366,7 @@ class _HomepageState extends State<Homepage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: List.generate(
               data.length,
-                  (index) => Center(
+              (index) => Center(
                 child: Text(
                   "${data[index]}",
                   style: AppTextTheme.medium.copyWith(
@@ -422,6 +419,7 @@ class _HomepageState extends State<Homepage> {
       ),
     );
   }
+
   List data = [
     "0",
     "2",

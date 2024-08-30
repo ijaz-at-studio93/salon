@@ -6,7 +6,8 @@ import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class ServedFilterWidget extends StatefulWidget {
-  const ServedFilterWidget({super.key});
+  final VoidCallback callback;
+  const ServedFilterWidget({super.key, required this.callback});
 
   @override
   State<ServedFilterWidget> createState() => _ServedFilterWidgetState();
@@ -18,7 +19,7 @@ class _ServedFilterWidgetState extends State<ServedFilterWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: Get.height * 0.36,
+      height: Get.height * 0.25,
       width: Get.width,
       decoration: const BoxDecoration(
         color: ColorConstant.whiteColor,
@@ -92,7 +93,7 @@ class _ServedFilterWidgetState extends State<ServedFilterWidget> {
                   );
                 }),
           ),
-          Padding(
+        /*  Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Text(
               "Service Done",
@@ -120,13 +121,15 @@ class _ServedFilterWidgetState extends State<ServedFilterWidget> {
                   );
                 }),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 16),*/
+          const SizedBox(height: 18),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: ButtonWidget(
                 buttonTitleText: "Apply",
                 onPress: () {
-                  Get.back();
+                  Get.back(result: selectedIndex);
+                  widget.callback();
                 }),
           )
         ],

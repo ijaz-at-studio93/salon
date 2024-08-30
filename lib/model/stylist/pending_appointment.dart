@@ -41,6 +41,7 @@ class Data {
   String? finalizedAt;
   String? paymentStatus;
   bool? isHomeService;
+  int? serviceCount;
   Appointment? appointment;
   User? user;
 
@@ -54,6 +55,7 @@ class Data {
       this.finalizedAt,
       this.paymentStatus,
       this.isHomeService,
+      this.serviceCount,
       this.appointment,
       this.user});
 
@@ -67,6 +69,7 @@ class Data {
     finalizedAt = json['finalizedAt'];
     paymentStatus = json['paymentStatus'];
     isHomeService = json['isHomeService'];
+    serviceCount = json['serviceCount'];
     appointment = json['appointment'] != null
         ? Appointment.fromJson(json['appointment'])
         : null;
@@ -84,6 +87,7 @@ class Data {
     data['finalizedAt'] = finalizedAt;
     data['paymentStatus'] = paymentStatus;
     data['isHomeService'] = isHomeService;
+    data['serviceCount'] = serviceCount;
     if (appointment != null) {
       data['appointment'] = appointment!.toJson();
     }

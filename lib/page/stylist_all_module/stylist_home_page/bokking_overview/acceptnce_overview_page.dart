@@ -167,22 +167,35 @@ class _BookingOverviewPageState extends State<BookingOverviewPage> {
                                           ),
                                           const SizedBox(width: 10),
                                           GestureDetector(
-                                            onTap: () {
-                                              showModalBottomSheet(
-                                                  isScrollControlled: true,
-                                                  shape:
-                                                      const RoundedRectangleBorder(
-                                                          borderRadius:
-                                                              BorderRadius.only(
-                                                    topLeft:
-                                                        Radius.circular(32),
-                                                    topRight:
-                                                        Radius.circular(32),
-                                                  )),
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return const ChangeSlotTimeBottomSheet();
-                                                  });
+                                            onTap: () async {
+
+
+                                                    showModalBottomSheet(
+                                                      isScrollControlled: true,
+                                                      shape:
+                                                          const RoundedRectangleBorder(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .only(
+                                                        topLeft:
+                                                            Radius.circular(32),
+                                                        topRight:
+                                                            Radius.circular(32),
+                                                      )),
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return ChangeSlotTimeBottomSheet(
+                                                          appointmentId: widget.appointmentId,
+                                                          currentTime:
+                                                              "${_stylistController.getAppointmentsDetailsModel.data?.appointment?.startsAt == "" ? "" : convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.startsAt ?? "")} - ${_stylistController.getAppointmentsDetailsModel.data?.appointment?.endsAt == "" ? "" : convertDate(date: _stylistController.getAppointmentsDetailsModel.data?.appointment?.endsAt ?? "")}",
+                                                          callback: () {
+                                                            _stylistController.doAppointmentsDetailsModel(
+                                                                appointmentId:
+                                                                widget.appointmentId);
+
+                                                          },
+                                                        );
+                                                      });
                                             },
                                             child: Row(
                                               children: [

@@ -11,6 +11,7 @@ class AcceptBookingOverViewWidget extends StatefulWidget {
   final String endTime;
   final String id;
   final int price;
+  final int serviceCount;
   final bool isHomeService;
   final VoidCallback onPress;
   const AcceptBookingOverViewWidget(
@@ -20,7 +21,7 @@ class AcceptBookingOverViewWidget extends StatefulWidget {
       required this.endTime,
       required this.price,
       required this.id,
-      required this.isHomeService});
+      required this.isHomeService, required this.serviceCount});
 
   @override
   State<AcceptBookingOverViewWidget> createState() =>
@@ -98,7 +99,7 @@ class _AcceptBookingOverViewWidgetState
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "5",
+                    widget.serviceCount.toString(),
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),

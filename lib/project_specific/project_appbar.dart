@@ -39,7 +39,6 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
           width: 30,
           height: 30,
           margin: const EdgeInsets.all(7),
-          /* decoration: const BoxDecoration(shape: BoxShape.circle, color: ColorConstant.primary) */
           child: Padding(
             padding: const EdgeInsets.all(10),
             child: Image.asset(

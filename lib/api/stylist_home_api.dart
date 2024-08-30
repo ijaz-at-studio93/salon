@@ -73,9 +73,11 @@ class StylistAPI {
   }
 
   /*----------------------  Setting Section  Served Booking Section ---------------*/
-  static Future<PendingAppointmentsListModel> servedBookingSection() async {
-    final response =
-        await DioClient.client.get("artist/appointments/served-appointments");
+  static Future<PendingAppointmentsListModel> servedBookingSection(
+      {required String distribution}) async {
+    final response = await DioClient.client.get(
+        "artist/appointments/served-appointments",
+        queryParameters: {"distribution": distribution});
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {
@@ -124,13 +126,18 @@ class StylistAPI {
   /*------------------------ Artiest Add Blog ------------*/
   static Future<bool> addArtiestBlog({
     required String title,
+    required String externalLink,
     required String body,
     required String description,
     required File image,
     required File video,
   }) async {
-    final formData = FormData.fromMap(
-        {"title": title, "body": body, "description": description});
+    final formData = FormData.fromMap({
+      "title": title,
+      "body": body,
+      "description": description,
+      "externalLink": externalLink
+    });
 
     if (image.path.isNotEmpty) {
       final mimeTypeData =
@@ -249,6 +256,19 @@ class StylistAPI {
       "artist/portfolio/$portfolioId",
     );
 
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*----------------- Update Time Slot For Booking --------------------*/
+  static Future<bool> updateBookingTimeSlat(
+      {required String appointmentId, required Map changeMinutes}) async {
+    final response = await DioClient.client.patch(
+        "artist/appointments/$appointmentId/time-slot",
+        data: changeMinutes);
     if (response.isSuccess) {
       return true;
     } else {

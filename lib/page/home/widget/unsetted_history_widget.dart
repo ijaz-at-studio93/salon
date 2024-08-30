@@ -47,6 +47,7 @@ class _UnsettedHistoryWidgetState extends State<UnsettedHistoryWidget> {
                 ),
                 Text(
                   widget.transactionData.user?.name ?? "",
+                  textScaler: const TextScaler.linear(0.85),
                   style: AppTextTheme.medium.copyWith(
                       fontSize: 16, color: ColorConstant.grayTextColor),
                 ),
@@ -65,8 +66,8 @@ class _UnsettedHistoryWidgetState extends State<UnsettedHistoryWidget> {
             ),
             Text(
               timeago.format(
-                  DateTime.parse(widget.transactionData.createdAt ?? ""),
-                  locale: 'en',
+                DateTime.parse(widget.transactionData.createdAt ?? ""),
+                locale: 'en',
               ),
               textScaler: const TextScaler.linear(0.85),
               style: AppTextTheme.medium

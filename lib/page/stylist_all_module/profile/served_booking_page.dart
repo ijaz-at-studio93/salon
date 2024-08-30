@@ -25,7 +25,7 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _stylistController.doGetServedBooking();
+      _stylistController.doGetServedBooking(distribution: "all_time");
     });
   }
 
@@ -60,10 +60,16 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: ServedBookingWidget(
+                                    serviceComplete: _stylistController
+                                            .getCompleteAppointmentsListModel
+                                            .data?[index]
+                                            .serviceCount ??
+                                        0,
                                     id: _stylistController
-                                        .getCompleteAppointmentsListModel
-                                        .data?[index]
-                                        .idx ?? "",
+                                            .getCompleteAppointmentsListModel
+                                            .data?[index]
+                                            .idx ??
+                                        "",
                                     price: _stylistController
                                             .getCompleteAppointmentsListModel
                                             .data?[index]
@@ -113,8 +119,8 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
                 .copyWith(fontSize: 23, color: ColorConstant.blackColor),
           ),
           GestureDetector(
-            onTap: () {
-              showModalBottomSheet(
+            onTap: () async {
+              int index = await showModalBottomSheet(
                   isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -123,8 +129,23 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
                   )),
                   context: context,
                   builder: (context) {
-                    return const ServedFilterWidget();
+                    return ServedFilterWidget(
+                      callback: () {},
+                    );
                   });
+
+              if (index == 0) {
+                _stylistController.doGetServedBooking(distribution: "all_time");
+              } else if (index == 1) {
+                _stylistController.doGetServedBooking(
+                    distribution: "this_week");
+              } else if (index == 2) {
+                _stylistController.doGetServedBooking(
+                    distribution: "this_month");
+              } else if (index == 3) {
+                _stylistController.doGetServedBooking(
+                    distribution: "this_year");
+              }
             },
             child: Container(
               height: 50,

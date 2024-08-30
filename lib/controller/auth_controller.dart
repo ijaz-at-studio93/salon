@@ -96,7 +96,8 @@ class AuthController extends GetxController {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
-    required bool homeService,
+    required String homeService,
+    required String serviceGender,
     required VoidCallback callback,
   }) async {
     try {
@@ -120,6 +121,7 @@ class AuthController extends GetxController {
           geolocationLat: geolocationLat,
           geolocationLng: geolocationLng,
           isHomeService: homeService,
+          serviceGender: serviceGender,
           description: description);
       if (_salonResponseModel.value.data?.id != null) {
         userDataStoreToSharedPrefs(_salonResponseModel.value);
@@ -146,7 +148,7 @@ class AuthController extends GetxController {
     required String geolocationLat,
     required String geolocationLng,
     required String description,
-    required bool homeService,
+    required String homeService,
     required VoidCallback callback,
   }) async {
     try {
@@ -381,6 +383,41 @@ class AuthController extends GetxController {
           mobileNo: mobileNo, password: password, otp: otp);
 
       if (isResult) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*---------------------Artiest  Send OTP ---------------*/
+  doSendArtiestOtp(
+      {required String mobileNo, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await AuthAPI.artistSendVerification(mobileNo: mobileNo);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------  Verify Artiest Otp  ---------------*/
+  doVerifyArtiestOtp(
+      {required String mobileNo,
+      required String otp,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result =
+          await AuthAPI.artistOtpVerification(mobileNo: mobileNo, otp: otp);
+      if (result) {
         callback.call();
       }
     } catch (e) {

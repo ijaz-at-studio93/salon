@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -7,7 +8,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
+import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart' as fp;
 
 class LocationPickPage extends StatefulWidget {
   final VoidCallback callback;
@@ -18,22 +21,23 @@ class LocationPickPage extends StatefulWidget {
 }
 
 class _LocationPickPageState extends State<LocationPickPage> {
-  late GoogleMapController mapController;
-  LatLng? initialPosition;
-  List<LatLng> postcodeLocations = [];
+  GoogleMapController? _controller;
+  LatLng _initialPosition = const LatLng(0.0, 0.0);
+  bool _locationLoaded = false;
   final List<Marker> _marker = <Marker>[];
   final _authController = Get.find<AuthController>();
+  final _searchMapLocation = TextEditingController();
+  ValueNotifier<bool> close = ValueNotifier(false);
+
+  final places =
+      fp.FlutterGooglePlacesSdk('AIzaSyCtufw6RifF95TlQ-JWS-bxfgLREJN3PXs');
+  ValueNotifier<List<fp.AutocompletePrediction>> locationData =
+      ValueNotifier([]);
 
   @override
   void initState() {
     super.initState();
-    getCurrentLatLng();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    mapController.dispose();
+    _setInitialLocation();
   }
 
   @override
@@ -52,6 +56,7 @@ class _LocationPickPageState extends State<LocationPickPage> {
             IconButton(
               onPressed: () {
                 Navigator.pop(context);
+                widget.callback.call();
               },
               icon: const Icon(
                 Icons.check_circle,
@@ -63,86 +68,256 @@ class _LocationPickPageState extends State<LocationPickPage> {
           isBackIcon: true,
           callback: widget.callback,
         ),
-        body: GoogleMap(
-          myLocationButtonEnabled: false,
-          myLocationEnabled: true,
-          zoomControlsEnabled: false,
-          mapType: MapType.normal,
-          tiltGesturesEnabled: true,
-          onMapCreated: (controller) {
-            setState(() {
-              mapController = controller;
-            });
-            _moveToInitialPosition();
-          },
-          onTap: (latLng) async {
-            List<Placemark> placeMarks = await placemarkFromCoordinates(
-                latLng.latitude, latLng.longitude);
-            Placemark place = placeMarks[0];
-            _marker.add(Marker(
-              markerId: const MarkerId('current_Postion'),
-              position: LatLng(latLng.latitude, latLng.longitude),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                BitmapDescriptor.hueViolet,
-              ),
-            ));
+        body: _locationLoaded
+            ? Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _initialPosition,
+                      zoom: 14.0,
+                    ),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller = controller;
+                    },
+                    onTap: (latLng) async {
+                      _marker.clear();
+                      List<Placemark> placeMarks =
+                          await placemarkFromCoordinates(
+                              latLng.latitude, latLng.longitude);
+                      Placemark place = placeMarks[0];
+                      _marker.add(Marker(
+                        markerId: const MarkerId('current_Postion23'),
+                        position: LatLng(latLng.latitude, latLng.longitude),
+                        icon: BitmapDescriptor.defaultMarkerWithHue(
+                          BitmapDescriptor.hueViolet,
+                        ),
+                      ));
 
-            setState(() {});
+                      _authController.salonAddressLan = latLng.longitude;
+                      _authController.salonAddressLat = latLng.latitude;
+                      _authController.salonCurrentAddress =
+                          "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
+                      setState(() {});
+                    },
+                    markers: Set<Marker>.of(
+                      _marker,
+                    ),
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                  ),
+                  Positioned(
+                    child: Column(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              color: ColorConstant.whiteColor,
+                              borderRadius: BorderRadius.circular(5)),
+                          alignment: Alignment.center,
+                          margin: const EdgeInsets.only(
+                              left: 10, right: 10, top: 80),
+                          // height: 48,
+                          child: TextField(
+                            controller: _searchMapLocation,
+                            style: Get.textTheme.bodyLarge
+                                ?.copyWith(color: Colors.black),
+                            onChanged: (val) async {
+                              if (val != "") {
+                                close.value = true;
+                                close.notifyListeners();
+                                final predictions = await places
+                                    .findAutocompletePredictions(val);
+                                locationData.value = predictions.predictions;
+                              } else {
+                                close.value = false;
+                                close.notifyListeners();
+                                locationData.value = [];
+                              }
+                              locationData.notifyListeners();
+                            },
+                            decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.only(top: 13),
+                                border: InputBorder.none,
+                                hintText: "Search Location",
+                                prefixIcon: const Icon(Icons.search,
+                                    color: Colors.black, size: 20),
+                                suffixIcon: ValueListenableBuilder(
+                                    valueListenable: close,
+                                    builder: (context, v, c) {
+                                      return close.value
+                                          ? InkWell(
+                                              onTap: () {
+                                                _marker.clear();
+                                                FocusManager
+                                                    .instance.primaryFocus
+                                                    ?.unfocus();
+                                                _searchMapLocation.clear();
+                                                locationData.value = [];
+                                                close.value = false;
+                                                close.notifyListeners();
 
-            _authController.salonAddressLan = latLng.longitude;
-            _authController.salonAddressLat = latLng.latitude;
-            _authController.salonCurrentAddress =
-                "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
-          },
-          initialCameraPosition: CameraPosition(
-            target: initialPosition ?? const LatLng(22.303894, 70.802162),
-            zoom: 12.0,
-          ),
-          markers: Set<Marker>.of(
-            _marker,
-          ),
-        ),
+                                                setState(() {
+                                                  _setInitialLocation();
+                                                });
+                                              },
+                                              child: const Icon(
+                                                CupertinoIcons.xmark_circle,
+                                                color: Colors.black,
+                                                size: 20,
+                                              ),
+                                            )
+                                          : const SizedBox();
+                                    })),
+                          ),
+                        ),
+                        Container(
+                          color: ColorConstant.whiteColor,
+                          margin: const EdgeInsets.only(
+                              left: 20, right: 20, top: 15),
+                          child: ValueListenableBuilder(
+                              valueListenable: locationData,
+                              builder: (context, v, c) {
+                                return locationData.value.isEmpty
+                                    ? const SizedBox()
+                                    : ListView.builder(
+                                        itemCount: locationData.value.length,
+                                        shrinkWrap: true,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () async {
+                                              _searchMapLocation.text =
+                                                  locationData
+                                                      .value[index].fullText
+                                                      .toString();
+                                              locationData.value = [];
+                                              _marker.clear();
+                                              List<Location> location =
+                                                  await locationFromAddress(
+                                                      _searchMapLocation.text);
+                                              if (location.isNotEmpty) {
+                                                List<Placemark> placeMarks =
+                                                    await placemarkFromCoordinates(
+                                                        location[0].latitude,
+                                                        location[0].longitude);
+                                                Placemark place = placeMarks[0];
+
+                                                setState(() {
+                                                  _marker.add(Marker(
+                                                    markerId: const MarkerId(
+                                                        'current_Postion'),
+                                                    position: LatLng(
+                                                        location[0].latitude,
+                                                        location[0].longitude),
+                                                    icon: BitmapDescriptor
+                                                        .defaultMarkerWithHue(
+                                                      BitmapDescriptor
+                                                          .hueViolet,
+                                                    ),
+                                                  ));
+                                                });
+
+                                                _authController
+                                                        .salonAddressLan =
+                                                    location[0].longitude;
+                                                _authController
+                                                        .salonAddressLat =
+                                                    location[0].latitude;
+                                                _authController
+                                                        .salonCurrentAddress =
+                                                    "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
+
+                                                _marker.add(Marker(
+                                                  markerId:
+                                                      const MarkerId('new'),
+                                                  position: LatLng(
+                                                      location[0].latitude,
+                                                      location[0].longitude),
+                                                  icon: BitmapDescriptor
+                                                      .defaultMarkerWithHue(
+                                                    BitmapDescriptor.hueViolet,
+                                                  ),
+                                                ));
+
+                                                setState(() {
+                                                  _initialPosition = LatLng(
+                                                      location[0].latitude,
+                                                      location[0].longitude);
+                                                  _controller?.animateCamera(
+                                                      CameraUpdate.newLatLng(
+                                                          LatLng(
+                                                              location[0]
+                                                                  .latitude,
+                                                              location[0]
+                                                                  .longitude)));
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              color: Colors.transparent,
+                                              child: Column(
+                                                children: [
+                                                  index == 0
+                                                      ? const SizedBox(
+                                                          height: 10,
+                                                        )
+                                                      : const SizedBox(),
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 10,
+                                                        vertical: 5),
+                                                    child: SizedBox(
+                                                      width: Get.width,
+                                                      child: Text(
+                                                          locationData
+                                                              .value[index]
+                                                              .fullText
+                                                              .toString(),
+                                                          style: Get.textTheme
+                                                              .titleMedium
+                                                              ?.copyWith(
+                                                            color: ColorConstant
+                                                                .blackColor,
+                                                            fontWeight:
+                                                                FontWeight.w400,
+                                                          )),
+                                                    ),
+                                                  ),
+                                                  index ==
+                                                          locationData.value
+                                                                  .length -
+                                                              1
+                                                      ? const SizedBox(
+                                                          height: 10,
+                                                        )
+                                                      : const Divider(
+                                                          color: ColorConstant
+                                                              .blackColor,
+                                                        )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
+                              }),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : const ProgressBarView(),
       ),
     );
   }
 
-  /*---------  Move Camera For Google Map ----------*/
-  void _moveToInitialPosition() {
-    mapController.animateCamera(CameraUpdate.newLatLng(
-        initialPosition ?? const LatLng(22.303894, 70.802162)));
-  }
-
-  /*========================= Current location lat lng ========================= */
-  getCurrentLatLng() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    LocationPermission permission;
-    if (!serviceEnabled) {
-      Get.back();
-      await Permission.location.request();
-      showMessage("Location services are disabled.");
-      return Future.error('Location services are disabled.');
-    }
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        Get.back();
-        await Permission.location.request();
-        showMessage("Location permissions are denied");
-        return Future.error('Location permissions are denied');
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      Get.back();
-      showMessage(
-          "Location permissions are permanently denied, we cannot request permissions.");
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    Position position = await Geolocator.getCurrentPosition();
-    initialPosition = LatLng(position.latitude, position.latitude);
-
+  /*----------------- Set  init  Location  -----------------*/
+  Future<void> _setInitialLocation() async {
+    await requestPermission();
+    Position position = await getCurrentLocation();
     setState(() {
+      _initialPosition = LatLng(position.latitude, position.longitude);
+      _locationLoaded = true;
       _marker.add(Marker(
         markerId: const MarkerId('current_Postion'),
         position: LatLng(position.latitude, position.longitude),
@@ -151,7 +326,6 @@ class _LocationPickPageState extends State<LocationPickPage> {
         ),
       ));
     });
-
     List<Placemark> placeMarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placeMarks[0];
@@ -161,10 +335,41 @@ class _LocationPickPageState extends State<LocationPickPage> {
         "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
   }
 
+  /*------------------- Location  Change Liston --------------------*/
+  void _listenToLocationChanges() {
+    Geolocator.getPositionStream().listen((Position position) {
+      _controller?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(position.latitude, position.longitude),
+            zoom: 14.0,
+          ),
+        ),
+      );
+    });
+  }
+
+  /*---------------- Request  Permission  -----------------*/
+  Future<void> requestPermission() async {
+    var status = await Permission.location.request();
+    if (status.isDenied) {
+      await Permission.location.request();
+    } else if (status.isPermanentlyDenied) {
+      showMessage(
+          "Location permissions are permanently denied, we cannot request permissions.");
+    }
+  }
+
+  /*--------------  Get Current Location  -----------------*/
+  Future<Position> getCurrentLocation() async {
+    return await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+  }
+
   bool _canPopNow = false;
   DateTime? _currentBackPressTime;
 
-  /*---------------  TapBack Button ----------------*/
+  /* ---------------  TapBack Button ---------------- */
   void tapBackAgainToCloseApp() {
     DateTime now = DateTime.now();
     widget.callback();

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -43,12 +44,15 @@ class _AddStylistPageState extends State<AddStylistPage> {
   final _whatsappNumber = TextEditingController();
   final _panNumber = TextEditingController();
   final _password = TextEditingController();
+  final _verificationCode = TextEditingController();
   String gender = "";
   DateTime selectedDate = DateTime.now();
   String birthDate = "";
   File imagePath = File("");
   final _authController = Get.find<AuthController>();
   final _homeController = Get.find<HomeController>();
+  int _start = 60;
+  bool isResendOTp = false;
 
   @override
   void initState() {
@@ -111,12 +115,78 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             textInputAction: TextInputAction.next,
                             title: "Stylist Name"),
                         const SizedBox(height: 20),
-                        PhoneFieldWidget(
+                        /*  PhoneFieldWidget(
                             textEditingController: _mobile,
                             hintText: "Tap To Enter",
                             textInputType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
+                            title: "Phone Number"),*/
+
+                        _mobileNumberWidget(
+                            textEditingController: _mobile,
+                            hintText: "Enter Here",
+                            textInputType: TextInputType.phone,
+                            textInputAction: TextInputAction.next,
                             title: "Phone Number"),
+                        const SizedBox(height: 20),
+                        isOTPField
+                            ? Column(
+                                children: [
+                                  SimpleTextFieldWidget(
+                                      onChanged: (val) {
+                                        if (val.length == 6) {
+                                          _authController.doVerifyArtiestOtp(
+                                              callback: () {},
+                                              mobileNo: _mobile.text,
+                                              otp: val);
+                                        }
+                                      },
+                                      textEditingController: _verificationCode,
+                                      hintText: "",
+                                      textInputType: TextInputType.number,
+                                      textInputAction: TextInputAction.done,
+                                      title: "Enter OTP"),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        right: 20, top: 15),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: [
+                                        isResendOTp
+                                            ? TextButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    _start = 60;
+                                                    isResendOTp = false;
+                                                    startTimer();
+                                                    _authController.doSendOTP(
+                                                        mobileNo: _mobile.text,
+                                                        cc: "91");
+                                                    _verificationCode.clear();
+                                                  });
+                                                },
+                                                child: Text(
+                                                  "Resend",
+                                                  style: AppTextTheme.bold
+                                                      .copyWith(
+                                                          fontSize: 16,
+                                                          color: ColorConstant
+                                                              .redColor),
+                                                ))
+                                            : Text(
+                                                "Retry in 00:${_start.toString()}",
+                                                style: AppTextTheme.bold
+                                                    .copyWith(
+                                                        fontSize: 16,
+                                                        color: ColorConstant
+                                                            .redColor),
+                                              ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const SizedBox(),
                         const SizedBox(height: 20),
                         SimpleTextFieldWidget(
                             textEditingController: _email,
@@ -147,20 +217,19 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             textInputAction: TextInputAction.none,
                             title: "Address"),
                         const SizedBox(height: 20),
-                        PhoneFieldWidget(
+                        /*PhoneFieldWidget(
                             textEditingController: _whatsappNumber,
                             hintText: "Tap To Enter",
                             textInputType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
-                            title: "Whatsapp Number"),
+                            title: "Whatsapp Number"),*/
                         const SizedBox(height: 20),
-
                         _panCard(
                             textEditingController: _panNumber,
-                            hintText: "For eg. ABCDE1234F",
-                            textInputType: TextInputType.text,
+                            hintText: "For eg. 123412341234",
+                            textInputType: TextInputType.number,
                             textInputAction: TextInputAction.next,
-                            title: "PAN Card"),
+                            title: " Aadhar Card no"),
                         const SizedBox(height: 20),
                         widget.isBasicInfoUpdate
                             ? const SizedBox()
@@ -227,17 +296,13 @@ class _AddStylistPageState extends State<AddStylistPage> {
       } else if (_address.text.isEmpty) {
         showMessage("Please enter address");
         return;
-      } else if (_whatsappNumber.text.isEmpty) {
-        showMessage("Please enter whatsapp-number");
-        return;
       } else if (_panNumber.text.isEmpty) {
-        showMessage("Please enter panCardNumber");
+        showMessage("Please enter Aadhaar number");
         return;
       } else {
-        final bool panCard =
-            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panNumber.text);
+        final bool panCard = RegExp(r'^\d{12}$').hasMatch(_panNumber.text);
         if (!panCard) {
-          showMessage("Please enter valid panCardNumber");
+          showMessage("Please enter Valid Aadhaar number");
           return;
         } else if (_password.text.isEmpty) {
           showMessage("Please enter password");
@@ -247,9 +312,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
           return;
         } else if (gender == "") {
           showMessage("Please  select gender");
-          return;
-        } else if (birthDate == "") {
-          showMessage("Please select birthdate");
           return;
         } else if (imagePath.path.isEmpty) {
           showMessage("Please choose image");
@@ -264,7 +326,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
               email: _email.text,
               experience: _experience.text,
               address: _address.text,
-              whatsappNo: _whatsappNumber.text,
+              whatsappNo: "9999999999",
               panNo: _panNumber.text,
               password: _password.text,
               isHomeService: isHomeServiceEnable,
@@ -305,23 +367,16 @@ class _AddStylistPageState extends State<AddStylistPage> {
       } else if (_address.text.isEmpty) {
         showMessage("Please enter address");
         return;
-      } else if (_whatsappNumber.text.isEmpty) {
-        showMessage("Please enter whatsapp-number");
-        return;
       } else if (_panNumber.text.isEmpty) {
-        showMessage("Please enter panCardNumber");
+        showMessage("Please enter Aadhaar number");
         return;
       } else {
-        final bool panCard =
-            RegExp(r'^[A-Z]{5}[0-9]{4}[A-Z]$').hasMatch(_panNumber.text);
+        final bool panCard = RegExp(r'^\d{12}$').hasMatch(_panNumber.text);
         if (!panCard) {
-          showMessage("Please enter valid panCardNumber");
+          showMessage("Please enter Valid Aadhaar number");
           return;
         } else if (gender == "") {
           showMessage("Please  select gender");
-          return;
-        } else if (birthDate == "") {
-          showMessage("Please select birthdate");
           return;
         } else {
           _homeController.doUpdateStylistBasicInfo(
@@ -332,7 +387,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
               email: _email.text,
               experience: _experience.text,
               address: _address.text,
-              whatsapp: _whatsappNumber.text,
+              whatsapp: "9999999999",
               panCard: _panNumber.text,
               homeService: isHomeServiceEnable.toString(),
               gender: gender,
@@ -345,6 +400,119 @@ class _AddStylistPageState extends State<AddStylistPage> {
         }
       }
     }
+  }
+
+  /*-------------- Mobile  number ---------------*/
+  bool isOTPButton = false;
+  bool isOTPField = false;
+  _mobileNumberWidget({
+    required TextEditingController textEditingController,
+    required String hintText,
+    required String title,
+    required TextInputType textInputType,
+    required TextInputAction textInputAction,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 50,
+            width: Get.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: ColorConstant.borderColor,
+              ),
+            ),
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 12),
+                  child: Text(
+                    "+91",
+                    style: AppTextTheme.bold.copyWith(
+                        fontSize: 13, color: ColorConstant.grayTextColor),
+                  ),
+                ),
+                const SizedBox(width: 5),
+                SizedBox(
+                  width: Get.width * 0.6,
+                  child: TextField(
+                    onChanged: (val) {
+                      if (val.length == 10) {
+                        setState(() {
+                          isOTPButton = true;
+                        });
+                      } else {
+                        setState(() {
+                          _verificationCode.clear();
+                          isOTPButton = false;
+                          isOTPField = false;
+                        });
+                      }
+                    },
+                    controller: textEditingController,
+                    keyboardType: textInputType,
+                    textInputAction: textInputAction,
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 13),
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                        // contentPadding: const EdgeInsets.only(bottom: 2),
+                        border: InputBorder.none,
+                        hintText: hintText,
+                        counterText: "",
+                        hintStyle: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.grayColor, fontSize: 13)),
+                  ),
+                ),
+                isOTPButton
+                    ? TextButton(
+                        onPressed: () {
+                          setState(() {
+                            _authController.doSendArtiestOtp(
+                                mobileNo: _mobile.text, callback: () {});
+                            isOTPField = true;
+                            _start = 60;
+                            startTimer();
+                          });
+                        },
+                        child: Text(
+                          "Get OTP",
+                          style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.primaryColor, fontSize: 13),
+                        ),
+                      )
+                    : const SizedBox(),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  /*--------------  Start Timer --------------*/
+  startTimer() {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_start == 0) {
+        setState(() {
+          isResendOTp = true;
+        });
+      } else {
+        setState(() {
+          _start--;
+        });
+      }
+    });
   }
 
   /*---------------- Count Row Widget -------------*/
@@ -818,17 +986,14 @@ class _AddStylistPageState extends State<AddStylistPage> {
     );
   }
 
-
-
   /*---------------  PAN CARD ------------*/
   _panCard({
-
     required TextEditingController textEditingController,
     required String hintText,
     required String title,
     required TextInputType textInputType,
     required TextInputAction textInputAction,
-}){
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -850,8 +1015,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                 ),
               ),
               child: TextFormField(
-                textCapitalization: TextCapitalization.characters,
-                controller:textEditingController,
+                controller: textEditingController,
                 keyboardType: textInputType,
                 textInputAction: textInputAction,
                 style: AppTextTheme.medium
@@ -867,7 +1031,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
       ),
     );
   }
-
 
   /*--------------- Minimum Experience ---------------*/
   _minimumExperience({

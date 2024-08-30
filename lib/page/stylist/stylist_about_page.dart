@@ -10,7 +10,6 @@ import 'package:salon/page/stylist/widget/service_offered_list_tile_widget.dart'
 import 'package:salon/page/stylist/widget/stylist_portfolio_gird_view.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
-import 'package:salon/util/pick_image.dart';
 import '../../constant/assetsconstant.dart';
 import '../../constant/color_constant.dart';
 import '../../project_specific/status_bar_color_appbar.dart';
@@ -165,11 +164,11 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
           right: 0,
           child: GestureDetector(
             onTap: () {
-              FileUtils.openPlatformImagePicker(onSelectImage: (file) {
+              /* FileUtils.openPlatformImagePicker(onSelectImage: (file) {
                 setState(() {
                   profileImage = file;
                 });
-              });
+              });*/
             },
             child: Container(
               width: 110,
@@ -211,8 +210,7 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
               ),
             ),
           ),
-        ),
-        Positioned(
+        ), /*Positioned(
           bottom: -40,
           left: Get.width * 0.2,
           right: 0,
@@ -246,7 +244,7 @@ class _StylistAboutPageState extends State<StylistAboutPage> {
               ),
             ),
           ),
-        ),
+        ),*/
       ],
     );
   }

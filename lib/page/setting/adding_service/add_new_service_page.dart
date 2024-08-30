@@ -11,7 +11,6 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
-
 class AddNewServicePage extends StatefulWidget {
   const AddNewServicePage({super.key});
 
@@ -67,12 +66,20 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
                             padding: EdgeInsets.only(
                                 bottom:
                                     MediaQuery.of(context).viewInsets.bottom),
-                            child: CreateNewServicePage(
-                              serviceId: "",
-                              isUpdate: false,
-                              salonService: _homeController
-                                  .getSalonServiceList.data!.first,
-                            ),
+                            child: _homeController
+                                        .getSalonServiceList.data?.isNotEmpty ??
+                                    false
+                                ? CreateNewServicePage(
+                                    serviceId: "",
+                                    isUpdate: false,
+                                    salonService: _homeController
+                                        .getSalonServiceList.data!.first,
+                                  )
+                                : const CreateNewServicePage(
+                                    serviceId: "",
+                                    isUpdate: false,
+                                    salonService: null,
+                                  ),
                           );
                         });
                   },

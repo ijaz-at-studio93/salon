@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/widget/time_sloat_widget.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 class ChangeSlotTimeBottomSheet extends StatefulWidget {
-  const ChangeSlotTimeBottomSheet({super.key});
+  final String currentTime;
+  final String appointmentId;
+  final VoidCallback callback;
+  const ChangeSlotTimeBottomSheet({
+    super.key,
+    required this.currentTime,
+    required this.appointmentId,
+    required this.callback,
+  });
 
   @override
   State<ChangeSlotTimeBottomSheet> createState() =>
@@ -14,7 +23,10 @@ class ChangeSlotTimeBottomSheet extends StatefulWidget {
 }
 
 class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
+  final _stylistController = Get.find<StylistController>();
+
   int isSelected = 0;
+  String selectTimeSlot = "";
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -78,7 +90,8 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
                           fontSize: 13, color: ColorConstant.grayTextColor),
                     ),
                     Text(
-                      "2:00-4:00 PM",
+                      widget.currentTime,
+                      textScaler: const TextScaler.linear(0.85),
                       style: AppTextTheme.bold.copyWith(
                           fontSize: 16, color: ColorConstant.blackColor),
                     ),
@@ -98,6 +111,7 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
                     ),
                     Text(
                       "2:00-4:15 PM",
+                      textScaler: const TextScaler.linear(0.85),
                       style: AppTextTheme.bold.copyWith(
                           fontSize: 16, color: ColorConstant.blackColor),
                     ),
@@ -110,15 +124,17 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
             height: 50,
             child: ListView.builder(
                 shrinkWrap: true,
-                itemCount: 10,
+                itemCount: timeSlotString.length,
                 scrollDirection: Axis.horizontal,
                 itemBuilder: (context, i) {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: TimeSlotWidget(
+                      timeSlot: "+${timeSlotString[i]}",
                       isSelected: isSelected == i,
                       onPress: () {
                         setState(() {
+                          selectTimeSlot = timeSlotString[i];
                           isSelected = i;
                         });
                       },
@@ -132,11 +148,22 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
             child: ButtonWidget(
                 buttonTitleText: "Apply",
                 onPress: () {
-                  Get.back();
+                  _stylistController.doUpdateBookingTimeSlot(
+                      appointmentId: widget.appointmentId,
+                      changeMinutes: {
+                        "changeMinutes":
+                            selectTimeSlot == "" ? 15 : selectTimeSlot,
+                      },
+                      callback: () {
+                        Get.back();
+                        widget.callback.call();
+                      });
                 }),
           ),
         ],
       ),
     );
   }
+
+  List timeSlotString = ["15", "25", "35", "45", "55"];
 }

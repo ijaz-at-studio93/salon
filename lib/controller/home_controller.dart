@@ -12,6 +12,9 @@ import 'package:salon/api/home_api.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
+import 'package:salon/model/bank_account/salon_bank_account.dart';
+import 'package:salon/model/master/master_api.dart';
+import 'package:salon/model/salon_category/salon_category_model.dart';
 import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
 import 'package:salon/model/salon_document_model/salon_document_get_model.dart';
@@ -23,6 +26,7 @@ import 'package:salon/model/service_model/pending_appointments_list_model.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
+import 'package:salon/model/service_model/setting_salon_service_list_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 
@@ -66,6 +70,14 @@ class HomeController extends GetxController {
       SalonServiceListModel().obs;
   SalonServiceListModel get getSalonServiceList => _salonServiceList.value;
   set setSalonServiceList(val) => _salonServiceList.value = val;
+
+/*------------------------ SettingSalonServiceListModel ----------------*/
+  final Rx<SettingSalonServiceListModel> _settingSalonServiceListModel =
+      SettingSalonServiceListModel().obs;
+  SettingSalonServiceListModel get getSettingSalonServiceListModel =>
+      _settingSalonServiceListModel.value;
+  set setSettingSalonServiceListModel(val) =>
+      _settingSalonServiceListModel.value = val;
 
   /*-------------------  Salon UpComing -------------------*/
   final Rx<PendingAppointmentsListModel> _salonUpcomingList =
@@ -165,8 +177,26 @@ class HomeController extends GetxController {
       TransactionsHistoryModel().obs;
   TransactionsHistoryModel get getTransactionsUnsettleHistoryModel =>
       _transactionsHistoryUnsettledModel.value;
-  set setTransactionsUnsettleHistoryModel(val) => _transactionsHistoryUnsettledModel.value = val;
+  set setTransactionsUnsettleHistoryModel(val) =>
+      _transactionsHistoryUnsettledModel.value = val;
 
+  /*============================= Salon Category =======================*/
+  final Rx<SalonCategoryListModel> _salonCategoryListModel =
+      SalonCategoryListModel().obs;
+  SalonCategoryListModel get getSalonCategoryListModel =>
+      _salonCategoryListModel.value;
+  set setSalonCategoryListModel(val) => _salonCategoryListModel.value = val;
+
+  /*-------------------- Get  bank List ----------------------*/
+  final RxList<ListAllBankModel> _bankModelList = <ListAllBankModel>[].obs;
+  List<ListAllBankModel> get bankModelList => _bankModelList;
+
+  /*-------------------  get  Account Data list ------------*/
+  final Rx<SalonBankAccountList> _salonBankAccountList =
+      SalonBankAccountList().obs;
+  SalonBankAccountList get getSalonBankAccountList =>
+      _salonBankAccountList.value;
+  set setSalonBankAccountList(val) => _salonBankAccountList.value = val;
 
   /*---------------  Category Id and Product Id List Data Store ----------------*/
   final RxList categoryId = [].obs;
@@ -745,7 +775,8 @@ class HomeController extends GetxController {
     try {
       _showProgress.value = true;
       _transactionsHistoryUnsettledModel.value =
-      await HomeAPI.getTransactionUnsettledHistory(distribution: distribution);
+          await HomeAPI.getTransactionUnsettledHistory(
+              distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {
@@ -753,5 +784,156 @@ class HomeController extends GetxController {
     }
   }
 
+  /*-------------------------- My Details  Salon Service by  Category  ----------------*/
+  doGetSalonServiceCategory() async {
+    try {
+      _showProgress.value = true;
+      _settingSalonServiceListModel.value =
+          await HomeAPI.getSalonServiceByCategory();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
 
+  /*============================  Salon Category ===========================*/
+  doGetSalonCategory() async {
+    try {
+      _showProgress.value = true;
+      _salonCategoryListModel.value = await HomeAPI.getSalonCategory();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------- Add Category -------------------------*/
+  doAddSalonCategory(
+      {required String name,
+      required String description,
+      required String serviceableGender,
+      required File? maleImage,
+      required File? femaleImage,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.addSalonCategory(
+          name: name,
+          description: description,
+          serviceableGender: serviceableGender,
+          maleImage: maleImage,
+          femaleImage: femaleImage);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------------- Delete Salon Category --------------------------*/
+  doDeleteSalonCategory(
+      {required String salonCategoryId, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result =
+          await HomeAPI.deleteSalonCategory(salonCategoryId: salonCategoryId);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------------  do Update Salon  Category ------------------------*/
+  doUpdateCategory(
+      {required String name,
+      required String description,
+      required String serviceableGender,
+      required String salonCategoryId,
+      required File? maleImage,
+      required File? femaleImage,
+      required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+
+      bool result = await HomeAPI.salonUpdateCategory(
+          name: name,
+          description: description,
+          serviceableGender: serviceableGender,
+          salonCategoryId: salonCategoryId,
+          maleImage: maleImage,
+          femaleImage: femaleImage);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------- bankModelList ---------------*/
+  doGetBankList() async {
+    try {
+      _showProgress.value = true;
+      _bankModelList.value = await HomeAPI.getListBankListData();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------- Get Bank Account Details --------------*/
+  doGetBankAccountDetails() async {
+    try {
+      _showProgress.value = true;
+      _salonBankAccountList.value = await HomeAPI.getSalonBankAccount();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-------------------  do Add Salon Account ----------------*/
+  doAddSalonBankAccount(
+      {required Map account, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.salonAccountCreate(account: account);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------ Delete Bank account ----------------*/
+  doDeleteBankAccount(
+      {required String accountId, required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.deleteBankAccount(accountId: accountId);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
 }

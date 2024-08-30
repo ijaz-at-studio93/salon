@@ -32,7 +32,7 @@ class Data {
   String? address;
   GeoLocationPoint? geoLocationPoint;
   String? description;
-  bool? homeService;
+  String? homeService;
   String? mobile;
   String? countryCode;
   String? ownerMobile;

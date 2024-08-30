@@ -164,11 +164,11 @@ class StylistController extends GetxController {
   }
 
   /*------------------- Do Get Served Booking ------------------*/
-  doGetServedBooking() async {
+  doGetServedBooking({required String distribution}) async {
     try {
       _showProgress.value = true;
       _completeAppointmentsListModel.value =
-          await StylistAPI.servedBookingSection();
+          await StylistAPI.servedBookingSection(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {
@@ -202,6 +202,7 @@ class StylistController extends GetxController {
   /*----------------- Do Blog Crate ----------------*/
   doCreateBlog({
     required String title,
+    required String externalLink,
     required String body,
     required String description,
     required File image,
@@ -212,6 +213,7 @@ class StylistController extends GetxController {
       _showProgress.value = true;
       bool result = await StylistAPI.addArtiestBlog(
           title: title,
+          externalLink: externalLink,
           body: body,
           description: description,
           image: image,
@@ -293,6 +295,27 @@ class StylistController extends GetxController {
           image: image,
           video: video);
 
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*---------------------  Update TimeSlot For Stylist -------------*/
+  doUpdateBookingTimeSlot({
+    required String appointmentId,
+    required Map changeMinutes,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = false;
+
+      bool result = await StylistAPI.updateBookingTimeSlat(
+          appointmentId: appointmentId, changeMinutes: changeMinutes);
       if (result) {
         callback.call();
       }

@@ -24,7 +24,7 @@ import 'add_new_product_service_page.dart';
 class CreateNewServicePage extends StatefulWidget {
   final bool isUpdate;
   final String serviceId;
-  final SalonService salonService;
+  final SalonService? salonService;
   const CreateNewServicePage(
       {super.key,
       required this.isUpdate,
@@ -52,13 +52,13 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     _homeController.categoryId.clear();
     _homeController.productId.clear();
     if (widget.isUpdate) {
-      _serviceName.text = widget.salonService.name ?? "";
-      _descriptionController.text = widget.salonService.description ?? "";
-      _servicePrice.text = widget.salonService.price.toString();
-      _duration.text = widget.salonService.duration.toString();
+      _serviceName.text = widget.salonService?.name ?? "";
+      _descriptionController.text = widget.salonService?.description ?? "";
+      _servicePrice.text = widget.salonService?.price.toString() ?? "";
+      _duration.text = widget.salonService?.duration.toString() ?? "";
       _category.text =
-          "Select Category${widget.salonService.categories?.length.toString() ?? ""}";
-      isHomeServiceEnable = widget.salonService.homeService ?? false;
+          "Select Category${widget.salonService?.categories?.length.toString() ?? ""}";
+      isHomeServiceEnable = widget.salonService?.homeService ?? false;
     }
   }
 
@@ -321,9 +321,6 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     } else if (_category.text.isEmpty) {
       showMessage("Please select Category");
       return;
-    } else if (_product.text.isEmpty) {
-      showMessage("Please select product");
-      return;
     } else if (imagePath.path.isEmpty) {
       showMessage("Please add Service image");
       return;
@@ -567,7 +564,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                       ? CachedNetworkImage(
                           fit: BoxFit.fitHeight,
                           imageUrl:
-                              "${APIConstants.image}${widget.salonService.image ?? ""}",
+                              "${APIConstants.image}${widget.salonService?.image ?? ""}",
                           placeholder: (context, url) => const Image(
                             image: AssetImage(AssetsConstant.placeHolder),
                             fit: BoxFit.fitHeight,

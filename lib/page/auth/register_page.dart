@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/controller/auth_controller.dart';
@@ -174,6 +172,8 @@ class _RegisterPageState extends State<RegisterPage> {
                       const SizedBox(height: 20),
                       _homeService(),
                       const SizedBox(height: 20),
+                      _salonType(),
+                      const SizedBox(height: 20),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
@@ -321,7 +321,8 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   /*------------ is Home Service --------------*/
-  bool isHomeServiceEnable = false;
+  int serviceSelect = 0;
+
   _homeService() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -329,18 +330,146 @@ class _RegisterPageState extends State<RegisterPage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            "Home Service",
+            "Provide Service",
             style: AppTextTheme.regular
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
         ),
         const SizedBox(height: 12),
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
+          margin: const EdgeInsets.symmetric(horizontal: 10),
           padding: const EdgeInsets.symmetric(horizontal: 10),
           height: 50,
           width: Get.width,
-          decoration: BoxDecoration(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 0;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 0
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Home",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 1;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 1
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Salon",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    serviceSelect = 2;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: serviceSelect == 2
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Both",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          /*decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: ColorConstant.borderColor,
@@ -349,7 +478,7 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              */ /*Text(
                 "Is home service",
                 style: AppTextTheme.regular
                     .copyWith(fontSize: 13, color: ColorConstant.blackColor),
@@ -363,9 +492,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         value; // Update the CupertinoSwitch state
                   });
                 },
-              ),
+              ),*/ /*
             ],
-          ),
+          ),*/
         ),
       ],
     );
@@ -501,7 +630,7 @@ class _RegisterPageState extends State<RegisterPage> {
               return null;
             },
             onChanged: (value) {
-              employeeSlab = value!;
+              employeeSlab = value ?? "";
               //Do something when selected item is changed.
             },
             onSaved: (value) {
@@ -697,6 +826,154 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  int selectSalonType = 0;
+
+  /*------------------- Salon type ----------------*/
+  _salonType() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Salon Type",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectSalonType = 0;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: selectSalonType == 0
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Male",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectSalonType = 1;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: selectSalonType == 1
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Female",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectSalonType = 2;
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(5),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 20,
+                        height: 20,
+                        padding: const EdgeInsets.all(3),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: ColorConstant.blackColor),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            decoration: BoxDecoration(
+                              color: selectSalonType == 2
+                                  ? ColorConstant.primaryColor
+                                  : Colors.transparent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        "Unisex",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   /*--------------------  Do Register --------------*/
   _doRegister() {
     if (_yourName.text.isEmpty) {
@@ -763,7 +1040,6 @@ class _RegisterPageState extends State<RegisterPage> {
           showMessage("Please enter Description");
           return;
         } else {
-          print(imagePath.path);
           _authController.doRegister(
             name: _yourName.text,
             describe: _describe.text,
@@ -783,7 +1059,16 @@ class _RegisterPageState extends State<RegisterPage> {
             geolocationLat: _authController.salonAddressLat.toString(),
             geolocationLng: _authController.salonAddressLan.toString(),
             description: _description.text,
-            homeService: isHomeServiceEnable,
+            serviceGender: selectSalonType == 0
+                ? "male"
+                : selectSalonType == 1
+                    ? "female"
+                    : "unisex",
+            homeService: serviceSelect == 0
+                ? "home"
+                : serviceSelect == 1
+                    ? "salon"
+                    : "both",
             callback: () {
               Get.to(() => const BottomBarPage());
             },

@@ -15,6 +15,7 @@ class ServedBookingWidget extends StatelessWidget {
   final String id;
   final String name;
   final int price;
+  final int serviceComplete;
   const ServedBookingWidget(
       {super.key,
       required this.startTime,
@@ -22,7 +23,7 @@ class ServedBookingWidget extends StatelessWidget {
       required this.price,
       required this.image,
       required this.name,
-      required this.id});
+      required this.id, required this.serviceComplete});
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +116,7 @@ class ServedBookingWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "1",
+                    serviceComplete.toString(),
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.blackColor),
                   ),
