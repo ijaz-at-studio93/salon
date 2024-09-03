@@ -14,7 +14,7 @@ class ServedBookingWidget extends StatelessWidget {
   final String image;
   final String id;
   final String name;
-  final int price;
+  final double price;
   final int serviceComplete;
   const ServedBookingWidget(
       {super.key,

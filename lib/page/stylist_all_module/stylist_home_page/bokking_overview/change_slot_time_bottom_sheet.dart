@@ -96,8 +96,7 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
                           fontSize: 16, color: ColorConstant.blackColor),
                     ),
                   ],
-                ),
-                Container(
+                ), /*Container(
                   height: Get.height * 0.04,
                   width: 1,
                   color: ColorConstant.grayTextColor,
@@ -116,7 +115,7 @@ class _ChangeSlotTimeBottomSheetState extends State<ChangeSlotTimeBottomSheet> {
                           fontSize: 16, color: ColorConstant.blackColor),
                     ),
                   ],
-                ),
+                ),*/
               ],
             ),
           ),

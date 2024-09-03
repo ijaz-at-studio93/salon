@@ -120,6 +120,7 @@ class StylistController extends GetxController {
           await StylistAPI.appointmentsDetails(appointmentId: appointmentId);
     } catch (e) {
       showError(e);
+      debugPrint("Stylist Appointment ===> ${e.toString()}");
     } finally {
       _showProgress.value = false;
     }

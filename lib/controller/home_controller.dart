@@ -581,6 +581,7 @@ class HomeController extends GetxController {
           await HomeAPI.appointmentDetails(appointmentId: appointmentId);
     } catch (e) {
       showError(e);
+      debugPrint(e.toString());
     } finally {
       _showProgress.value = false;
     }

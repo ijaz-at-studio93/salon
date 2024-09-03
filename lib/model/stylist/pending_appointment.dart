@@ -32,7 +32,7 @@ class PendingAppointmentsListModel {
 }
 
 class Data {
-  int? orderAmount;
+  double? orderAmount;
   String? bookingOrderId;
   String? idx;
   String? orderStatus;
@@ -60,7 +60,7 @@ class Data {
       this.user});
 
   Data.fromJson(Map<String, dynamic> json) {
-    orderAmount = json['orderAmount'];
+    orderAmount = double.parse(json['orderAmount'].toString());
     bookingOrderId = json['bookingOrderId'];
     idx = json['idx'];
     orderStatus = json['orderStatus'];

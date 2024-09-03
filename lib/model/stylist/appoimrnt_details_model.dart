@@ -27,7 +27,7 @@ class AppointmentsDetailsModel {
 }
 
 class Data {
-  int? orderAmount;
+  double? orderAmount;
   String? bookingId;
   String? idx;
   String? finalizedAt;
@@ -35,6 +35,7 @@ class Data {
   String? orderStatus;
   bool? allowPortfolioUpload;
   bool? isHomeService;
+  TaxDetails? taxDetails;
   Address? address;
   User? user;
   Salon? salon;
@@ -50,6 +51,7 @@ class Data {
       this.orderStatus,
       this.allowPortfolioUpload,
       this.isHomeService,
+      this.taxDetails,
       this.address,
       this.user,
       this.salon,
@@ -57,7 +59,7 @@ class Data {
       this.items});
 
   Data.fromJson(Map<String, dynamic> json) {
-    orderAmount = json['orderAmount'];
+    orderAmount = double.parse(json['orderAmount'].toString());
     bookingId = json['bookingId'];
     idx = json['idx'];
     finalizedAt = json['finalizedAt'];
@@ -65,6 +67,9 @@ class Data {
     orderStatus = json['orderStatus'];
     allowPortfolioUpload = json['allowPortfolioUpload'];
     isHomeService = json['isHomeService'];
+    taxDetails = json['taxDetails'] != null
+        ? TaxDetails.fromJson(json['taxDetails'])
+        : null;
     address =
         json['address'] != null ? Address.fromJson(json['address']) : null;
     user = json['user'] != null ? User.fromJson(json['user']) : null;
@@ -178,6 +183,57 @@ class GeoLocationPoint {
     }
     data['type'] = type;
     data['coordinates'] = coordinates;
+    return data;
+  }
+}
+
+class TaxDetails {
+  List<AllTaxDetails>? allTaxDetails;
+  double? totalTaxAmount;
+
+  TaxDetails({this.allTaxDetails, this.totalTaxAmount});
+
+  TaxDetails.fromJson(Map<String, dynamic> json) {
+    if (json['allTaxDetails'] != null) {
+      allTaxDetails = <AllTaxDetails>[];
+      json['allTaxDetails'].forEach((v) {
+        allTaxDetails!.add(AllTaxDetails.fromJson(v));
+      });
+    }
+    totalTaxAmount = double.parse(json['totalTaxAmount'].toString());
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (allTaxDetails != null) {
+      data['allTaxDetails'] = allTaxDetails!.map((v) => v.toJson()).toList();
+    }
+    data['totalTaxAmount'] = totalTaxAmount;
+    return data;
+  }
+}
+
+class AllTaxDetails {
+  String? code;
+  String? name;
+  double? amount;
+  int? percentage;
+
+  AllTaxDetails({this.code, this.name, this.amount, this.percentage});
+
+  AllTaxDetails.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    name = json['name'];
+    amount = json['amount'];
+    percentage = json['percentage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['code'] = code;
+    data['name'] = name;
+    data['amount'] = amount;
+    data['percentage'] = percentage;
     return data;
   }
 }

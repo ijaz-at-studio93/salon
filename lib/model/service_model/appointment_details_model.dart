@@ -34,6 +34,8 @@ class Data {
   String? appointmentId;
   String? orderStatus;
   bool? isHomeService;
+  TaxDetails? taxDetails;
+  DiscountDetails? discountDetails;
   Address? address;
   User? user;
   Salon? salon;
@@ -48,6 +50,8 @@ class Data {
       this.appointmentId,
       this.orderStatus,
       this.isHomeService,
+      this.taxDetails,
+      this.discountDetails,
       this.address,
       this.user,
       this.salon,
@@ -62,6 +66,12 @@ class Data {
     appointmentId = json['appointmentId'];
     orderStatus = json['orderStatus'];
     isHomeService = json['isHomeService'];
+    taxDetails = json['taxDetails'] != null
+        ? TaxDetails.fromJson(json['taxDetails'])
+        : null;
+    discountDetails = json['discountDetails'] != null
+        ? DiscountDetails.fromJson(json['discountDetails'])
+        : null;
     address =
         json['address'] != null ? Address.fromJson(json['address']) : null;
     user = json['user'] != null ? User.fromJson(json['user']) : null;
@@ -86,6 +96,12 @@ class Data {
     data['appointmentId'] = appointmentId;
     data['orderStatus'] = orderStatus;
     data['isHomeService'] = isHomeService;
+    if (taxDetails != null) {
+      data['taxDetails'] = taxDetails!.toJson();
+    }
+    if (discountDetails != null) {
+      data['discountDetails'] = discountDetails!.toJson();
+    }
     if (address != null) {
       data['address'] = address!.toJson();
     }
@@ -101,6 +117,83 @@ class Data {
     if (items != null) {
       data['items'] = items!.map((v) => v.toJson()).toList();
     }
+    return data;
+  }
+}
+
+class DiscountDetails {
+  String? code;
+  String? type;
+  int? amount;
+
+  DiscountDetails({
+    this.code,
+    this.type,
+    this.amount,
+  });
+
+  DiscountDetails.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    type = json['type'];
+    amount = json['amount'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['code'] = code;
+    data['type'] = type;
+    data['amount'] = amount;
+    return data;
+  }
+}
+
+class TaxDetails {
+  List<AllTaxDetails>? allTaxDetails;
+  double? totalTaxAmount;
+
+  TaxDetails({this.allTaxDetails, this.totalTaxAmount});
+
+  TaxDetails.fromJson(Map<String, dynamic> json) {
+    if (json['allTaxDetails'] != null) {
+      allTaxDetails = <AllTaxDetails>[];
+      json['allTaxDetails'].forEach((v) {
+        allTaxDetails!.add(AllTaxDetails.fromJson(v));
+      });
+    }
+    totalTaxAmount = double.parse(json['totalTaxAmount'].toString());
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    if (allTaxDetails != null) {
+      data['allTaxDetails'] = allTaxDetails!.map((v) => v.toJson()).toList();
+    }
+    data['totalTaxAmount'] = totalTaxAmount;
+    return data;
+  }
+}
+
+class AllTaxDetails {
+  String? code;
+  String? name;
+  double? amount;
+  int? percentage;
+
+  AllTaxDetails({this.code, this.name, this.amount, this.percentage});
+
+  AllTaxDetails.fromJson(Map<String, dynamic> json) {
+    code = json['code'];
+    name = json['name'];
+    amount = json['amount'];
+    percentage = json['percentage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['code'] = code;
+    data['name'] = name;
+    data['amount'] = amount;
+    data['percentage'] = percentage;
     return data;
   }
 }

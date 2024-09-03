@@ -9,7 +9,7 @@ class BookingOverviewWidget extends StatefulWidget {
   final String startTime;
   final String endTime;
   final String id;
-  final int price;
+  final double price;
   final int serviceCount;
   final bool isHomeService;
   final VoidCallback tapReject;
