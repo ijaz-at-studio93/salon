@@ -22,6 +22,7 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   final _homeController = Get.find<HomeController>();
+
   @override
   void initState() {
     super.initState();

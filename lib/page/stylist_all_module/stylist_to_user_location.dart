@@ -15,6 +15,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 class StylistToUserLocation extends StatefulWidget {
   final double latitude;
   final double longitude;
+
   const StylistToUserLocation(
       {super.key, required this.latitude, required this.longitude});
 
@@ -36,7 +37,7 @@ class _StylistToUserLocationState extends State<StylistToUserLocation> {
   Future<BitmapDescriptor> getBitmapDescriptorFromAssetBytes(
       String path, int width) async {
     final Uint8List? imageData = await getBytesFromAsset(path, width);
-    return BitmapDescriptor.fromBytes(imageData!);
+    return BitmapDescriptor.bytes(imageData!);
   }
 
   PolylinePoints polylinePoints = PolylinePoints();
@@ -61,7 +62,7 @@ class _StylistToUserLocationState extends State<StylistToUserLocation> {
   }
 
   addPolyLine() {
-    PolylineId id = PolylineId("poly");
+    PolylineId id = const PolylineId("poly");
     Polyline polyline = Polyline(
         polylineId: id,
         width: 3,
@@ -173,11 +174,13 @@ class _StylistToUserLocationState extends State<StylistToUserLocation> {
       required double destLng}) async {
     await polylinePoints
         .getRouteBetweenCoordinates(
-      /*'AIzaSyCtufw6RifF95TlQ-JWS-bxfgLREJN3PXs',*/
-      'AIzaSyClfJgsQEwO0zO6io_TuR-TDUsVwGT3ex0',
-      PointLatLng(currentLat, currentLng), //Starting LAT LANG
-      PointLatLng(destLat, destLng), //End LAT LANG
-      travelMode: TravelMode.driving,
+      request: PolylineRequest(
+          origin: PointLatLng(currentLat, currentLng),
+          destination: PointLatLng(destLat, destLng),
+          mode: TravelMode.driving),
+      googleApiKey:
+          /*'AIzaSyCtufw6RifF95TlQ-JWS-bxfgLREJN3PXs',*/
+          'AIzaSyClfJgsQEwO0zO6io_TuR-TDUsVwGT3ex0',
     )
         .then((value) {
       for (var point in value.points) {

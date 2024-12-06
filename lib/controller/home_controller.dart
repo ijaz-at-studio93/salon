@@ -780,6 +780,7 @@ class HomeController extends GetxController {
               distribution: distribution);
     } catch (e) {
       showError(e);
+      print(e.toString());
     } finally {
       _showProgress.value = false;
     }

@@ -24,13 +24,12 @@ void main() async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
-      apiKey: 'AIzaSyCGQSFK-wIwU452TaX8jtvmAR5yD-mQlPU',
-      appId: '1:9001451192:android:b378fec7894f8aea70fe4d',
-      messagingSenderId: '9001451192',
-      projectId: 'salon-534a7',
+      apiKey: 'AIzaSyDnkUp6veqiN67pc3tSApy3RUqkk_pa3Pg',
+      appId: '1:664897641321:android:e7f891474d9e7daeabfbf8',
+      messagingSenderId: '664897641321',
+      projectId: 'scuts-3ede2',
       storageBucket: 'salon-534a7.appspot.com',
-    )
-    );
+    ));
   } else {
     await Firebase.initializeApp();
   }

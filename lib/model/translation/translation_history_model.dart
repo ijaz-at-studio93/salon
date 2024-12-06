@@ -32,7 +32,7 @@ class TransactionsHistoryModel {
 }
 
 class TransactionData {
-  int? orderAmount;
+  double? orderAmount;
   String? bookingOrderId;
   String? idx;
   String? createdAt;
@@ -48,7 +48,7 @@ class TransactionData {
         this.user});
 
   TransactionData.fromJson(Map<String, dynamic> json) {
-    orderAmount = json['orderAmount'];
+    orderAmount = double.parse(json['orderAmount'].toString());
     bookingOrderId = json['bookingOrderId'];
     idx = json['idx'];
     createdAt = json['createdAt'];

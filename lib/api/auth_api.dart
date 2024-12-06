@@ -9,6 +9,7 @@ import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/util/shared_prefs.dart';
 import 'package:http_parser/http_parser.dart';
+
 import 'dio_client.dart';
 
 class AuthAPI {

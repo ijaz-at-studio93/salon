@@ -22,11 +22,12 @@ class BottomBarPage extends StatefulWidget {
 class _BottomBarPageState extends State<BottomBarPage> {
   int _selectedIndex = 0;
   final _homeController = Get.find<HomeController>();
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _canPopNow,
-      onPopInvoked: (bool didPop) {
+      onPopInvoked: (didPop) {
         if (!didPop) {
           tapBackAgainToCloseApp();
         }

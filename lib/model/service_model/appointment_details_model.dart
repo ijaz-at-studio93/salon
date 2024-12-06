@@ -27,7 +27,7 @@ class AppointmentDetailsModel {
 }
 
 class Data {
-  int? orderAmount;
+  double? orderAmount;
   String? bookingId;
   String? idx;
   String? finalizedAt;
@@ -59,7 +59,7 @@ class Data {
       this.items});
 
   Data.fromJson(Map<String, dynamic> json) {
-    orderAmount = json['orderAmount'];
+    orderAmount = double.parse(json['orderAmount'].toString());
     bookingId = json['bookingId'];
     idx = json['idx'];
     finalizedAt = json['finalizedAt'];
