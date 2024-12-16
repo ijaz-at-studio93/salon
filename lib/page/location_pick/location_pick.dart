@@ -30,7 +30,7 @@ class _LocationPickPageState extends State<LocationPickPage> {
   ValueNotifier<bool> close = ValueNotifier(false);
 
   final places =
-      fp.FlutterGooglePlacesSdk('AIzaSyCtufw6RifF95TlQ-JWS-bxfgLREJN3PXs');
+      fp.FlutterGooglePlacesSdk('AIzaSyATecmTI6WWH24gR6wCR4IooVH77VCnSgc');
   ValueNotifier<List<fp.AutocompletePrediction>> locationData =
       ValueNotifier([]);
 

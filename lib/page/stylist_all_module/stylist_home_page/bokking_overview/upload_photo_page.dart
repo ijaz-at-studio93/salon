@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
@@ -13,6 +14,7 @@ import 'package:salon/util/pick_image.dart';
 
 class UploadPhotoPage extends StatefulWidget {
   final String appointmentId;
+
   const UploadPhotoPage({super.key, required this.appointmentId});
 
   @override
@@ -23,6 +25,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
   List gridImages = [];
   List gridVideo = [];
   final _stylistController = Get.find<StylistController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -253,7 +256,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                         Get.offAll(() => const StylistBottomBarPage());
                       });
                 } else if (gridImages.isNotEmpty) {
-                  print("  Images");
+                  print("Images");
                   List<String> data = [];
 
                   for (int i = 0; i < gridImages.length; i++) {
@@ -268,7 +271,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                         Get.offAll(() => const StylistBottomBarPage());
                       });
                 } else if (gridVideo.isNotEmpty) {
-                  print("Video  ");
+                  print("Video ");
                   List<String> videoData = [];
 
                   for (int i = 0; i < gridVideo.length; i++) {
