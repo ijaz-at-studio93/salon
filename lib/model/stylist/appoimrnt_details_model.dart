@@ -224,7 +224,7 @@ class AllTaxDetails {
   AllTaxDetails.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     name = json['name'];
-    amount = json['amount'];
+    amount = double.parse(json['amount'].toString());
     percentage = json['percentage'];
   }
 
