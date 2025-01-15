@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
@@ -15,6 +15,7 @@ import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
+
 import '../../../project_specific/phone_field_widget.dart';
 import '../../location_pick/location_pick.dart';
 
@@ -60,6 +61,11 @@ class _EditProfileState extends State<EditProfile> {
             : _authController.getGetSalonProfile.data?.homeService == "salon"
                 ? 1
                 : 2;
+
+        _authController.salonAddressLat = _authController
+            .getGetSalonProfile.data?.geoLocationPoint?.coordinates?[0];
+        _authController.salonAddressLan = _authController
+            .getGetSalonProfile.data?.geoLocationPoint?.coordinates?[1];
       });
     });
   }
