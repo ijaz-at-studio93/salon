@@ -8,6 +8,7 @@ import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_se
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/service_breakdown_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/util/NoItemsWidget.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../constant/assetsconstant.dart';
 import '../../../project_specific/status_bar_color_appbar.dart';
@@ -173,41 +174,9 @@ class _HomePage2State extends State<HomePage2> {
             Row(
               children: [
                 GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.primaryColor.withOpacity(0.2),
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            AssetsConstant.notificationIcon,
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 23,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorConstant.orangeDotColor),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    _launchDialer(phoneNumber: "88970 90838");
+                  },
                   child: Container(
                     height: 46,
                     width: 46,
@@ -230,6 +199,16 @@ class _HomePage2State extends State<HomePage2> {
         ),
       ),
     );
+  }
+  /*======================= LaunchDialer =========================*/
+  Future<void> _launchDialer({required String phoneNumber}) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   /*----------- Tab Bar variable  ----------- */

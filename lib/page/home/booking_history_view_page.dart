@@ -529,7 +529,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                                         ?.type ==
                                                     "percentage"
                                                 ? Text(
-                                                    "${_homeController.getAppointmentDetailsModel.data?.discountDetails?.amount}% Off",
+                                                    "${_homeController.getAppointmentDetailsModel.data?.discountDetails?.amount ?? "0" }% Off",
                                                     style: AppTextTheme.bold
                                                         .copyWith(
                                                             color: ColorConstant
@@ -537,7 +537,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                                             fontSize: 13),
                                                   )
                                                 : Text(
-                                                    "₹ ${_homeController.getAppointmentDetailsModel.data?.discountDetails?.amount} Off",
+                                                    "₹ ${_homeController.getAppointmentDetailsModel.data?.discountDetails?.amount ?? "0"} Off",
                                                     style: AppTextTheme.bold
                                                         .copyWith(
                                                             color: ColorConstant

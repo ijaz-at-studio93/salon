@@ -13,6 +13,7 @@ import 'package:salon/project_specific/status_bar_color_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
 import 'package:salon/util/reject_service_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'booking_overview_widget.dart';
 
 class StylistBookingOverViewPage extends StatefulWidget {
@@ -86,7 +87,8 @@ class _StylistBookingOverViewPageState
                                           const NeverScrollableScrollPhysics(),
                                       itemBuilder: (context, index) {
                                         return Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 5),
                                           child: BookingOverviewWidget(
                                             serviceCount: _stylistController
                                                     .getPendingAppointmentsListModel
@@ -270,7 +272,7 @@ class _StylistBookingOverViewPageState
             ),
             Row(
               children: [
-                GestureDetector(
+                /*GestureDetector(
                   onTap: () {},
                   child: Container(
                     height: 46,
@@ -302,10 +304,12 @@ class _StylistBookingOverViewPageState
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(width: 15),
+                ),*/
+
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    _launchDialer(phoneNumber: "88970 90838");
+                  },
                   child: Container(
                     height: 46,
                     width: 46,
@@ -328,6 +332,17 @@ class _StylistBookingOverViewPageState
         ),
       ),
     );
+  }
+
+  /*======================= LaunchDialer =========================*/
+  Future<void> _launchDialer({required String phoneNumber}) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   /* --------------- Tab Bar variable  ---------------- */

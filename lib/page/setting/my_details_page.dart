@@ -9,13 +9,14 @@ import 'package:salon/page/blog/Insights_home_page.dart';
 import 'package:salon/page/review_rating/review_and_rating_page.dart';
 import 'package:salon/page/setting/about_app_page.dart';
 import 'package:salon/page/setting/availability_setting_page.dart';
+import 'package:salon/page/setting/faq_page.dart';
 import 'package:salon/page/setting/product_list_page.dart';
 import 'package:salon/page/setting/service_list_page.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+
 import '../../project_specific/logout_dialog.dart';
-import '../bank_account/add_new_fresh_account_page.dart';
 import '../stylist_all_module/stylist_home_page/edit_profile.dart';
 import 'category/categoty_page.dart';
 
@@ -86,13 +87,13 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                           ));
                     }),
                 _dividerCustom(),
-                _customRowWidget(
+                /* _customRowWidget(
                     titleName: "Account Details",
                     image: AssetsConstant.accountDetails,
                     onTap: () {
                       Get.to(() => const AddNewFreshAccountPage());
                     }),
-                _dividerCustom(),
+                _dividerCustom(),*/
                 _customRowWidget(
                     titleName: "Review & Ratings",
                     image: AssetsConstant.reviewRatings,
@@ -103,7 +104,9 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                 _customRowWidget(
                     titleName: "FAQ’s & Support",
                     image: AssetsConstant.faq,
-                    onTap: () {}),
+                    onTap: () {
+                      Get.to(() => const FaqPage());
+                    }),
                 _dividerCustom(),
                 _customRowWidget(
                     titleName: "About Us",

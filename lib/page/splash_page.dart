@@ -42,7 +42,7 @@ class _SplashPageState extends State<SplashPage> {
             color: ColorConstant.primaryColor,
             child: Center(
               child: Text(
-                "SALON",
+                "Scuts for Business",
                 style: AppTextTheme.bold
                     .copyWith(color: ColorConstant.whiteColor, fontSize: 35),
               ),

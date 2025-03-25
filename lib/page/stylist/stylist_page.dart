@@ -7,6 +7,7 @@ import 'package:salon/page/stylist/widget/stylist_list_tile_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+
 import '../../controller/home_controller.dart';
 import 'add_stylist/add_stylist_page.dart';
 
@@ -117,6 +118,17 @@ class _StylistPageState extends State<StylistPage> {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 12),
                                   child: StylistListTileWidget(
+                                    callback: () {
+                                      _homeController.doDeleteArtiest(
+                                          callback: () {
+                                            _homeController.doSalonArtistList();
+                                          },
+                                          artistId: _homeController
+                                                  .getSalonArtistListModel
+                                                  .data?[index]
+                                                  .id ??
+                                              "");
+                                    },
                                     id: _homeController.getSalonArtistListModel
                                             .data?[index].id ??
                                         "",

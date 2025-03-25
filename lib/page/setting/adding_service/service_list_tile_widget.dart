@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -42,20 +43,20 @@ class _ServiceListTileWidgetState extends State<ServiceListTileWidget> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(6),
                 child: CachedNetworkImage(
-                  width: 80,
-                  height: 80,
+                  width: 75,
+                  height: 75,
                   fit: BoxFit.cover,
                   imageUrl: widget.image,
                   placeholder: (context, url) => const Image(
                     image: AssetImage(AssetsConstant.placeHolder),
-                    width: 80,
-                    height: 80,
+                    width: 75,
+                    height: 75,
                     fit: BoxFit.cover,
                   ),
                   errorWidget: (context, url, error) => const Image(
                     image: AssetImage(AssetsConstant.placeHolder),
-                    width: 80,
-                    height: 80,
+                    width: 75,
+                    height: 75,
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -71,10 +72,15 @@ class _ServiceListTileWidgetState extends State<ServiceListTileWidget> {
                         style: AppTextTheme.medium.copyWith(
                             color: ColorConstant.grayTextColor, fontSize: 13),
                       ),
-                      Text(
-                        widget.name,
-                        style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 13),
+                      SizedBox(
+                        width: Get.width*0.18,
+                        child: Text(
+                          widget.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.blackColor, fontSize: 13),
+                        ),
                       )
                     ],
                   ),

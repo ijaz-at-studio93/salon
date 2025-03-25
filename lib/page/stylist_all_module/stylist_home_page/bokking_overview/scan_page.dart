@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+
 import 'package:qr_scanner_with_effect/qr_scanner_with_effect.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
@@ -9,6 +10,7 @@ import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/widget/portfolio_permission_dialog.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
+
 
 class ScanPage extends StatefulWidget {
   final VoidCallback callback;

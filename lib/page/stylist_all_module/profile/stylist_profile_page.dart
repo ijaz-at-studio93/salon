@@ -6,11 +6,13 @@ import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/page/blog/Insights_home_page.dart';
+import 'package:salon/page/setting/faq_page.dart';
 import 'package:salon/page/stylist_all_module/profile/served_booking_page.dart';
 import 'package:salon/page/stylist_all_module/profile/stylist_review_and_rating_page.dart';
 import 'package:salon/project_specific/logout_dialog.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+
 import '../../setting/about_app_page.dart';
 import 'edit_profile_stylist_page.dart';
 
@@ -58,7 +60,9 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
           _customRowWidget(
               titleName: "FAQ’s & Support",
               image: AssetsConstant.faq,
-              onTap: () {}),
+              onTap: () {
+                Get.to(() => const FaqPage());
+              }),
           _dividerCustom(),
           _customRowWidget(
               titleName: "About Us",
@@ -123,6 +127,7 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
           ),
           const SizedBox(width: 20),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 _authController.getSalonArtistResponseModel.data
@@ -143,23 +148,13 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: ColorConstant.primaryColor)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        AssetsConstant.editIcon,
-                        width: 14,
-                        height: 14,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        "Edit Details",
+                    child: Center(
+                      child: Text(
+                        "View Profile",
                         style: AppTextTheme.regular.copyWith(
                             color: ColorConstant.primaryColor, fontSize: 13),
-                      )
-                    ],
-                  ),
-                ),
+                      ),
+                    )),
               )
             ],
           ),

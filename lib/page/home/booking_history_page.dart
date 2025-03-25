@@ -46,12 +46,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                const SizedBox(),
+               /* Text(
                   "Latest Order",
                   textScaler: const TextScaler.linear(0.85),
                   style: AppTextTheme.bold
                       .copyWith(fontSize: 20, color: ColorConstant.blackColor),
-                ),
+                ),*/
                 overall == "0" ? const SizedBox() : _noOfServiceYouOffer(),
               ],
             ),

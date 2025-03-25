@@ -44,6 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
   int _start = 60;
 
   bool isResendOTp = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +65,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 15, vertical: 10),
                         child: Text(
-                          "Saloon Detail",
+                          "Salon Detail",
                           style: AppTextTheme.bold.copyWith(
                               color: ColorConstant.blackColor, fontSize: 16),
                         ),
@@ -663,6 +664,7 @@ class _RegisterPageState extends State<RegisterPage> {
   /*-------------- Mobile  number ---------------*/
   bool isOTPButton = false;
   bool isOTPField = false;
+
   _mobileNumberWidget({
     required TextEditingController textEditingController,
     required String hintText,
@@ -760,6 +762,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   /*----------------- Service Image --------------*/
   File imagePath = File("");
+
   _salonImage() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),

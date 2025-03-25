@@ -6,6 +6,7 @@ import 'package:salon/controller/home_controller.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DocumentSubmittedPage extends StatefulWidget {
   const DocumentSubmittedPage({super.key});
@@ -67,22 +68,30 @@ class _DocumentSubmittedPageState extends State<DocumentSubmittedPage> {
                   bottom: 35,
                   right: 0,
                   left: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        AssetsConstant.callIcon,
-                        height: 24,
-                        width: 24,
-                        color: ColorConstant.primaryColor,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        "Contact Us",
-                        style: AppTextTheme.medium.copyWith(
-                            fontSize: 19, color: ColorConstant.primaryColor),
-                      )
-                    ],
+                  child: GestureDetector(
+                    onTap: () {
+                      _launchDialer(
+                          phoneNumber: _homeController.getEligibilityModel.data
+                                  ?.contactDetails?.contactUsMobile ??
+                              "");
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          AssetsConstant.callIcon,
+                          height: 24,
+                          width: 24,
+                          color: ColorConstant.primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Contact Us",
+                          style: AppTextTheme.medium.copyWith(
+                              fontSize: 19, color: ColorConstant.primaryColor),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -91,6 +100,17 @@ class _DocumentSubmittedPageState extends State<DocumentSubmittedPage> {
         ),
       ),
     );
+  }
+
+  /*======================= LaunchDialer =========================*/
+  Future<void> _launchDialer({required String phoneNumber}) async {
+    final Uri url = Uri.parse('tel:$phoneNumber');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   /*------------- Get Tread Log Data ------------*/

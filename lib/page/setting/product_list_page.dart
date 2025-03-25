@@ -8,6 +8,7 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/setting/widget/update_product.dart';
 import 'package:salon/project_specific/project_appbar.dart';
+
 import '../../project_specific/progressbar_view.dart';
 import '../../project_specific/text_theme.dart';
 import '../../util/NoItemsWidget.dart';
@@ -238,6 +239,73 @@ class _ProductListPageState extends State<ProductListPage> {
                                 )
                               ],
                             ),
+                            Expanded(
+                              child: IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text(
+                                            "Delete",
+                                            style: AppTextTheme.medium.copyWith(
+                                                color:
+                                                    ColorConstant.blackColor),
+                                          ),
+                                          content: Text(
+                                            "Are you sure you want to delete product",
+                                            style: AppTextTheme.medium.copyWith(
+                                                color:
+                                                    ColorConstant.blueGrayColor,
+                                                fontSize: 14),
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  Get.back();
+                                                },
+                                                child: Text(
+                                                  "Cancel",
+                                                  style: AppTextTheme.medium
+                                                      .copyWith(
+                                                          color: ColorConstant
+                                                              .redColor,
+                                                          fontSize: 14),
+                                                )),
+                                            TextButton(
+                                                onPressed: () {
+                                                  _homeController
+                                                      .doDeleteProduct(
+                                                          callback: () {
+                                                            Get.back();
+                                                            _homeController
+                                                                .doGetProductListData();
+                                                          },
+                                                          productId: _homeController
+                                                                  .getProductListModel
+                                                                  .productList?[
+                                                                      i]
+                                                                  .id ??
+                                                              "");
+                                                },
+                                                child: Text(
+                                                  "Yes",
+                                                  style: AppTextTheme.medium
+                                                      .copyWith(
+                                                          color: ColorConstant
+                                                              .primaryColor,
+                                                          fontSize: 14),
+                                                )),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: ColorConstant.redColor,
+                                  )),
+                            )
                           ],
                         ),
                       );

@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'dart:ui';
-import 'package:flutter/animation.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
@@ -13,7 +11,6 @@ import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
 import 'package:salon/model/bank_account/salon_bank_account.dart';
-import 'package:salon/model/master/master_api.dart';
 import 'package:salon/model/salon_category/salon_category_model.dart';
 import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
@@ -188,8 +185,8 @@ class HomeController extends GetxController {
   set setSalonCategoryListModel(val) => _salonCategoryListModel.value = val;
 
   /*-------------------- Get  bank List ----------------------*/
-  final RxList<ListAllBankModel> _bankModelList = <ListAllBankModel>[].obs;
-  List<ListAllBankModel> get bankModelList => _bankModelList;
+/*  final RxList<ListAllBankModel> _bankModelList = <ListAllBankModel>[].obs;
+  List<ListAllBankModel> get bankModelList => _bankModelList;*/
 
   /*-------------------  get  Account Data list ------------*/
   final Rx<SalonBankAccountList> _salonBankAccountList =
@@ -246,6 +243,38 @@ class HomeController extends GetxController {
     try {
       _showProgress.value = true;
       _productListModel.value = await HomeAPI.getProductList();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------- delete product ---------------------*/
+  doDeleteProduct(
+      {required VoidCallback callback, required String productId}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.deleteProduct(productId: productId);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------- Delete Stylist ----------*/
+  doDeleteArtiest(
+      {required VoidCallback callback, required String artistId}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.deleteStylist(artistId: artistId);
+      if (result) {
+        callback.call();
+      }
     } catch (e) {
       showError(e);
     } finally {
@@ -884,7 +913,7 @@ class HomeController extends GetxController {
   }
 
   /*-------------------- bankModelList ---------------*/
-  doGetBankList() async {
+  /* doGetBankList() async {
     try {
       _showProgress.value = true;
       _bankModelList.value = await HomeAPI.getListBankListData();
@@ -894,7 +923,7 @@ class HomeController extends GetxController {
       _showProgress.value = false;
     }
   }
-
+*/
   /*-------------------- Get Bank Account Details --------------*/
   doGetBankAccountDetails() async {
     try {

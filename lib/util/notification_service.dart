@@ -78,7 +78,7 @@ class PushNotificationService {
     await flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
-    var androidSettings = const AndroidInitializationSettings('@mipmap/notification_icon');
+    var androidSettings = const AndroidInitializationSettings('@drawable/ic_notification');
     var iOSSettings = const DarwinInitializationSettings(
       requestSoundPermission: false,
       requestAlertPermission: false,

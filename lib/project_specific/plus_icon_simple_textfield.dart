@@ -39,42 +39,46 @@ class _PlusIconSimpleTextFieldState extends State<PlusIconSimpleTextField> {
                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
           ),
           const SizedBox(height: 12),
-          Container(
-              height: 50,
-              width: Get.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: ColorConstant.borderColor,
-                ),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: Get.width * 0.8,
-                    child: TextField(
-                      onTap: widget.onTap,
-                      readOnly: widget.readOnly,
-                      canRequestFocus: false,
-                      controller: widget.textEditingController,
-                      keyboardType: widget.textInputType,
-                      textInputAction: widget.textInputAction,
-                      style: AppTextTheme.medium.copyWith(
-                          color: ColorConstant.blackColor, fontSize: 13),
-                      decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.only(left: 12),
-                          border: InputBorder.none,
-                          hintText: widget.hintText,
-                          hintStyle: AppTextTheme.medium.copyWith(
-                              color: ColorConstant.grayColor, fontSize: 13)),
-                    ),
+          GestureDetector(
+            onTap: widget.onTap,
+            child: Container(
+                height: 50,
+                width: Get.width,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.transparent,
+                  border: Border.all(
+                    color: ColorConstant.borderColor,
                   ),
-                  const Icon(
-                    Icons.add,
-                    color: ColorConstant.idColor,
-                  )
-                ],
-              )),
+                ),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: Get.width * 0.8,
+                      child: TextField(
+                        onTap: widget.onTap,
+                        readOnly: widget.readOnly,
+                        canRequestFocus: false,
+                        controller: widget.textEditingController,
+                        keyboardType: widget.textInputType,
+                        textInputAction: widget.textInputAction,
+                        style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.blackColor, fontSize: 13),
+                        decoration: InputDecoration(
+                            contentPadding: const EdgeInsets.only(left: 12),
+                            border: InputBorder.none,
+                            hintText: widget.hintText,
+                            hintStyle: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.grayColor, fontSize: 13)),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.add,
+                      color: ColorConstant.idColor,
+                    )
+                  ],
+                )),
+          ),
         ],
       ),
     );

@@ -35,8 +35,8 @@ class AuthAPI {
         .post("auth/salon/reset-password-otp", data: {
       "mobile": mobileNo,
       "countryCode": "91",
-      "password": "12345678",
-      "otp": "123456"
+      "password": password,
+      "otp": otp
     });
     if (response.isSuccess) {
       return true;

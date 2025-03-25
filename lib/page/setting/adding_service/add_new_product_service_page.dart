@@ -1,7 +1,6 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
@@ -197,12 +196,23 @@ class _AddNewProductServicePageState extends State<AddNewProductServicePage> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
+                                    for (int i = 0;
+                                        i < _homeController.productId.length;
+                                        i++) {
+                                      if (_homeController.productId[i] ==
+                                          _homeController.getProductListModel
+                                              .productList?[index].id) {
+                                        _homeController
+                                            .getProductListModel
+                                            .productList?[index]
+                                            .isSelectedProduct = true;
+                                      }
+                                    }
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20, vertical: 10),
                                       child: AddProductCheckBoxWidget(
                                         homeController: _homeController,
-
                                         product: _homeController
                                             .getProductListModel
                                             .productList![index],

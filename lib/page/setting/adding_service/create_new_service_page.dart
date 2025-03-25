@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,6 @@ import 'package:salon/page/setting/adding_service/service_preview_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/plus_icon_simple_textfield.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
-
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/util/pick_image.dart';
 
@@ -25,6 +25,7 @@ class CreateNewServicePage extends StatefulWidget {
   final bool isUpdate;
   final String serviceId;
   final SalonService? salonService;
+
   const CreateNewServicePage(
       {super.key,
       required this.isUpdate,
@@ -40,7 +41,10 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   final _descriptionController = TextEditingController();
   final _servicePrice = TextEditingController();
   final _duration = TextEditingController();
-  final _category = TextEditingController();
+
+  final Rx<String> _category = "".obs;
+
+  String get getCategory => _category.value;
   final _product = TextEditingController();
   bool isHomeServiceEnable = false; // Variable to track the switch state
 
@@ -51,16 +55,20 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     super.initState();
     _homeController.categoryId.clear();
     _homeController.productId.clear();
+
     if (widget.isUpdate) {
       _serviceName.text = widget.salonService?.name ?? "";
       _descriptionController.text = widget.salonService?.description ?? "";
       _servicePrice.text = widget.salonService?.price.toString() ?? "";
       _duration.text = widget.salonService?.duration.toString() ?? "";
-      _category.text =
+      _category.value =
           "Select Category${widget.salonService?.categories?.length.toString() ?? ""}";
       isHomeServiceEnable = widget.salonService?.homeService ?? false;
     }
   }
+
+  int count = 0;
+  int productCount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -158,95 +166,174 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                         ),
                       ),
                       _selectServiceGender(),
-                      const SizedBox(height: 16),
-                      PlusIconSimpleTextField(
-                          onTap: () {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                enableDrag: false,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(32),
-                                  topRight: Radius.circular(32),
-                                )),
-                                context: context,
-                                builder: (context) {
-                                  return AddCategoryNewService(
-                                    callback: () {
-                                      _homeController.categoryId.clear();
-                                      for (int i = 0;
-                                          i <
-                                              _homeController.getCategoryModel
-                                                  .data!.length;
-                                          i++) {
-                                        if (_homeController.getCategoryModel
-                                                .data?[i].isSelect ??
-                                            false) {
-                                          _homeController.categoryId.add(
-                                              _homeController.getCategoryModel
-                                                  .data?[i].id);
-                                          _category.text =
-                                              "Select Category ${i == 0 ? 1 : i}";
-                                        }
-                                      }
-                                    },
-                                  );
-                                });
-                          },
-                          readOnly: true,
-                          textEditingController: _category,
-                          hintText: "Tap To Enter",
-                          textInputType: TextInputType.text,
-                          textInputAction: TextInputAction.next,
-                          title: "Category Name"),
-                      const SizedBox(height: 16),
-                      PlusIconSimpleTextField(
-                          onTap: () {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                enableDrag: false,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(32),
-                                  topRight: Radius.circular(32),
-                                )),
-                                context: context,
-                                builder: (context) {
-                                  return AddNewProductServicePage(
-                                    callback: () {
-                                      _homeController.productId.clear();
-                                      for (int i = 0;
-                                          i <
-                                              _homeController
-                                                  .getProductListModel
-                                                  .productList!
-                                                  .length;
-                                          i++) {
-                                        if (_homeController
-                                                .getProductListModel
-                                                .productList?[i]
-                                                .isSelectedProduct ??
-                                            false) {
-                                          _product.text =
-                                              "Select Product Service ${i == 0 ? 1 : i}";
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          "Category Name",
+                          style: AppTextTheme.regular.copyWith(
+                              fontSize: 13, color: ColorConstant.blackColor),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            isScrollControlled: true,
+                            enableDrag: false,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(32),
+                                topRight: Radius.circular(32),
+                              ),
+                            ),
+                            context: context,
+                            builder: (context) {
+                              return AddCategoryNewService(
+                                callback: () {
+                                  count = 0;
+                                  _homeController.categoryId.clear();
+                                  int length = _homeController
+                                          .getCategoryModel.data?.length ??
+                                      0;
 
-                                          _homeController.productId.add(
-                                              _homeController
-                                                  .getProductListModel
-                                                  .productList?[i]
-                                                  .id);
-                                        }
-                                      }
-                                    },
-                                  );
-                                });
-                          },
-                          readOnly: true,
-                          textEditingController: _product,
-                          hintText: "Tap To Enter",
-                          textInputType: TextInputType.text,
-                          textInputAction: TextInputAction.next,
-                          title: "Product/Service "),
+                                  for (int i = 0; i < length; i++) {
+                                    if (_homeController.getCategoryModel
+                                            .data?[i].isSelect ??
+                                        false) {
+                                      _homeController.categoryId.add(
+                                        _homeController
+                                            .getCategoryModel.data?[i].id,
+                                      );
+                                      count++; // Increment count only for selected categories
+                                    }
+                                  }
+
+                                  setState(() {});
+                                },
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          height: 50,
+                          width: Get.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.transparent,
+                            border: Border.all(
+                              color: ColorConstant.borderColor,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                count == 0
+                                    ? 'Tap To Enter'
+                                    : "Selected Category ${count.toString()}",
+                                style: AppTextTheme.medium.copyWith(
+                                  color: count == 0
+                                      ? ColorConstant.grayColor
+                                      : ColorConstant.blackColor,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.add,
+                                color: ColorConstant.idColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          "Product/Service",
+                          style: AppTextTheme.regular.copyWith(
+                              fontSize: 13, color: ColorConstant.blackColor),
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            isScrollControlled: true,
+                            enableDrag: false,
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(32),
+                                topRight: Radius.circular(32),
+                              ),
+                            ),
+                            context: context,
+                            builder: (context) {
+                              return AddNewProductServicePage(
+                                callback: () {
+                                  productCount = 0;
+                                  _homeController.categoryId.clear();
+                                  int length = _homeController
+                                          .getProductListModel
+                                          .productList
+                                          ?.length ??
+                                      0;
+
+                                  for (int i = 0; i < length; i++) {
+                                    if (_homeController
+                                            .getProductListModel
+                                            .productList?[i]
+                                            .isSelectedProduct ??
+                                        false) {
+                                      _homeController.productId.add(
+                                          _homeController.getProductListModel
+                                              .productList?[i].id);
+                                      productCount++; // Increment count only for selected categories
+                                    }
+                                  }
+
+                                  setState(() {});
+                                },
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          height: 50,
+                          width: Get.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            color: Colors.transparent,
+                            border: Border.all(
+                              color: ColorConstant.borderColor,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                productCount == 0
+                                    ? 'Tap To Enter'
+                                    : "Select Product Service ${productCount.toString()}",
+                                style: AppTextTheme.medium.copyWith(
+                                  color: count == 0
+                                      ? ColorConstant.grayColor
+                                      : ColorConstant.blackColor,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const Icon(
+                                Icons.add,
+                                color: ColorConstant.idColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       GestureDetector(
                         onTap: () {},
@@ -318,7 +405,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     } else if (_duration.text.isEmpty) {
       showMessage("Please enter service timing");
       return;
-    } else if (_category.text.isEmpty) {
+    } else if (getCategory.isEmpty) {
       showMessage("Please select Category");
       return;
     } else if (imagePath.path.isEmpty) {
@@ -530,6 +617,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   /*----------------- Service Image --------------*/
 
   File imagePath = File("");
+
   _serviceImage() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -597,6 +685,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
 
   /*--------------- Select Service Gender ------------*/
   int _selectedGender = 1;
+
   _selectServiceGender() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

@@ -1,5 +1,7 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
 import 'package:salon/api/dio_client.dart';
@@ -7,7 +9,7 @@ import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
 import 'package:salon/model/bank_account/salon_bank_account.dart';
-import 'package:salon/model/master/master_api.dart';
+
 import 'package:salon/model/salon_category/salon_category_model.dart';
 import 'package:salon/model/salon_dash_board/salon_dash_board_model.dart';
 import 'package:salon/model/salon_document_model/eligibility_model.dart';
@@ -18,7 +20,6 @@ import 'package:salon/model/service_model/appointment_details_model.dart';
 import 'package:salon/model/service_model/category_list_model.dart';
 import 'package:salon/model/service_model/pending_appointments_list_model.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:salon/model/service_model/salon_service_list_model.dart';
 import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/service_model/setting_salon_service_list_model.dart';
@@ -54,6 +55,28 @@ class HomeAPI {
     final response = await DioClient.client.get(APIEndPoint.productList);
     if (response.isSuccess) {
       return ProductListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*======================= delete Product ===================*/
+  static Future<bool> deleteProduct({required String productId}) async {
+    final response =
+        await DioClient.client.delete("salon/product/$productId/delete");
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*===================== Delete Artiest =====================*/
+  static Future<bool> deleteStylist({required String artistId}) async {
+    final response =
+    await DioClient.client.delete("salon/artist/$artistId/delete");
+    if (response.isSuccess) {
+      return true;
     } else {
       throw response.data;
     }
@@ -747,16 +770,16 @@ class HomeAPI {
   }
 
   /*---------------------- Master List All Bank -----------------------*/
-  static Future<List<ListAllBankModel>> getListBankListData() async {
-    final response = await DioClient.client.get('common/bank/list-all-bank');
-    if (response.isSuccess) {
-      return response.data['data']
-          .map<ListAllBankModel>((e) => ListAllBankModel.fromJson(e))
-          .toList();
-    } else {
-      throw response.data;
-    }
-  }
+  // static Future<List<ListAllBankModel>> getListBankListData() async {
+  //   final response = await DioClient.client.get('common/bank/list-all-bank');
+  //   if (response.isSuccess) {
+  //     return response.data['data']
+  //         .map<ListAllBankModel>((e) => ListAllBankModel.fromJson(e))
+  //         .toList();
+  //   } else {
+  //     throw response.data;
+  //   }
+  // }
 
 
   /*-------------------  get Salon  bank Account -------------------*/

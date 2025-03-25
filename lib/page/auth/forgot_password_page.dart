@@ -167,7 +167,7 @@ class _ForGotPasswordPageState extends State<ForGotPasswordPage> {
           ),
           const SizedBox(height: 35),
           Text(
-            "Login to \nyour Scout Account",
+            "Login to \nyour Scuts Account",
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.whiteColor, fontSize: 23),
           ),

@@ -1,16 +1,18 @@
 import 'dart:io';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
+import 'package:salon/api/master_api.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/master_model/get_category_model.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/dropdown/dropdown_search.dart';
 import 'package:salon/util/pick_image.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -94,7 +96,38 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   child: Column(
                     children: [
                       const SizedBox(height: 10),
-                      _selectCategory(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: DropdownSearch<GetCategoryData>(
+                            mode: Mode.MENU,
+                            onFind: (_) async {
+                              return MasterApi.getCategory();
+                            },
+                            itemAsString: (op) => op.name ?? "Select Category",
+                            popupBackgroundColor: ColorConstant.primaryColor,
+                            dropDownButton: const Icon(Icons.arrow_downward_sharp),
+                            dropdownSearchBaseStyle: Get.textTheme.bodyLarge
+                                ?.copyWith(color: Colors.white),
+                            dropdownSearchDecoration: InputDecoration(
+                                labelText: "",
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 14),
+                                isDense: false,
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12))),
+                            enabled: true,
+                            onChanged: (value) {
+                              categoryId = value?.id ?? "";
+                            },
+                            autoValidateMode: AutovalidateMode.onUserInteraction,
+                            validator: (u) => GetUtils.isNullOrBlank(u) ?? true
+                                ? "Please select any value"
+                                : null,
+                            searchBoxStyle: Get.textTheme.bodyLarge?.copyWith(
+                              color: Colors.white,
+                            ),
+                            showSearchBox: false),
+                      ),
                       const SizedBox(height: 16),
                       SimpleTextFieldWidget(
                           textEditingController: _productName,
@@ -208,65 +241,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         color: ColorConstant.grayColor, fontSize: 13)),
               )),
         ],
-      ),
-    );
-  }
-
-  /*---------------------- Select  Category ---------------------*/
-  _selectCategory() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        height: 50,
-        width: Get.width,
-        child: DropdownButtonFormField2(
-          isExpanded: true,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          hint: Text(
-            'Select Category',
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.grayColor, fontSize: 13),
-          ),
-          items: _homeController.getCategoryModel.data
-              ?.map((item) => DropdownMenuItem(
-                    value: item.name,
-                    onTap: () {
-                      categoryId = item.id.toString();
-                    },
-                    child: Text(item.name ?? "",
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 13)),
-                  ))
-              .toList(),
-          validator: (value) {
-            if (value == null) {
-              return 'Select Category';
-            }
-            return null;
-          },
-          onChanged: (value) {
-            //Do something when selected item is changed.
-          },
-          onSaved: (value) {
-            /* selectedValue = value.toString();*/
-          },
-          buttonStyleData: const ButtonStyleData(
-            padding: EdgeInsets.only(right: 8),
-          ),
-          dropdownStyleData: DropdownStyleData(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-            ),
-          ),
-          menuItemStyleData: const MenuItemStyleData(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-          ),
-        ),
       ),
     );
   }

@@ -14,6 +14,7 @@ import 'package:flutter_google_places_sdk/flutter_google_places_sdk.dart' as fp;
 
 class LocationPickPage extends StatefulWidget {
   final VoidCallback callback;
+
   const LocationPickPage({super.key, required this.callback});
 
   @override
@@ -33,6 +34,10 @@ class _LocationPickPageState extends State<LocationPickPage> {
       fp.FlutterGooglePlacesSdk('AIzaSyATecmTI6WWH24gR6wCR4IooVH77VCnSgc');
   ValueNotifier<List<fp.AutocompletePrediction>> locationData =
       ValueNotifier([]);
+
+  String address = "";
+  double lat = 0.0;
+  double lng = 0.0;
 
   @override
   void initState() {
@@ -55,8 +60,14 @@ class _LocationPickPageState extends State<LocationPickPage> {
           actions: [
             IconButton(
               onPressed: () {
+                _authController.salonAddressLan = lng;
+                _authController.salonAddressLat = lat;
+                _authController.salonCurrentAddress = address;
                 Navigator.pop(context);
                 widget.callback.call();
+                print(address);
+                print(lat.toString());
+                print(lng.toString());
               },
               icon: const Icon(
                 Icons.check_circle,
@@ -66,7 +77,6 @@ class _LocationPickPageState extends State<LocationPickPage> {
           ],
           nameOfScreen: "Pick Your Location",
           isBackIcon: true,
-          callback: widget.callback,
         ),
         body: _locationLoaded
             ? Stack(
@@ -94,9 +104,9 @@ class _LocationPickPageState extends State<LocationPickPage> {
                         ),
                       ));
 
-                      _authController.salonAddressLan = latLng.longitude;
-                      _authController.salonAddressLat = latLng.latitude;
-                      _authController.salonCurrentAddress =
+                      lng = latLng.longitude;
+                      lat = latLng.latitude;
+                      address =
                           "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
                       setState(() {});
                     },
@@ -216,15 +226,10 @@ class _LocationPickPageState extends State<LocationPickPage> {
                                                   ));
                                                 });
 
-                                                _authController
-                                                        .salonAddressLan =
-                                                    location[0].longitude;
-                                                _authController
-                                                        .salonAddressLat =
-                                                    location[0].latitude;
-                                                _authController
-                                                        .salonCurrentAddress =
-                                                    "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
+                                                lng = location[0].longitude;
+                                                lat = location[0].latitude;
+                                                address =
+                                                    _searchMapLocation.text;
 
                                                 _marker.add(Marker(
                                                   markerId:
@@ -329,9 +334,9 @@ class _LocationPickPageState extends State<LocationPickPage> {
     List<Placemark> placeMarks =
         await placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark place = placeMarks[0];
-    _authController.salonAddressLan = position.longitude;
-    _authController.salonAddressLat = position.latitude;
-    _authController.salonCurrentAddress =
+    lng = position.longitude;
+    lat = position.latitude;
+    address =
         "${place.street}, ${place.subLocality}, ${place.locality}, ${place.postalCode}, ${place.country}";
   }
 

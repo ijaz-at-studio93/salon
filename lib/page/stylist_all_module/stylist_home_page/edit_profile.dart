@@ -63,9 +63,9 @@ class _EditProfileState extends State<EditProfile> {
                 : 2;
 
         _authController.salonAddressLat = _authController
-            .getGetSalonProfile.data?.geoLocationPoint?.coordinates?[0];
-        _authController.salonAddressLan = _authController
             .getGetSalonProfile.data?.geoLocationPoint?.coordinates?[1];
+        _authController.salonAddressLan = _authController
+            .getGetSalonProfile.data?.geoLocationPoint?.coordinates?[0];
       });
     });
   }
@@ -601,7 +601,7 @@ class _EditProfileState extends State<EditProfile> {
                 ),
                 const SizedBox(width: 5),
                 SizedBox(
-                  width: Get.width * 0.6,
+                  width: Get.width * 0.55,
                   child: TextField(
                     onChanged: (val) {
                       if (val.length == 10) {

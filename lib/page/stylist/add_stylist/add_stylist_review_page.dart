@@ -31,7 +31,7 @@ class _AddStylistReviewPageState extends State<AddStylistReviewPage> {
               _stylistProfilePhoto(),
               _headerWidget(
                   color: Colors.transparent,
-                  title: "Unique Scout ID",
+                  title: "Unique Scuts ID",
                   titleValue: "AJHUID7686"),
               _headerWidget(
                   color: ColorConstant.review,

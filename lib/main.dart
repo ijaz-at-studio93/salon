@@ -15,6 +15,7 @@ import 'package:salon/page/splash_page.dart';
 import 'package:salon/util/NotificationUtils.dart';
 import 'package:salon/util/notification_service.dart';
 import 'package:salon/util/shared_prefs.dart';
+
 import 'api/dio_client.dart';
 import 'controller/auth_controller.dart';
 
@@ -24,12 +25,10 @@ void main() async {
   if (Platform.isAndroid) {
     await Firebase.initializeApp(
         options: const FirebaseOptions(
-      apiKey: 'AIzaSyATecmTI6WWH24gR6wCR4IooVH77VCnSgc',
-      appId: '1:664897641321:android:e7f891474d9e7daeabfbf8',
-      messagingSenderId: '664897641321',
-      projectId: 'scuts-3ede2',
-      storageBucket: 'salon-534a7.appspot.com',
-    ));
+            apiKey: 'AIzaSyATecmTI6WWH24gR6wCR4IooVH77VCnSgc',
+            appId: '1:664897641321:android:e7f891474d9e7daeabfbf8',
+            messagingSenderId: '664897641321',
+            projectId: 'scuts-3ede2'));
   } else {
     await Firebase.initializeApp();
   }
@@ -122,7 +121,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Salon',
+      debugShowCheckedModeBanner: false,
+      title: 'Scuts for business',
       theme: ThemeData(
         fontFamily: "Satoshi",
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

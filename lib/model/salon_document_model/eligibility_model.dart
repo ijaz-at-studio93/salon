@@ -9,7 +9,7 @@ class EligibilityModel {
   EligibilityModel.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     success = json['success'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? new Data.fromJson(json['data']) : null;
     message = json['message'];
   }
 
@@ -28,13 +28,17 @@ class EligibilityModel {
 class Data {
   bool? isApproved;
   DocumentData? documentData;
+  ContactDetails? contactDetails;
 
-  Data({this.isApproved, this.documentData});
+  Data({this.isApproved, this.documentData, this.contactDetails});
 
   Data.fromJson(Map<String, dynamic> json) {
     isApproved = json['isApproved'];
     documentData = json['documentData'] != null
-        ? DocumentData.fromJson(json['documentData'])
+        ? new DocumentData.fromJson(json['documentData'])
+        : null;
+    contactDetails = json['contactDetails'] != null
+        ? new ContactDetails.fromJson(json['contactDetails'])
         : null;
   }
 
@@ -43,6 +47,9 @@ class Data {
     data['isApproved'] = isApproved;
     if (documentData != null) {
       data['documentData'] = documentData!.toJson();
+    }
+    if (contactDetails != null) {
+      data['contactDetails'] = contactDetails!.toJson();
     }
     return data;
   }
@@ -56,9 +63,9 @@ class DocumentData {
 
   DocumentData(
       {this.salonDocumentCount,
-      this.submittedDocumentCount,
-      this.isAllSubmitted,
-      this.isAllVerified});
+        this.submittedDocumentCount,
+        this.isAllSubmitted,
+        this.isAllVerified});
 
   DocumentData.fromJson(Map<String, dynamic> json) {
     salonDocumentCount = json['salonDocumentCount'];
@@ -73,6 +80,25 @@ class DocumentData {
     data['submittedDocumentCount'] = submittedDocumentCount;
     data['isAllSubmitted'] = isAllSubmitted;
     data['isAllVerified'] = isAllVerified;
+    return data;
+  }
+}
+
+class ContactDetails {
+  String? contactUsMobile;
+  String? contactUsEmail;
+
+  ContactDetails({this.contactUsMobile, this.contactUsEmail});
+
+  ContactDetails.fromJson(Map<String, dynamic> json) {
+    contactUsMobile = json['contactUsMobile'];
+    contactUsEmail = json['contactUsEmail'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['contactUsMobile'] = contactUsMobile;
+    data['contactUsEmail'] = contactUsEmail;
     return data;
   }
 }

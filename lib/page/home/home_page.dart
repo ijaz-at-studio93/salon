@@ -135,8 +135,8 @@ class _HomepageState extends State<Homepage> {
               : _homeController.getEligibilityModel.data?.documentData
                           ?.isAllSubmitted ??
                       false
-                  ? const CompleteProfilePage()
-                  : const DocumentSubmittedPage(),
+                  ?const DocumentSubmittedPage()
+                  : const CompleteProfilePage(),
     );
   }
 
@@ -155,43 +155,7 @@ class _HomepageState extends State<Homepage> {
               style: AppTextTheme.bold
                   .copyWith(color: ColorConstant.blackColor, fontSize: 19),
             ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.primaryColor.withOpacity(0.2),
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            AssetsConstant.notificationIcon,
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 23,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorConstant.orangeDotColor),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            )
+
           ],
         ),
       ),

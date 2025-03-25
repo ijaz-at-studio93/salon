@@ -7,15 +7,12 @@ import 'package:salon/page/auth/forgot_password_page.dart';
 import 'package:salon/page/auth/register_page.dart';
 import 'package:salon/page/bottom_bar_page.dart';
 import 'package:salon/page/stylist_all_module/stylist_bottom_bar_page.dart';
-
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/password_text_field.dart';
 import 'package:salon/project_specific/phone_field_widget.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
-
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/shared_prefs.dart';
-
 import '../../constant/color_constant.dart';
 
 class LoginPage extends StatefulWidget {
@@ -133,7 +130,7 @@ class _LoginPageState extends State<LoginPage> {
         children: [
           const SizedBox(height: 35),
           Text(
-            "Login to \nyour Scout Account",
+            "Login to \nyour Scuts Account",
             style: AppTextTheme.bold
                 .copyWith(color: ColorConstant.whiteColor, fontSize: 23),
           ),
@@ -174,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             "1": Text(
-              "Saloon",
+              "Salon",
               style: AppTextTheme.medium.copyWith(
                   fontSize: 16,
                   color: selectedStylistOrSalon == "1"
@@ -185,6 +182,9 @@ class _LoginPageState extends State<LoginPage> {
           onValueChanged: (dynamic value) {
             setState(() {
               selectedStylistOrSalon = value;
+              FocusManager.instance.primaryFocus?.unfocus();
+              _mobileTextEditingController.clear();
+              _passwordTextEditingController.clear();
             });
           }),
     );

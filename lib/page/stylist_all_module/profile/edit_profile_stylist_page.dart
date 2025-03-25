@@ -24,7 +24,7 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(nameOfScreen: "Edit Profile"),
+      appBar: const AppBarWidget(nameOfScreen: "Profile"),
       body: Column(
         children: [
           Expanded(

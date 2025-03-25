@@ -12,13 +12,14 @@ class StylistListTileWidget extends StatelessWidget {
   final String image;
   final String name;
   final String id;
+  final VoidCallback callback;
 
   const StylistListTileWidget(
       {super.key,
       required this.onPress,
       required this.image,
       required this.name,
-      required this.id});
+      required this.id, required this.callback});
 
   @override
   Widget build(BuildContext context) {
@@ -107,26 +108,67 @@ class StylistListTileWidget extends StatelessWidget {
               const SizedBox(width: 10),
               PopupMenuButton<String>(
                 onSelected: (val) {
-
-                  showModalBottomSheet(
-                      isScrollControlled: true,
-                      enableDrag: false,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          )),
+                  if (val == "Edit") {
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        enableDrag: false,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        )),
+                        context: context,
+                        builder: (context) {
+                          return StylistEditBottomSheet(
+                            artistId: id,
+                          );
+                        });
+                  } else {
+                    showDialog(
                       context: context,
                       builder: (context) {
-                        return  StylistEditBottomSheet(
-                          artistId: id,
+                        return AlertDialog(
+                          title: Text(
+                            "Delete",
+                            style: AppTextTheme.medium
+                                .copyWith(color: ColorConstant.blackColor),
+                          ),
+                          content: Text(
+                            "Are you sure you want to delete stylist",
+                            style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.blueGrayColor,
+                                fontSize: 14),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                },
+                                child: Text(
+                                  "Cancel",
+                                  style: AppTextTheme.medium.copyWith(
+                                      color: ColorConstant.redColor,
+                                      fontSize: 14),
+                                )),
+                            TextButton(
+                                onPressed: () {
+                                  Get.back();
+                                  callback.call();
+                                },
+                                child: Text(
+                                  "Yes",
+                                  style: AppTextTheme.medium.copyWith(
+                                      color: ColorConstant.primaryColor,
+                                      fontSize: 14),
+                                )),
+                          ],
                         );
-                      });
-
-
+                      },
+                    );
+                  }
                 },
                 itemBuilder: (BuildContext context) {
-                  return {'Edit'}.map((String choice) {
+                  return {'Edit', 'Delete'}.map((String choice) {
                     return PopupMenuItem<String>(
                       value: choice,
                       child: Text(choice),

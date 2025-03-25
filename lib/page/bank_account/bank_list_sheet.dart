@@ -24,7 +24,7 @@ class _BankListSheetState extends State<BankListSheet> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doGetBankList();
+
       bankName = "";
       bankImage = "";
     });
@@ -71,32 +71,32 @@ class _BankListSheetState extends State<BankListSheet> {
             ),
           ),
           const SizedBox(height: 15),
-          Expanded(
-            child: Obx(
-              () => _homeController.showProgress
-                  ? const ProgressBarView()
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: _homeController.bankModelList.length,
-                      itemBuilder: (context, index) {
-                        return BankListWidget(
-                          onTap: () {
-                            bankName =
-                                _homeController.bankModelList[index].name ?? "";
-                            bankImage = _homeController
-                                    .bankModelList[index].bankIconImage ??
-                                "";
-                            widget.callback.call();
-                            Get.back();
-                          },
-                          title:
-                              _homeController.bankModelList[index].name ?? "",
-                          image:
-                              "${APIConstants.image}${_homeController.bankModelList[index].bankIconImage ?? ""}",
-                        );
-                      }),
-            ),
-          ),
+          // Expanded(
+          //   child: Obx(
+          //     () => _homeController.showProgress
+          //         ? const ProgressBarView()
+          //         : ListView.builder(
+          //             shrinkWrap: true,
+          //             itemCount: _homeController.bankModelList.length,
+          //             itemBuilder: (context, index) {
+          //               return BankListWidget(
+          //                 onTap: () {
+          //                   bankName =
+          //                       _homeController.bankModelList[index].name ?? "";
+          //                   bankImage = _homeController
+          //                           .bankModelList[index].bankIconImage ??
+          //                       "";
+          //                   widget.callback.call();
+          //                   Get.back();
+          //                 },
+          //                 title:
+          //                     _homeController.bankModelList[index].name ?? "",
+          //                 image:
+          //                     "${APIConstants.image}${_homeController.bankModelList[index].bankIconImage ?? ""}",
+          //               );
+          //             }),
+          //   ),
+          // ),
         ],
       ),
     );
