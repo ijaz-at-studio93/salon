@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -41,7 +42,7 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   final _descriptionController = TextEditingController();
   final _servicePrice = TextEditingController();
   final _duration = TextEditingController();
-
+  int _selectedGender = 1;
   final Rx<String> _category = "".obs;
 
   String get getCategory => _category.value;
@@ -61,6 +62,13 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
       _descriptionController.text = widget.salonService?.description ?? "";
       _servicePrice.text = widget.salonService?.price.toString() ?? "";
       _duration.text = widget.salonService?.duration.toString() ?? "";
+      if (widget.salonService?.gender == "male") {
+        _selectedGender = 1;
+      } else if (widget.salonService?.gender == "female") {
+        _selectedGender = 2;
+      } else {
+        _selectedGender = 3;
+      }
       _category.value =
           "Select Category${widget.salonService?.categories?.length.toString() ?? ""}";
       isHomeServiceEnable = widget.salonService?.homeService ?? false;
@@ -191,7 +199,8 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                               return AddCategoryNewService(
                                 callback: () {
                                   count = 0;
-                                  _homeController.categoryId.clear();
+
+                                  categoryData.clear();
                                   int length = _homeController
                                           .getCategoryModel.data?.length ??
                                       0;
@@ -201,14 +210,22 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                                             .data?[i].isSelect ??
                                         false) {
                                       _homeController.categoryId.add(
-                                        _homeController
-                                            .getCategoryModel.data?[i].id,
-                                      );
+                                          _homeController.getCategoryModel
+                                                  .data?[i].id ??
+                                              "");
+                                      categoryData.add(_homeController
+                                              .getCategoryModel.data?[i].id ??
+                                          "");
+
+                                      log('Create New Service ::=> ${_homeController.getCategoryModel.data?[i].id}');
+
                                       count++; // Increment count only for selected categories
                                     }
                                   }
 
-                                  setState(() {});
+                                  setState(() {
+                                    log('categoryData New Service ::=> ${categoryData.length}');
+                                  });
                                 },
                               );
                             },
@@ -391,6 +408,9 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     );
   }
 
+  List<String> categoryData = [];
+  List<String> productData = [];
+
   /*--------------------- Do add Service ------------------------*/
   _doAddService() {
     if (_serviceName.text.isEmpty) {
@@ -405,19 +425,18 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
     } else if (_duration.text.isEmpty) {
       showMessage("Please enter service timing");
       return;
-    } else if (getCategory.isEmpty) {
+    } else if (count == 0) {
       showMessage("Please select Category");
       return;
     } else if (imagePath.path.isEmpty) {
       showMessage("Please add Service image");
       return;
     } else {
-      List<String> categoryData = [];
-      List<String> productData = [];
+      print(_homeController.categoryId.length);
 
-      for (int i = 0; i < _homeController.categoryId.length; i++) {
+      /*for (int i = 0; i < _homeController.categoryId.length; i++) {
         categoryData.add(_homeController.categoryId[i]);
-      }
+      }*/
 
       for (int i = 0; i < _homeController.productId.length; i++) {
         productData.add(_homeController.productId[i]);
@@ -684,7 +703,6 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
   }
 
   /*--------------- Select Service Gender ------------*/
-  int _selectedGender = 1;
 
   _selectServiceGender() {
     return Padding(
@@ -697,38 +715,48 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                 _selectedGender = 1;
               });
             },
-            child: Row(
-              children: [
-                Text(
-                  "Male",
-                  style: AppTextTheme.medium
-                      .copyWith(color: ColorConstant.blackColor, fontSize: 13),
-                ),
-                const SizedBox(width: 15),
-                Container(
-                  height: 16,
-                  width: 16,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _selectedGender == 1
-                          ? ColorConstant.primaryColor
-                          : ColorConstant.blackColor,
-                    ),
-                  ),
-                  child: Container(
-                    width: 10,
-                    height: 10,
+            child: Container(
+              height: 30,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: _selectedGender == 1
+                      ? ColorConstant.primaryColor.withOpacity(0.10)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 16,
+                    width: 16,
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _selectedGender == 1
-                          ? ColorConstant.primaryColor
-                          : Colors.transparent,
+                      border: Border.all(
+                        color: _selectedGender == 1
+                            ? ColorConstant.primaryColor
+                            : ColorConstant.blackColor,
+                      ),
+                    ),
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedGender == 1
+                            ? ColorConstant.primaryColor
+                            : Colors.transparent,
+                      ),
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(width: 15),
+                  Text(
+                    "Male",
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 13),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 15),
@@ -738,38 +766,48 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                 _selectedGender = 2;
               });
             },
-            child: Row(
-              children: [
-                Text(
-                  "Female",
-                  style: AppTextTheme.medium
-                      .copyWith(color: ColorConstant.blackColor, fontSize: 13),
-                ),
-                const SizedBox(width: 15),
-                Container(
-                  height: 16,
-                  width: 16,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _selectedGender == 2
-                          ? ColorConstant.primaryColor
-                          : ColorConstant.blackColor,
-                    ),
-                  ),
-                  child: Container(
-                    width: 10,
-                    height: 10,
+            child: Container(
+              height: 30,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: _selectedGender == 2
+                      ? ColorConstant.primaryColor.withOpacity(0.10)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 16,
+                    width: 16,
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _selectedGender == 2
-                          ? ColorConstant.primaryColor
-                          : Colors.transparent,
+                      border: Border.all(
+                        color: _selectedGender == 2
+                            ? ColorConstant.primaryColor
+                            : ColorConstant.blackColor,
+                      ),
+                    ),
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedGender == 2
+                            ? ColorConstant.primaryColor
+                            : Colors.transparent,
+                      ),
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(width: 15),
+                  Text(
+                    "Female",
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 13),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(width: 15),
@@ -779,38 +817,48 @@ class _CreateNewServicePageState extends State<CreateNewServicePage> {
                 _selectedGender = 3;
               });
             },
-            child: Row(
-              children: [
-                Text(
-                  "Unisex",
-                  style: AppTextTheme.medium
-                      .copyWith(color: ColorConstant.blackColor, fontSize: 13),
-                ),
-                const SizedBox(width: 15),
-                Container(
-                  height: 16,
-                  width: 16,
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: _selectedGender == 3
-                          ? ColorConstant.primaryColor
-                          : ColorConstant.blackColor,
-                    ),
-                  ),
-                  child: Container(
-                    width: 10,
-                    height: 10,
+            child: Container(
+              height: 30,
+              width: 100,
+              decoration: BoxDecoration(
+                  color: _selectedGender == 3
+                      ? ColorConstant.primaryColor.withOpacity(0.10)
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 16,
+                    width: 16,
+                    padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _selectedGender == 3
-                          ? ColorConstant.primaryColor
-                          : Colors.transparent,
+                      border: Border.all(
+                        color: _selectedGender == 3
+                            ? ColorConstant.primaryColor
+                            : ColorConstant.blackColor,
+                      ),
+                    ),
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _selectedGender == 3
+                            ? ColorConstant.primaryColor
+                            : Colors.transparent,
+                      ),
                     ),
                   ),
-                )
-              ],
+                  const SizedBox(width: 15),
+                  Text(
+                    "Unisex",
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 13),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
