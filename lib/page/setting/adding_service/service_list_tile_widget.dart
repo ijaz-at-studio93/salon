@@ -14,6 +14,7 @@ class ServiceListTileWidget extends StatefulWidget {
   final String gender;
   final String time;
   final bool isHomeService;
+  final String category;
   final VoidCallback editOnTap;
   const ServiceListTileWidget(
       {super.key,
@@ -21,7 +22,7 @@ class ServiceListTileWidget extends StatefulWidget {
       required this.name,
       required this.gender,
       required this.time,
-      required this.isHomeService, required this.editOnTap, required this.price});
+      required this.isHomeService, required this.editOnTap, required this.price, required this.category});
 
   @override
   State<ServiceListTileWidget> createState() => _ServiceListTileWidgetState();
@@ -124,6 +125,21 @@ class _ServiceListTileWidgetState extends State<ServiceListTileWidget> {
                       ),
                       Text(
                         widget.time,
+                        style: AppTextTheme.bold.copyWith(
+                            color: ColorConstant.blackColor, fontSize: 13),
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      Text(
+                        "Category : ",
+                        style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.grayTextColor, fontSize: 13),
+                      ),
+                      Text(
+                        widget.category,
                         style: AppTextTheme.bold.copyWith(
                             color: ColorConstant.blackColor, fontSize: 13),
                       )

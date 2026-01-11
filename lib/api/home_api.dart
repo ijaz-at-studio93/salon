@@ -27,6 +27,8 @@ import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 import 'package:salon/model/translation/translation_history_model.dart';
 
+import '../model/stylist/allow_portfolio_upload_model.dart';
+
 class HomeAPI {
   /*=================== eligibility =====================*/ static Future<
       EligibilityModel> checkEligibility() async {
@@ -289,15 +291,11 @@ class HomeAPI {
     required String name,
     required String mobile,
     required String countryCode,
-    required String email,
     required String experience,
-    required String address,
     required String whatsapp,
-    required String panCard,
     required String homeService,
     required String password,
     required String gender,
-    required String dob,
     required File image,
     required List<String> storeId,
     required List<String> genderDataList,
@@ -306,15 +304,12 @@ class HomeAPI {
       "name": name,
       "mobile": mobile,
       "countryCode": countryCode,
-      "email": email,
       "experience": experience,
-      "address": address,
       "whatsapp": whatsapp,
-      "panCard": panCard,
       "homeService": homeService,
       "password": password,
       "gender": gender,
-      "dob": dob
+      "address":"test"
     });
 
     if (storeId.isNotEmpty) {
@@ -382,28 +377,20 @@ class HomeAPI {
     required String name,
     required String mobile,
     required String countryCode,
-    required String email,
     required String experience,
-    required String address,
     required String whatsapp,
-    required String panCard,
     required String homeService,
     required String gender,
-    required String dob,
     required File image,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
       "mobile": mobile,
       "countryCode": countryCode,
-      "email": email,
       "experience": experience,
-      "address": address,
       "whatsapp": whatsapp,
-      "panCard": panCard,
       "homeService": homeService,
       "gender": gender,
-      "dob": dob
     });
 
     if (image.path.isNotEmpty) {
@@ -448,6 +435,70 @@ class HomeAPI {
         await DioClient.client.get("salon/appointments/pending-appointments");
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*-----------------------  Booking Approve -----------------------------*/
+  static Future<bool> approveBooking(
+      {required String appointmentId, required String status}) async {
+    final response = await DioClient.client.put(
+        "salon/appointments/$appointmentId/status",
+        data: {"status": status});
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Booking For Qr Code Scan ----------------*/
+  static Future<AllowPortfolioUploadModel> qrcodeScan(
+      {required String appointmentId}) async {
+    final response = await DioClient.client.put(
+        "salon/appointments/complete-with-completion-token",
+        data: {"appointmentId": appointmentId});
+    if (response.data['success']) {
+      return AllowPortfolioUploadModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*-------------------- Upload Image -------------------------*/
+  static Future<String> uploadImage({
+    required String appointmentId,
+    required List<String> multiplePath,
+    required List<String> multipleVideo,
+  }) async {
+    final formData = FormData.fromMap({});
+
+    if (multiplePath.isNotEmpty) {
+      for (int i = 0; i < multiplePath.length; i++) {
+        final mimeTypeData =
+        lookupMimeType(multiplePath[i], headerBytes: [0xFF, 0xD8])
+            ?.split('/');
+        final multipartFile = await MultipartFile.fromFile(multiplePath[i],
+            contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+        formData.files.add(MapEntry('images', multipartFile));
+      }
+    }
+
+    if (multipleVideo.isNotEmpty) {
+      for (int i = 0; i < multipleVideo.length; i++) {
+        final mimeTypeData = lookupMimeType(multipleVideo[i])?.split('/');
+        final multipartFile = await MultipartFile.fromFile(multipleVideo[i],
+            contentType: MediaType(mimeTypeData![0], multipleVideo[1]));
+        formData.files.add(MapEntry('videos', multipartFile));
+      }
+    }
+
+    final response = await DioClient.client.put(
+        'salon/appointments/$appointmentId/portfolio-upload',
+        data: formData);
+    if (response.isSuccess) {
+      return response.data['message'];
     } else {
       throw response.data;
     }
@@ -526,6 +577,24 @@ class HomeAPI {
       {required String artistId}) async {
     final response = await DioClient.client
         .get("salon/availability/artist/$artistId/availability");
+    if (response.isSuccess) {
+      return ArtiestAvailabilityGetModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Artiest Availability  Get Data ------------- */
+  static Future<ArtiestAvailabilityGetModel> blockSlotForArtist(
+      {required String artistId, required DateTime? start, required DateTime? end}) async {
+    final response = await DioClient.client
+      .post(
+      "salon/availability/artist/$artistId/block-slot",
+      data: {
+        "start": start?.toIso8601String(),
+        "end": end?.toIso8601String(),
+      },
+    );
     if (response.isSuccess) {
       return ArtiestAvailabilityGetModel.fromJson(response.data);
     } else {
@@ -681,13 +750,15 @@ class HomeAPI {
     required String name,
     required String description,
     required String serviceableGender,
+    required String profession,
     required File? maleImage,
     required File? femaleImage,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
       "description": description,
-      "serviceableGender": serviceableGender
+      "serviceableGender": serviceableGender,
+      "profession": profession
     });
 
     if (maleImage != null) {

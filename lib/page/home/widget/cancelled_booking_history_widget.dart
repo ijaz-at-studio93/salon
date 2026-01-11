@@ -69,8 +69,22 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
           ),
           const SizedBox(height: 14),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text(
+                "Date : ",
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.regular
+                    .copyWith(color: ColorConstant.idColor, fontSize: 16),
+              ),
+              Text(
+                convertBooingDateFormat(dateTime : widget.orderData.finalizedAt ?? ''),
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.bold
+                    .copyWith(color: ColorConstant.primaryColor, fontSize: 16),
+              ),
+              const SizedBox(width: 50),
+
               Text(
                 "Status : ",
                 textScaler: const TextScaler.linear(0.85),
@@ -78,7 +92,7 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
                     .copyWith(color: ColorConstant.idColor, fontSize: 16),
               ),
               Text(
-                "Cancel",
+                "Cancelled",
                 textScaler: const TextScaler.linear(0.85),
                 style: AppTextTheme.bold
                     .copyWith(color: ColorConstant.redColor, fontSize: 16),
@@ -181,5 +195,12 @@ class _CancelledBookingHistoryWidgetState extends State<CancelledBookingHistoryW
     DateTime dateTime = DateTime.parse(dateTimeString);
     String formattedTime = DateFormat('h:mm a').format(dateTime);
     return formattedTime;
+  }
+
+  /*------------------------ Convert Booking Date ---------------*/
+  String convertBooingDateFormat({required String dateTime}) {
+    if (dateTime == "") return "";
+    final date = DateTime.parse(dateTime);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }

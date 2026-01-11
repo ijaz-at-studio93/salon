@@ -56,6 +56,7 @@ class DioClient {
           debugPrint("Bearer $token");
           debugPrint('DioClientPrint');
           if (token.isNotEmpty) {
+            req.headers['Authorization'] = 'Bearer $token';
             req.headers['x-access-token'] = token;
           }
           return handler.next(req);

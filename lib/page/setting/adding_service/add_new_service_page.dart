@@ -19,6 +19,7 @@ class AddNewServicePage extends StatefulWidget {
 }
 
 class _AddNewServicePageState extends State<AddNewServicePage> {
+  String _searchQuery = '';
   final _serviceTextEditingController = TextEditingController();
   final _homeController = Get.find<HomeController>();
   @override
@@ -119,87 +120,75 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
           ),
           const SizedBox(height: 20),
           Obx(
-            () => Expanded(
+                () => Expanded(
               child: _homeController.showProgress
                   ? const ProgressBarView()
                   : SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          ListView.separated(
-                              separatorBuilder: (context, index) {
-                                return const Divider(
-                                  endIndent: 20,
-                                  indent: 20,
-                                  color: ColorConstant.grayTextColor,
-                                );
-                              },
-                              itemCount: _homeController
-                                      .getSalonServiceList.data?.length ??
-                                  0,
-                              shrinkWrap: true,
-                              padding: EdgeInsets.zero,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
-                                  child: ServiceListTileWidget(
-                                    editOnTap: () {
-                                      showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
+                child: Column(
+                  children: [
+                    // compute filtered list
+                    Builder(builder: (context) {
+                      final allServices = _homeController.getSalonServiceList.data ?? [];
+                      final query = _searchQuery.trim().toLowerCase();
+                      final services = query.isEmpty
+                          ? allServices
+                          : allServices.where((s) {
+                        final name = (s.name ?? '').toString().toLowerCase();
+                        final desc = (s.description ?? '').toString().toLowerCase();
+                        return name.contains(query) || desc.contains(query);
+                      }).toList();
+
+                      return ListView.separated(
+                          separatorBuilder: (context, index) {
+                            return const Divider(
+                              endIndent: 20,
+                              indent: 20,
+                              color: ColorConstant.grayTextColor,
+                            );
+                          },
+                          itemCount: services.length,
+                          shrinkWrap: true,
+                          padding: EdgeInsets.zero,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            final svc = services[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              child: ServiceListTileWidget(
+                                editOnTap: () {
+                                  showModalBottomSheet(
+                                      isScrollControlled: true,
+                                      shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.only(
                                             topLeft: Radius.circular(32),
                                             topRight: Radius.circular(32),
                                           )),
-                                          context: context,
-                                          builder: (context) {
-                                            return Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: MediaQuery.of(context)
-                                                      .viewInsets
-                                                      .bottom),
-                                              child: CreateNewServicePage(
-                                                serviceId: _homeController
-                                                        .getSalonServiceList
-                                                        .data?[index]
-                                                        .id ??
-                                                    "",
-                                                isUpdate: true,
-                                                salonService: _homeController
-                                                    .getSalonServiceList
-                                                    .data![index],
-                                              ),
-                                            );
-                                          });
-                                    },
-                                    price: _homeController.getSalonServiceList
-                                            .data?[index].price
-                                            .toString() ??
-                                        "",
-                                    isHomeService: _homeController
-                                            .getSalonServiceList
-                                            .data?[index]
-                                            .homeService ??
-                                        false,
-                                    time: _homeController.getSalonServiceList
-                                            .data?[index].duration
-                                            .toString() ??
-                                        "",
-                                    gender: _homeController.getSalonServiceList
-                                            .data?[index].gender ??
-                                        "",
-                                    image:
-                                        "${APIConstants.image}${_homeController.getSalonServiceList.data?[index].image ?? ""}",
-                                    name: _homeController.getSalonServiceList
-                                            .data?[index].name ??
-                                        "",
-                                  ),
-                                );
-                              }),
-                        ],
-                      ),
-                    ),
+                                      context: context,
+                                      builder: (context) {
+                                        return Padding(
+                                          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+                                          child: CreateNewServicePage(
+                                            serviceId: svc.id ?? "",
+                                            isUpdate: true,
+                                            salonService: svc,
+                                          ),
+                                        );
+                                      });
+                                },
+                                price: svc.price?.toString() ?? "",
+                                isHomeService: svc.homeService ?? false,
+                                time: svc.duration?.toString() ?? "",
+                                gender: svc.gender ?? "",
+                                image: "${APIConstants.image}${svc.image ?? ""}",
+                                name: svc.name ?? "",
+                                category: svc.categories?[0].name?? "",
+                              ),
+                            );
+                          });
+                    }),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -231,12 +220,17 @@ class _AddNewServicePageState extends State<AddNewServicePage> {
             width: Get.width * 0.8,
             child: TextField(
               controller: _serviceTextEditingController,
+              onChanged: (value) {
+                setState(() => _searchQuery = value);
+              },
               decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: "Search and add service",
-                  hintStyle: AppTextTheme.regular.copyWith(
-                      fontSize: 16, color: ColorConstant.grayTextColor)),
+                border: InputBorder.none,
+                hintText: "Search and add service",
+                hintStyle: AppTextTheme.regular.copyWith(
+                    fontSize: 16, color: ColorConstant.grayTextColor),
+              ),
             ),
+
           ),
         ],
       ),

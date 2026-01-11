@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:platform_device_id/platform_device_id.dart';
+//import 'package:platform_device_id/platform_device_id.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/page/bottom_bar_page.dart';
@@ -201,7 +204,20 @@ class _SplashPageState extends State<SplashPage> {
 
   /*------------------ GET VERSION APP -------------------*/
   void getVersionApp() async {
-    String? deviceId = await PlatformDeviceId.getDeviceId;
+    //String? deviceId = await PlatformDeviceId.getDeviceId;
+    // 💡 FIX START
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    String? deviceId;
+
+    if (Platform.isAndroid) {
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      deviceId = androidInfo.id;
+    } else if (Platform.isIOS) {
+      IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+      deviceId = iosInfo.identifierForVendor;
+    }
+    // 💡 FIX END
+
     SharedPrefs.writeValue(PrefConstants.deviceId, deviceId);
     String data = await getVersion();
 

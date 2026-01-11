@@ -62,8 +62,21 @@ class BookingHistoryPendingWidget extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              Text(
+                "Date : ",
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.regular
+                    .copyWith(color: ColorConstant.idColor, fontSize: 16),
+              ),
+              Text(
+                convertBooingDateFormat(dateTime : orderData.finalizedAt ?? ''),
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.bold
+                    .copyWith(color: ColorConstant.primaryColor, fontSize: 16),
+              ),
+              const SizedBox(width: 50),
               Text(
                 "Status : ",
                 textScaler: const TextScaler.linear(0.85),
@@ -71,7 +84,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                     .copyWith(color: ColorConstant.idColor, fontSize: 16),
               ),
               Text(
-                "Pending",
+                orderData.orderStatus ?? '',
                 textScaler: const TextScaler.linear(0.85),
                 style: AppTextTheme.bold
                     .copyWith(color: ColorConstant.primaryColor, fontSize: 16),
@@ -95,7 +108,8 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        "₹${orderData.orderAmount}/-",
+                        "₹${orderData.items!.fold<double>(0.0,
+                                (sum, item) => sum + (item.service?.price ?? 0))}/-",
                         textScaler: const TextScaler.linear(0.85),
                         style: AppTextTheme.bold.copyWith(
                             color: ColorConstant.blackColor, fontSize: 16),
@@ -174,5 +188,12 @@ class BookingHistoryPendingWidget extends StatelessWidget {
     DateTime dateTime = DateTime.parse(dateTimeString);
     String formattedTime = DateFormat('h:mm a').format(dateTime);
     return formattedTime;
+  }
+
+  /*------------------------ Convert Booking Date ---------------*/
+  String convertBooingDateFormat({required String dateTime}) {
+    if (dateTime == "") return "";
+    final date = DateTime.parse(dateTime);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }

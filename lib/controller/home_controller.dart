@@ -27,6 +27,7 @@ import 'package:salon/model/service_model/setting_salon_service_list_model.dart'
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
 
+import '../model/stylist/allow_portfolio_upload_model.dart';
 import '../model/translation/translation_history_model.dart';
 
 class HomeController extends GetxController {
@@ -88,6 +89,52 @@ class HomeController extends GetxController {
       PendingAppointmentsListModel().obs;
   PendingAppointmentsListModel get getSalonServedList => _salonServedList.value;
   set setSalonServedList(val) => _salonServedList.value = val;
+
+  /*------------------------- Complete Booking For QrCode ---------------------*/
+  final Rx<AllowPortfolioUploadModel> _allowPortfolioUploadModel =
+      AllowPortfolioUploadModel().obs;
+  AllowPortfolioUploadModel get getAllowPortfolioUploadModel =>
+      _allowPortfolioUploadModel.value;
+  set setAllowPortfolioUploadModel(val) =>
+      _allowPortfolioUploadModel.value = val;
+
+  final qrScanned = <String, bool>{}.obs;      // appointmentId -> scanned?
+  final qrToken   = <String, String>{}.obs;    // appointmentId -> token
+
+  void setQrScan(String appointmentId, String token) {
+    qrScanned[appointmentId] = true;
+    qrToken[appointmentId] = token;
+    qrScanned.refresh();
+  }
+
+  void clearQrScan(String appointmentId) {
+    qrScanned.remove(appointmentId);
+    qrToken.remove(appointmentId);
+    qrScanned.refresh();
+  }
+
+  /*-------------------- do Upload Image ------------------*/
+  doUploadImage(
+      {required String appointmentId,
+        required List<String> multiplePath,
+        required List<String> multiplePathVideo,
+        required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      String result = await HomeAPI.uploadImage(
+          appointmentId: appointmentId,
+          multiplePath: multiplePath,
+          multipleVideo: multiplePathVideo);
+      if (result != "") {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+      print("Error Data Show new ${e.toString()}");
+    } finally {
+      _showProgress.value = false;
+    }
+  }
 
   /*------------------- Salon Cancel Appointment -----------------*/
   final Rx<PendingAppointmentsListModel> _salonCancelServedList =
@@ -458,15 +505,11 @@ class HomeController extends GetxController {
     required String name,
     required String mobile,
     required String countryCode,
-    required String email,
     required String experience,
-    required String address,
     required String whatsapp,
-    required String panCard,
     required String homeService,
     required String password,
     required String gender,
-    required String dob,
     required File image,
     required List<String> storeId,
     required List<String> genderDataList,
@@ -478,15 +521,11 @@ class HomeController extends GetxController {
           name: name,
           mobile: mobile,
           countryCode: countryCode,
-          email: email,
           experience: experience,
-          address: address,
           whatsapp: whatsapp,
-          panCard: panCard,
           homeService: homeService,
           password: password,
           gender: gender,
-          dob: dob,
           image: image,
           storeId: storeId,
           genderDataList: genderDataList);
@@ -506,14 +545,10 @@ class HomeController extends GetxController {
     required String name,
     required String mobile,
     required String countryCode,
-    required String email,
     required String experience,
-    required String address,
     required String whatsapp,
-    required String panCard,
     required String homeService,
     required String gender,
-    required String dob,
     required File image,
     required VoidCallback callback,
   }) async {
@@ -524,14 +559,10 @@ class HomeController extends GetxController {
           name: name,
           mobile: mobile,
           countryCode: countryCode,
-          email: email,
           experience: experience,
-          address: address,
           whatsapp: whatsapp,
-          panCard: panCard,
           homeService: homeService,
           gender: gender,
-          dob: dob,
           image: image);
       if (result) {
         callback.call();
@@ -575,6 +606,47 @@ class HomeController extends GetxController {
       _showProgress.value = false;
     }
   }
+
+  /*------------------------ Approve Booking  ------------------------*/
+  doBookingApprove(
+      {required String appointmentId,
+        required String status,
+        required VoidCallback callback}) async {
+    try {
+      _showProgress.value = true;
+      bool result = await HomeAPI.approveBooking(
+          appointmentId: appointmentId, status: status);
+      if (result) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*------------------------- Qr Code To Booking Page -------------------*/
+  doScanQrcode({
+    required String appointmentId,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      _allowPortfolioUploadModel.value =
+      await HomeAPI.qrcodeScan(appointmentId: appointmentId);
+
+      final startsAt = _allowPortfolioUploadModel.value.data?.appointment?.startsAt;
+      if ((startsAt ?? '').isNotEmpty) {
+        callback.call();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
 
   /*-----------------------  Get Cancel Booking Data --------------*/
   doCancelData({required String distribution}) async {
@@ -659,6 +731,19 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       _artiestAvailabilityGetModel.value =
           await HomeAPI.getArtiestAvailability(artistId: artistId);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*--------------------- Get Artiest Availability  -------------------*/
+  doBlockArtiestAvailability({required String artistId, required DateTime? start, required DateTime? end}) async {
+    try {
+      _showProgress.value = true;
+      _artiestAvailabilityGetModel.value =
+      await HomeAPI.blockSlotForArtist(artistId: artistId, start: start, end: end);
     } catch (e) {
       showError(e);
     } finally {
@@ -845,15 +930,18 @@ class HomeController extends GetxController {
       {required String name,
       required String description,
       required String serviceableGender,
+        required String profession,
       required File? maleImage,
       required File? femaleImage,
       required VoidCallback callback}) async {
     try {
+      print('profession is *****************'+profession);
       _showProgress.value = true;
       bool result = await HomeAPI.addSalonCategory(
           name: name,
           description: description,
           serviceableGender: serviceableGender,
+          profession: profession,
           maleImage: maleImage,
           femaleImage: femaleImage);
       if (result) {

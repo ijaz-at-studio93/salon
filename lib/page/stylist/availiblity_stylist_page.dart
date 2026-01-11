@@ -12,6 +12,7 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 
 import '../../project_specific/text_theme.dart';
+import 'block_slot_page.dart';
 
 class AvailabilitySheetPage extends StatefulWidget {
   final String artiestId;
@@ -38,9 +39,37 @@ class _AvailiblitySheetPageState extends State<AvailabilitySheetPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
+      appBar: AppBarWidget(
         nameOfScreen: "Available",
         isBackIcon: true,
+        rightWidget: GestureDetector(
+          onTap: () async {
+            print("Block Slot clicked");
+            final result = await Get.to(() => BlockSlotPage(
+              artistId: widget.artiestId,
+            ));
+            print(result);
+
+            if (result == true) {
+              // 🔄 RELOAD availability
+              _homeController.doGetArtiestAvailability(artistId: widget.artiestId);
+            }
+            },
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            decoration: BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Text(
+              "Block Slot",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

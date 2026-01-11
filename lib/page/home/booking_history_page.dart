@@ -47,12 +47,6 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(),
-               /* Text(
-                  "Latest Order",
-                  textScaler: const TextScaler.linear(0.85),
-                  style: AppTextTheme.bold
-                      .copyWith(fontSize: 20, color: ColorConstant.blackColor),
-                ),*/
                 overall == "0" ? const SizedBox() : _noOfServiceYouOffer(),
               ],
             ),
@@ -88,7 +82,9 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                       .appointment
                                                       ?.id ??
                                                   "",
-                                              status: "Pending",
+                                              status: _homeController
+                                                  .getSalonUpcomingList
+                                                  .data?[index].orderStatus ?? "",
                                             ));
                                       },
                                     ),

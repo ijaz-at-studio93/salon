@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart' as fln;
 
 /*background notification handler*/
 Future<dynamic> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -73,44 +74,93 @@ class PushNotificationService {
   }
 
   registerNotificationListeners() async {
-    AndroidNotificationChannel channel = androidNotificationChannel();
-      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+    // flutter_local_notifications plugin
+    final fln.FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    fln.FlutterLocalNotificationsPlugin();
+
+    // 1) Create booking channel with custom sound
+    const fln.AndroidNotificationChannel bookingChannel = fln.AndroidNotificationChannel(
+      'booking', // must match backend android.channelId
+      'Booking Notifications',
+      description: 'Channel for booking alerts',
+      importance: fln.Importance.max,
+      playSound: true,
+      sound: fln.RawResourceAndroidNotificationSound('booking'),
+      //bypassDnd: true,
+    );
+
+    // Also keep your high importance channel if used elsewhere
+    const fln.AndroidNotificationChannel highImportanceChannel = fln.AndroidNotificationChannel(
+      'high_importance_channel',
+      'High Importance Notifications',
+      description: 'This channel is used for important notifications.',
+      importance: fln.Importance.max,
+    );
+
+    // Register channels with the plugin
     await flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-    var androidSettings = const AndroidInitializationSettings('@drawable/ic_notification');
-    var iOSSettings = const DarwinInitializationSettings(
+        .resolvePlatformSpecificImplementation<
+        fln.AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(bookingChannel);
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+        fln.AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(highImportanceChannel);
+
+    // 2) Initialize plugin
+    var androidSettings = const fln.AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iOSSettings = const fln.DarwinInitializationSettings(
       requestSoundPermission: false,
       requestAlertPermission: false,
     );
-    var initSettings = InitializationSettings(android: androidSettings, iOS: iOSSettings);
-    flutterLocalNotificationsPlugin.initialize(initSettings, onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
+    var initSettings = fln.InitializationSettings(android: androidSettings, iOS: iOSSettings);
+    await flutterLocalNotificationsPlugin.initialize(initSettings,
+        onDidReceiveNotificationResponse: onDidReceiveNotificationResponse);
+
+    // 3) Background handler (safe to keep)
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
+    // 4) Foreground message: show local notification using the 'booking' channel and sound
     FirebaseMessaging.onMessage.listen((RemoteMessage? message) {
-      RemoteNotification? notification = message!.notification;
-      AndroidNotification? android = message.notification?.android;
-      /*print(notification?.title);
-      print(notification?.body);*/
-      if (message.data.isNotEmpty) {
-        this.message = message.data;
-        if (Platform.isAndroid) {
-          flutterLocalNotificationsPlugin.show(
-              notification.hashCode,
-              notification?.title,
-              notification?.body,
-              NotificationDetails(
-                android: AndroidNotificationDetails(
-                  channel.id,
-                  channel.name,
-                  channelDescription: channel.description,
-                  icon: android?.smallIcon,
-                  playSound: true,
-                ),
-              ),
-              payload: jsonEncode(message.data));
-        }
-      }
+      if (message == null) return;
+      if (message.notification == null && message.data.isEmpty) return;
+
+      final notification = message.notification;
+      // Use provided channel id from payload (if any), fallback to booking
+      final channelId = message.data['android_channel_id'] ?? 'booking';
+
+      // Android details (explicitly set sound and channel)
+      final fln.AndroidNotificationDetails androidDetails = fln.AndroidNotificationDetails(
+        channelId,
+        'Booking Notifications',
+        channelDescription: 'Channel for booking alerts',
+        importance: fln.Importance.max,
+        priority: fln.Priority.high,
+        playSound: true,
+        sound: fln.RawResourceAndroidNotificationSound('booking'),
+        icon: '@mipmap/ic_launcher',
+      );
+
+      // iOS details (sound name must include extension)
+      final fln.DarwinNotificationDetails iOSDetails = const fln.DarwinNotificationDetails(
+        presentAlert: true,
+        presentSound: true,
+        presentBadge: true,
+        sound: 'booking.wav',
+      );
+
+      final fln.NotificationDetails platformDetails =
+      fln.NotificationDetails(android: androidDetails, iOS: iOSDetails);
+
+      // show local notification so sound plays in foreground
+      flutterLocalNotificationsPlugin.show(
+        notification.hashCode,
+        notification?.title ?? message.data['title'],
+        notification?.body ?? message.data['body'],
+        platformDetails,
+        payload: jsonEncode(message.data),
+      );
     });
   }
 

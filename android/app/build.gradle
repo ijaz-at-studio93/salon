@@ -30,10 +30,12 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace "com.ananta.saloon"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {
+        // Add this line to enable desugaring
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -50,9 +52,9 @@ android {
         applicationId "com.ananta.saloon"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
+        minSdkVersion flutter.minSdkVersion
         multiDexEnabled true
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 35
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -79,6 +81,8 @@ flutter {
 }
 
 dependencies {
+    // Add this dependency for desugaring
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
     implementation "com.google.firebase:firebase-core:21.1.1"
     implementation "com.google.android.ump:user-messaging-platform:3.1.0"
     implementation 'com.android.support:multidex:1.0.3'

@@ -14,31 +14,23 @@ import 'add_service_bottom_seet.dart';
 class SelectServicePage extends StatefulWidget {
   final String name;
   final String phone;
-  final String email;
   final String experience;
-  final String address;
   final String whatsappNo;
-  final String panNo;
   final String password;
   final bool isHomeService;
   final String gender;
   final bool isUpdate;
   final String artistId;
-  final String birthdate;
   final File image;
   const SelectServicePage(
       {super.key,
       required this.name,
       required this.phone,
-      required this.email,
       required this.experience,
-      required this.address,
       required this.whatsappNo,
-      required this.panNo,
       required this.password,
       required this.isHomeService,
       required this.gender,
-      required this.birthdate,
       required this.image,
       required this.isUpdate,
       required this.artistId});
@@ -222,15 +214,11 @@ class _SelectServicePageState extends State<SelectServicePage> {
                           name: widget.name,
                           mobile: widget.phone,
                           countryCode: "91",
-                          email: widget.email,
                           experience: widget.experience,
-                          address: widget.address,
                           whatsapp: widget.whatsappNo,
-                          panCard: widget.panNo,
                           homeService: widget.isHomeService.toString(),
                           password: widget.password,
                           gender: widget.gender,
-                          dob: widget.birthdate,
                           image: widget.image,
                           storeId: storeServiceId,
                           genderDataList: genderStore,

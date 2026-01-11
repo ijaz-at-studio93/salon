@@ -24,6 +24,8 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
   final _categoryTitle = TextEditingController();
   final _categoryDescription = TextEditingController();
   final _homeController = Get.find<HomeController>();
+  int selectProfession = 0; // 0 = hair, 1 = beauty
+  String get _professionValue => selectProfession == 0 ? 'hair' : 'beauty';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,6 +75,8 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
                           ),
                 const SizedBox(height: 10),
                 _selectGenderWidget(),
+                const SizedBox(height: 10),
+                _selectProfessionWidget(),
                 Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -105,6 +109,7 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
               name: _categoryTitle.text,
               description: _categoryDescription.text,
               serviceableGender: "male",
+              profession: _professionValue,
               maleImage: maleImage,
               femaleImage: null,
               callback: () {
@@ -120,6 +125,7 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
               name: _categoryTitle.text,
               description: _categoryDescription.text,
               serviceableGender: "female",
+              profession: _professionValue,
               maleImage: null,
               femaleImage: femaleImage,
               callback: () {
@@ -137,6 +143,7 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
               name: _categoryTitle.text,
               description: _categoryDescription.text,
               serviceableGender: "unisex",
+              profession: _professionValue,
               maleImage: maleImage,
               femaleImage: femaleImage,
               callback: () {
@@ -450,4 +457,86 @@ class _AddSalonCategoryPageState extends State<AddSalonCategoryPage> {
       ),
     );
   }
+
+  _selectProfessionWidget() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "Select Profession",
+            style: AppTextTheme.regular
+                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+          ),
+          const SizedBox(height: 15),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => selectProfession = 0),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20, height: 20, padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: ColorConstant.blackColor),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 15, height: 15,
+                          decoration: BoxDecoration(
+                            color: selectProfession == 0
+                                ? ColorConstant.primaryColor
+                                : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text("Hair",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor)),
+                  ],
+                ),
+              ),
+              //const SizedBox(width: 10), // gap
+              GestureDetector(
+                onTap: () => setState(() => selectProfession = 1),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20, height: 20, padding: const EdgeInsets.all(3),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: ColorConstant.blackColor),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Center(
+                        child: Container(
+                          width: 15, height: 15,
+                          decoration: BoxDecoration(
+                            color: selectProfession == 1
+                                ? ColorConstant.primaryColor
+                                : Colors.transparent,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text("Beauty",
+                        style: AppTextTheme.regular.copyWith(
+                            fontSize: 13, color: ColorConstant.blackColor)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
 }
