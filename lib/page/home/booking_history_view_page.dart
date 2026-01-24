@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dash/flutter_dash.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -602,6 +603,12 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                           .doGetAppointmentDetailsModel(
                                         appointmentId: widget.appointmentId,
                                       );
+
+                                      _homeController.doUpcomingData();
+
+                                      showSnackBar(
+                                          message:
+                                              "Booking confirmed successfully!");
                                     },
                                   );
                                 } else if (status == 'confirmed') {
@@ -639,6 +646,12 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                       });
                                     },
                                   );
+
+                                  _homeController.doUpcomingData();
+
+                                  showSnackBar(
+                                      message:
+                                          "Booking completed successfully!");
                                 }
                               },
                               child: Text(

@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../constant/api_constant.dart';
@@ -136,5 +134,32 @@ Future<void> showMessage(String message, {int duration = 2}) async {
       duration: Duration(seconds: duration),
       borderRadius: 16,
     ));
+  }
+}
+
+void showSnackBar({
+  String? title,
+  required String message,
+}) {
+  if (Get.context != null) {
+    ScaffoldMessenger.of(Get.context!).showSnackBar(
+      SnackBar(
+        content: Text(
+          '$message}',
+          style: TextStyle(
+            color: Colors.purple.shade800,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        backgroundColor: Colors.purple.shade100, // soft background
+        behavior: SnackBarBehavior.floating,
+        margin: const EdgeInsets.all(12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        duration: const Duration(seconds: 3),
+        elevation: 6,
+      ),
+    );
   }
 }
