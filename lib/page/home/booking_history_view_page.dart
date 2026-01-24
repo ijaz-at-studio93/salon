@@ -552,84 +552,99 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: ColorConstant.primaryColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12)),
-                          ),
-                          onPressed: () async {
-                            final status = _homeController
-                                .getAppointmentDetailsModel.data?.orderStatus;
-                            final token = _homeController.qrToken[
-                                widget.appointmentId]; // if you stored it
+                    Obx(
+                      () => Visibility(
+                        visible: _homeController.getAppointmentDetailsModel.data
+                                    ?.orderStatus !=
+                                'completed' &&
+                            _homeController.getAppointmentDetailsModel.data
+                                    ?.orderStatus !=
+                                'user_cancelled',
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorConstant.primaryColor,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12)),
+                              ),
+                              onPressed: () async {
+                                final status = _homeController
+                                    .getAppointmentDetailsModel
+                                    .data
+                                    ?.orderStatus;
+                                final token = _homeController.qrToken[
+                                    widget.appointmentId]; // if you stored it
 
-                            if (status == 'pending') {
-                              // ACCEPT
-                              _homeController.doBookingApprove(
-                                appointmentId: widget.appointmentId,
-                                status: "confirmed",
-                                callback: () {
-                                  // REFRESH the appointment so UI sees orderStatus = 'confirmed'
-                                  _homeController.doGetAppointmentDetailsModel(
+                                if (status == 'pending') {
+                                  // ACCEPT
+                                  _homeController.doBookingApprove(
                                     appointmentId: widget.appointmentId,
-                                  );
-                                },
-                              );
-                            } else if (status == 'confirmed') {
-                              _homeController.doScanQrcode(
-                                appointmentId: widget.appointmentId,
-                                callback: () {
-                                  var allow = _homeController
-                                          .getAllowPortfolioUploadModel
-                                          .data
-                                          ?.allowPortfolioUpload ==
-                                      true;
-                                  debugPrint('***********');
-                                  print(allow);
-                                  WidgetsBinding.instance
-                                      .addPostFrameCallback((_) {
-                                    if (allow) {
-                                      Get.dialog(
-                                        PortfolioPermissionDialog(
-                                          yes: () {
-                                            Get.back();
-                                            Get.to(() => UploadImagePage(
-                                                appointmentId:
-                                                    widget.appointmentId));
-                                          },
-                                          cancel: () {
-                                            Get.back();
-                                            Get.back();
-                                          },
-                                        ),
-                                        barrierDismissible: false,
+                                    status: "confirmed",
+                                    callback: () {
+                                      // REFRESH the appointment so UI sees orderStatus = 'confirmed'
+                                      _homeController
+                                          .doGetAppointmentDetailsModel(
+                                        appointmentId: widget.appointmentId,
                                       );
-                                    } else {
-                                      Get.back();
-                                    }
-                                  });
-                                },
-                              );
-                            }
-                          },
-                          child: Text(
-                            (_homeController.getAppointmentDetailsModel.data
-                                        ?.orderStatus ==
-                                    'pending')
-                                ? "Accept"
-                                : (_homeController.getAppointmentDetailsModel
-                                            .data?.orderStatus ==
-                                        'confirmed')
-                                    ? "Mark As Done"
-                                    : "",
-                            style: AppTextTheme.bold
-                                .copyWith(fontSize: 16, color: Colors.white),
+                                    },
+                                  );
+                                } else if (status == 'confirmed') {
+                                  _homeController.doScanQrcode(
+                                    appointmentId: widget.appointmentId,
+                                    callback: () {
+                                      var allow = _homeController
+                                              .getAllowPortfolioUploadModel
+                                              .data
+                                              ?.allowPortfolioUpload ==
+                                          true;
+                                      debugPrint('***********');
+                                      print(allow);
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        if (allow) {
+                                          Get.dialog(
+                                            PortfolioPermissionDialog(
+                                              yes: () {
+                                                Get.back();
+                                                Get.to(() => UploadImagePage(
+                                                    appointmentId:
+                                                        widget.appointmentId));
+                                              },
+                                              cancel: () {
+                                                Get.back();
+                                                Get.back();
+                                              },
+                                            ),
+                                            barrierDismissible: false,
+                                          );
+                                        } else {
+                                          Get.back();
+                                        }
+                                      });
+                                    },
+                                  );
+                                }
+                              },
+                              child: Text(
+                                (_homeController.getAppointmentDetailsModel.data
+                                            ?.orderStatus ==
+                                        'pending')
+                                    ? "Accept"
+                                    : (_homeController
+                                                .getAppointmentDetailsModel
+                                                .data
+                                                ?.orderStatus ==
+                                            'confirmed')
+                                        ? "Mark As Done"
+                                        : "",
+                                style: AppTextTheme.bold.copyWith(
+                                    fontSize: 16, color: Colors.white),
+                              ),
+                            ),
                           ),
                         ),
                       ),
