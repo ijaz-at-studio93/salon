@@ -204,72 +204,67 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                                     BorderRadius.circular(8),
                                               ),
                                               child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
                                                 children: [
-                                                  Row(
-                                                    children: [
-                                                      ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(100),
-                                                        child:
-                                                            CachedNetworkImage(
-                                                          width: 50,
-                                                          height: 50,
-                                                          fit: BoxFit.cover,
-                                                          imageUrl:
-                                                              "${APIConstants.image}${item?.service?.image ?? ""}",
-                                                          placeholder:
-                                                              (context, url) =>
-                                                                  const Image(
-                                                            image: AssetImage(
-                                                                AssetsConstant
-                                                                    .placeHolder),
-                                                            width: 50,
-                                                            height: 50,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                          errorWidget: (context,
-                                                                  url, error) =>
+                                                  ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            100),
+                                                    child: CachedNetworkImage(
+                                                      width: 50,
+                                                      height: 50,
+                                                      fit: BoxFit.cover,
+                                                      imageUrl:
+                                                          "${APIConstants.image}${item?.service?.image ?? ""}",
+                                                      placeholder:
+                                                          (context, url) =>
                                                               const Image(
-                                                            image: AssetImage(
-                                                                AssetsConstant
-                                                                    .placeHolder),
-                                                            width: 50,
-                                                            height: 50,
-                                                            fit: BoxFit.cover,
-                                                          ),
-                                                        ),
+                                                        image: AssetImage(
+                                                            AssetsConstant
+                                                                .placeHolder),
+                                                        width: 50,
+                                                        height: 50,
+                                                        fit: BoxFit.cover,
                                                       ),
-                                                      const SizedBox(width: 10),
-                                                      Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Service Name : ",
-                                                                style:
-                                                                    AppTextTheme
-                                                                        .medium
-                                                                        .copyWith(
-                                                                  color: ColorConstant
-                                                                      .grayTextColor,
-                                                                  fontSize: 13,
-                                                                ),
+                                                      errorWidget: (context,
+                                                              url, error) =>
+                                                          const Image(
+                                                        image: AssetImage(
+                                                            AssetsConstant
+                                                                .placeHolder),
+                                                        width: 50,
+                                                        height: 50,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  Expanded(
+                                                    child: Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Row(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            Text(
+                                                              "Service Name : ",
+                                                              style:
+                                                                  AppTextTheme
+                                                                      .medium
+                                                                      .copyWith(
+                                                                color: ColorConstant
+                                                                    .grayTextColor,
+                                                                fontSize: 13,
                                                               ),
-                                                              Text(
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
                                                                 item?.service
                                                                         ?.name ??
                                                                     "",
-                                                                textScaler:
-                                                                    const TextScaler
-                                                                        .linear(
-                                                                        0.85),
                                                                 style:
                                                                     AppTextTheme
                                                                         .bold
@@ -278,27 +273,69 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                                                       .blackColor,
                                                                   fontSize: 16,
                                                                 ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .visible,
                                                               ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 5),
-                                                          Row(
-                                                            children: [
-                                                              Text(
-                                                                "Service Price : ",
-                                                                style:
-                                                                    AppTextTheme
-                                                                        .medium
-                                                                        .copyWith(
-                                                                  color: ColorConstant
-                                                                      .grayTextColor,
-                                                                  fontSize: 13,
-                                                                ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        const SizedBox(
+                                                            height: 5),
+                                                        Row(
+                                                          children: [
+                                                            // Service Price
+                                                            Text(
+                                                              "Service Price : ",
+                                                              style:
+                                                                  AppTextTheme
+                                                                      .medium
+                                                                      .copyWith(
+                                                                color: ColorConstant
+                                                                    .grayTextColor,
+                                                                fontSize: 13,
                                                               ),
-                                                              Text(
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
                                                                 item?.service
                                                                         ?.price
+                                                                        ?.toString() ??
+                                                                    "",
+                                                                style:
+                                                                    AppTextTheme
+                                                                        .bold
+                                                                        .copyWith(
+                                                                  color: ColorConstant
+                                                                      .blackColor,
+                                                                  fontSize: 16,
+                                                                ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
+                                                              ),
+                                                            ),
+
+                                                            const SizedBox(
+                                                                width:
+                                                                    20), // space between price and duration
+
+                                                            // Duration
+                                                            Text(
+                                                              "Duration : ",
+                                                              style:
+                                                                  AppTextTheme
+                                                                      .medium
+                                                                      .copyWith(
+                                                                color: ColorConstant
+                                                                    .grayTextColor,
+                                                                fontSize: 13,
+                                                              ),
+                                                            ),
+                                                            Flexible(
+                                                              child: Text(
+                                                                item?.service
+                                                                        ?.duration
                                                                         ?.toString() ??
                                                                     "",
                                                                 textScaler:
@@ -313,40 +350,15 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                                                       .blackColor,
                                                                   fontSize: 16,
                                                                 ),
+                                                                overflow:
+                                                                    TextOverflow
+                                                                        .ellipsis,
                                                               ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Text(
-                                                        "Duration : ",
-                                                        style: AppTextTheme
-                                                            .medium
-                                                            .copyWith(
-                                                          color: ColorConstant
-                                                              .grayTextColor,
-                                                          fontSize: 13,
-                                                        ),
-                                                      ),
-                                                      Text(
-                                                        item?.service?.duration
-                                                                ?.toString() ??
-                                                            "",
-                                                        textScaler:
-                                                            const TextScaler
-                                                                .linear(0.85),
-                                                        style: AppTextTheme.bold
-                                                            .copyWith(
-                                                          color: ColorConstant
-                                                              .blackColor,
-                                                          fontSize: 16,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
                                                   ),
                                                 ],
                                               ),
