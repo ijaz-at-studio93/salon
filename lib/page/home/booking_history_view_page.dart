@@ -644,14 +644,14 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                                           Get.back();
                                         }
                                       });
+
+                                      _homeController.doUpcomingData();
+
+                                      showSnackBar(
+                                          message:
+                                              "Booking completed successfully!");
                                     },
                                   );
-
-                                  _homeController.doUpcomingData();
-
-                                  showSnackBar(
-                                      message:
-                                          "Booking completed successfully!");
                                 }
                               },
                               child: Text(
