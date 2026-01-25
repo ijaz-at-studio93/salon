@@ -10,6 +10,7 @@ import 'package:salon/page/home/widget/complete_booking_history_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
+
 import '../../project_specific/project_appbar.dart';
 import 'booking_history_view_page.dart';
 
@@ -35,9 +36,9 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
+      appBar: AppBarWidget(
         nameOfScreen: "Booking History",
-        isBackIcon: false,
+        isBackIcon: Navigator.of(context).canPop(),
       ),
       body: Column(
         children: [
@@ -83,8 +84,10 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                       ?.id ??
                                                   "",
                                               status: _homeController
-                                                  .getSalonUpcomingList
-                                                  .data?[index].orderStatus ?? "",
+                                                      .getSalonUpcomingList
+                                                      .data?[index]
+                                                      .orderStatus ??
+                                                  "",
                                             ));
                                       },
                                     ),
@@ -224,13 +227,17 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               if (value == 'Today') {
                 _homeController.doCompleteBookingData(distribution: "today");
               } else if (value == 'yesterday') {
-                _homeController.doCompleteBookingData(distribution: "yesterday");
+                _homeController.doCompleteBookingData(
+                    distribution: "yesterday");
               } else if (value == 'This Week') {
-                _homeController.doCompleteBookingData(distribution: "this_week");
+                _homeController.doCompleteBookingData(
+                    distribution: "this_week");
               } else if (value == 'This Month') {
-                _homeController.doCompleteBookingData(distribution: "this_month");
+                _homeController.doCompleteBookingData(
+                    distribution: "this_month");
               } else if (value == 'This year') {
-                _homeController.doCompleteBookingData(distribution: "this_year");
+                _homeController.doCompleteBookingData(
+                    distribution: "this_year");
               }
             }
           },

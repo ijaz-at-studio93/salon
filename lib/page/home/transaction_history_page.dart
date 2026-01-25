@@ -36,9 +36,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
-      appBar: const AppBarWidget(
+      appBar: AppBarWidget(
         nameOfScreen: "Transaction History",
-        isBackIcon: false,
+        isBackIcon: Navigator.of(context).canPop(),
       ),
       body: Column(
         children: [
