@@ -48,16 +48,15 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           _amountAndFilterBar(),
           const SizedBox(height: 10),
           Obx(
-                () =>
-                Expanded(
-                  child: _homeController.showProgress
-                      ? const ProgressBarView()
-                      : overall == "0"
+            () => Expanded(
+              child: _homeController.showProgress
+                  ? const ProgressBarView()
+                  : overall == "0"
                       ? _buildAllTabList()
                       : overall == "1"
-                      ? _buildSettledList()
-                      : _buildUnsettledList(),
-                ),
+                          ? _buildSettledList()
+                          : _buildUnsettledList(),
+            ),
           ),
         ],
       ),
@@ -84,16 +83,14 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           overall = value;
           setState(() {
             if (overall == "0") {
-              _homeController
-                  .doGetTransactionHistory(distribution: "all_time");
-              _homeController
-                  .doGetTransactionUnsettledHistory(distribution: "all_time");
+              _homeController.doGetTransactionHistory(distribution: "all_time");
+              _homeController.doGetTransactionUnsettledHistory(
+                  distribution: "all_time");
             } else if (overall == "1") {
-              _homeController
-                  .doGetTransactionHistory(distribution: "all_time");
+              _homeController.doGetTransactionHistory(distribution: "all_time");
             } else if (overall == "2") {
-              _homeController
-                  .doGetTransactionUnsettledHistory(distribution: "all_time");
+              _homeController.doGetTransactionUnsettledHistory(
+                  distribution: "all_time");
             }
           });
         },
@@ -161,7 +158,6 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       ),
     );
   }
-
 
   /*------------------- "All" Tab -------------------*/
   /*------------------- "All" Tab -------------------*/
@@ -234,8 +230,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     }
 
     return ListView.separated(
-      separatorBuilder: (context, index) =>
-      const Divider(
+      separatorBuilder: (context, index) => const Divider(
         color: ColorConstant.dividerColor,
         indent: 40,
         endIndent: 20,
@@ -262,8 +257,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     }
 
     return ListView.separated(
-      separatorBuilder: (context, index) =>
-      const Divider(
+      separatorBuilder: (context, index) => const Divider(
         color: ColorConstant.dividerColor,
         indent: 40,
         endIndent: 20,
@@ -331,8 +325,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
           ),
           items: dataList
               .map(
-                (item) =>
-                DropdownMenuItem<String>(
+                (item) => DropdownMenuItem<String>(
                   value: item,
                   child: Text(
                     item,
@@ -342,7 +335,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                     ),
                   ),
                 ),
-          )
+              )
               .toList(),
           onChanged: (value) {
             if (overall == "0") {
@@ -360,7 +353,9 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
   /*--------------------- Filter Helper ------------------*/
   void _applyFilter(String? value,
-      {bool both = false, bool settledOnly = false, bool unsettledOnly = false}) {
+      {bool both = false,
+      bool settledOnly = false,
+      bool unsettledOnly = false}) {
     final map = {
       'All': 'all_time',
       'Today': 'today',
@@ -393,33 +388,45 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
       total += settled.fold(
         0.0,
-            (sum, item) =>
-        sum + (double.tryParse(item.items!.fold<double>(0.0,
-                (sum, item) => sum + (item.price ?? 0)).toString()) ?? 0.0),
+        (sum, item) =>
+            sum +
+            (double.tryParse(item.items!
+                    .fold<double>(0.0, (sum, item) => sum + (item.price ?? 0))
+                    .toString()) ??
+                0.0),
       );
 
       total += unsettled.fold(
         0.0,
-            (sum, item) =>
-        sum + (double.tryParse(item.items!.fold<double>(0.0,
-                (sum, item) => sum + (item.price ?? 0)).toString()) ?? 0.0),
+        (sum, item) =>
+            sum +
+            (double.tryParse(item.items!
+                    .fold<double>(0.0, (sum, item) => sum + (item.price ?? 0))
+                    .toString()) ??
+                0.0),
       );
     } else if (overall == "1") {
       final settled = _homeController.getTransactionsHistoryModel.data ?? [];
       total += settled.fold(
         0.0,
-            (sum, item) =>
-        sum + (double.tryParse(item.items!.fold<double>(0.0,
-                (sum, item) => sum + (item.price ?? 0)).toString()) ?? 0.0),
+        (sum, item) =>
+            sum +
+            (double.tryParse(item.items!
+                    .fold<double>(0.0, (sum, item) => sum + (item.price ?? 0))
+                    .toString()) ??
+                0.0),
       );
     } else if (overall == "2") {
       final unsettled =
           _homeController.getTransactionsUnsettleHistoryModel.data ?? [];
       total += unsettled.fold(
         0.0,
-            (sum, item) =>
-        sum + (double.tryParse(item.items!.fold<double>(0.0,
-                (sum, item) => sum + (item.price ?? 0)).toString()) ?? 0.0),
+        (sum, item) =>
+            sum +
+            (double.tryParse(item.items!
+                    .fold<double>(0.0, (sum, item) => sum + (item.price ?? 0))
+                    .toString()) ??
+                0.0),
       );
     }
 
