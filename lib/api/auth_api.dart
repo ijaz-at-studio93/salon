@@ -1,14 +1,17 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' as getX;
+import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
+import 'package:salon/controller/auth_controller.dart';
 import 'package:salon/model/artist_model/artist_login_model.dart';
 import 'package:salon/model/auth/app_update_model.dart';
 import 'package:salon/model/auth/otp_verify_model.dart';
-import 'package:salon/model/auth/salon_auth_model.dart';
+import 'package:salon/model/auth/salon_auth_model.dart' as saloonAuth;
 import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/util/shared_prefs.dart';
-import 'package:http_parser/http_parser.dart';
 
 import 'dio_client.dart';
 
@@ -49,7 +52,7 @@ class AuthAPI {
 
   /*--------------------- Login --------------------- */
 
-  static Future<SalonResponseModel> doRegister({
+  static Future<saloonAuth.SalonResponseModel> doRegister({
     required String name,
     required String describe,
     required String email,
@@ -108,7 +111,7 @@ class AuthAPI {
     );
 
     if (response.isSuccess) {
-      return SalonResponseModel.fromJson(response.data);
+      return saloonAuth.SalonResponseModel.fromJson(response.data);
     } else {
       throw response.data;
     }
@@ -177,7 +180,7 @@ class AuthAPI {
   }
 
   /*================ Login For Salon =============*/
-  static Future<SalonResponseModel> loginSalon(
+  static Future<saloonAuth.SalonResponseModel> loginSalon(
       {required String mobileNo,
       required String cc,
       required String password}) async {
@@ -190,7 +193,7 @@ class AuthAPI {
       "deviceId": SharedPrefs.readStringValue(PrefConstants.deviceId),
     });
     if (response.isSuccess) {
-      return SalonResponseModel.fromJson(response.data);
+      return saloonAuth.SalonResponseModel.fromJson(response.data);
     } else {
       throw response.data;
     }
@@ -285,6 +288,52 @@ class AuthAPI {
       return true;
     } else {
       throw response.data;
+    }
+  }
+
+  static Future<saloonAuth.SalonResponseModel?> refreshAccessToken() async {
+    try {
+      final storedJson = SharedPrefs.read(PrefConstants.userModel);
+
+      if (storedJson == null) return null;
+
+      final existingModel = saloonAuth.SalonResponseModel.fromJson(storedJson);
+
+      final refreshToken = existingModel.data?.refreshToken ?? "";
+
+      if (refreshToken.isEmpty) return null;
+
+      final response = await DioClient.client.get(
+        APIEndPoint.refreshToken,
+        options: Options(
+          headers: {
+            'Cookie': 'refresh-token=$refreshToken',
+          },
+          extra: {
+            'skipAuth': true,
+          },
+        ),
+      );
+
+      final data = saloonAuth.Data.fromJson(response.data['data']);
+      existingModel.data = existingModel.data?.copyWith(
+        accessToken: data.accessToken,
+        accessTokenValidTill: data.accessTokenValidTill,
+        refreshToken: data.refreshToken,
+        refreshTokenValidTill: data.refreshTokenValidTill,
+      );
+
+      getX.Get.find<AuthController>().userDataStoreToSharedPrefs(existingModel);
+
+      return existingModel;
+    } on DioException catch (e) {
+      /// 🚨 If refresh token invalid → Logout user
+      if (e.response?.statusCode == 401) {
+        getX.Get.find<AuthController>().resetApp();
+        return null;
+      }
+
+      rethrow;
     }
   }
 }

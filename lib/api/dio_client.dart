@@ -10,6 +10,7 @@ import 'package:salon/project_specific/text_theme.dart';
 
 import '../constant/api_constant.dart';
 import '../util/shared_prefs.dart';
+import 'auth_api.dart';
 import 'dio_connectivity_request_retrier.dart';
 import 'dio_interceptors.dart';
 
@@ -19,22 +20,32 @@ class DioClient {
   static CancelToken? cancelToken;
   static Dio? _dio;
 
+  static bool isRefreshing = false;
+
   static Dio get client {
     return Get.find<Dio>();
   }
 
   static init() {
     if (_dio == null) {
-      _dio = Dio(BaseOptions(
-        baseUrl: APIConstants.baseUrl,
-        validateStatus: (status) {
-          return status! <= 500;
-        },
-        headers: {
-          'Accept': 'application/json',
-        },
-      ));
+      _dio = Dio(
+        BaseOptions(
+          baseUrl: APIConstants.baseUrl,
 
+          /// Send only SUCCESS (2xx) to onResponse
+          /// 401/403 will go to onError
+          validateStatus: (status) {
+            return status != null && status < 300;
+          },
+          headers: {
+            'Accept': 'application/json',
+          },
+        ),
+      );
+
+      /// ===============================
+      /// LOGGER
+      /// ===============================
       _dio!.interceptors.add(
         PrettyDioLogger(
           requestHeader: true,
@@ -47,43 +58,124 @@ class DioClient {
         ),
       );
 
+      /// ===============================
+      /// AUTH + REFRESH INTERCEPTOR
+      /// ===============================
       _dio!.interceptors.add(
-        InterceptorsWrapper(onRequest:
-            (RequestOptions req, RequestInterceptorHandler handler) async {
-          String token = SharedPrefs.readStringValue(PrefConstants.token);
-          debugPrint("Bearer $token");
-          debugPrint('DioClientPrint');
-          if (token.isNotEmpty) {
-            req.headers['Authorization'] = 'Bearer $token';
-            req.headers['x-access-token'] = token;
-          }
-          return handler.next(req);
-        }, onResponse:
-            (Response<dynamic> resp, ResponseInterceptorHandler handler) async {
-          try {
-            if (resp.statusCode == 403 || resp.statusCode == 401) {
-              Get.find<AuthController>().resetApp();
+        InterceptorsWrapper(
+          /// ---------------------------
+          /// REQUEST
+          /// ---------------------------
+          onRequest: (options, handler) async {
+            if (options.extra['skipAuth'] == true) {
+              return handler.next(options);
             }
-            if (resp.statusCode == 500) {
+
+            String token = SharedPrefs.readStringValue(PrefConstants.token);
+
+            if (token.isNotEmpty) {
+              options.headers['Authorization'] = 'Bearer $token';
+              options.headers['x-access-token'] = token;
+            }
+
+            return handler.next(options);
+          },
+
+          /// ---------------------------
+          /// RESPONSE
+          /// ---------------------------
+          onResponse: (response, handler) {
+            if (response.statusCode == 500) {
               showMessage("Please wait server under maintenance");
             }
-          } catch (e) {
-            return handler.next(resp);
-          }
-          return handler.next(resp);
-        }, onError:
-            (DioException error, ErrorInterceptorHandler handler) async {
-          return handler.next(error);
-        }),
+            return handler.next(response);
+          },
+
+          /// ---------------------------
+          /// ERROR (REFRESH TOKEN FLOW)
+          /// ---------------------------
+          onError: (DioException error, ErrorInterceptorHandler handler) async {
+            final int? statusCode = error.response?.statusCode;
+            final String message =
+                error.response?.data?['message']?.toString() ?? "";
+
+            /// ------------------------------------------------
+            /// 🚨 STOP LOOP IF TOKEN COMPLETELY INVALID
+            /// ------------------------------------------------
+            if (message == "Invalid authorization token") {
+              isRefreshing = false;
+
+              /// Logout user immediately
+              Get.find<AuthController>().resetApp();
+
+              return handler.next(error);
+            }
+
+            /// ------------------------------------------------
+            /// 🔥 ACCESS TOKEN EXPIRED (401 / 403)
+            /// ------------------------------------------------
+            if (statusCode == 401 || statusCode == 403) {
+              try {
+                final RequestOptions requestOptions = error.requestOptions;
+
+                /// ✅ Prevent infinite retry loop
+                if (requestOptions.extra["retried"] == true) {
+                  return handler.next(error);
+                }
+
+                /// Avoid multiple refresh calls
+                if (!isRefreshing) {
+                  isRefreshing = true;
+
+                  await AuthAPI.refreshAccessToken();
+
+                  isRefreshing = false;
+                } else {
+                  /// wait until refresh finishes
+                  await Future.delayed(const Duration(milliseconds: 500));
+                }
+
+                /// ---------------------------
+                /// RETRY ORIGINAL REQUEST
+                /// ---------------------------
+                String newToken =
+                    SharedPrefs.readStringValue(PrefConstants.token);
+
+                requestOptions.headers['Authorization'] = 'Bearer $newToken';
+                requestOptions.headers['x-access-token'] = newToken;
+
+                /// Mark request as retried (VERY IMPORTANT)
+                requestOptions.extra["retried"] = true;
+
+                final Response retryResponse =
+                    await _dio!.fetch(requestOptions);
+
+                return handler.resolve(retryResponse);
+              } catch (e) {
+                isRefreshing = false;
+                Get.find<AuthController>().resetApp();
+                return handler.next(error);
+              }
+            }
+
+            return handler.next(error);
+          },
+        ),
       );
 
-      _dio!.interceptors.add(RetryOnConnectionChangeInterceptor(
-        requestRetrier: DioConnectivityRequestRetrier(
-          dio: _dio!,
-          connectivity: Connectivity(),
+      /// ===============================
+      /// RETRY ON CONNECTION CHANGE
+      /// ===============================
+      _dio!.interceptors.add(
+        RetryOnConnectionChangeInterceptor(
+          requestRetrier: DioConnectivityRequestRetrier(
+            dio: _dio!,
+            connectivity: Connectivity(),
+          ),
         ),
-      ));
+      );
     }
+
     Get.put(_dio!, permanent: true);
   }
 

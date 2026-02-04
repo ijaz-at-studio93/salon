@@ -8,6 +8,7 @@ class APIEndPoint {
   static const String salonLoginPassword = "auth/salon/login/password";
   static const String loginMobileVerificationCode =
       "auth/salon/login/mobile-verification-code";
+  static const String refreshToken = "auth/refresh";
 
   /*-------------- Home API -------------------*/
   static const String eligibility = "salon/onboarding/eligibility";
@@ -19,7 +20,6 @@ class APIEndPoint {
   static const String serviceAdd = "salon/service/add";
   static const String getServiceList = "salon/service/list?status[]=active";
   static const String salonArtist = "salon/artist/add";
-
 
   /*------------- Artiest AUTH  -------------*/
   static const String salonArtiestLoginPassword = "auth/artist/login/password";

@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/auth_api.dart';
@@ -9,6 +10,7 @@ import 'package:salon/model/auth/otp_verify_model.dart';
 import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/page/auth/login_page.dart';
+
 import '../util/shared_prefs.dart';
 
 class AuthController extends GetxController {
@@ -123,7 +125,7 @@ class AuthController extends GetxController {
           isHomeService: homeService,
           serviceGender: serviceGender,
           description: description);
-      if (_salonResponseModel.value.data?.id != null) {
+      if (_salonResponseModel.value.data?.accessToken != null) {
         userDataStoreToSharedPrefs(_salonResponseModel.value);
         callback.call();
       }
@@ -202,7 +204,7 @@ class AuthController extends GetxController {
       _showProgress.value = true;
       _salonResponseModel.value = await AuthAPI.loginSalon(
           mobileNo: mobileNo, cc: cc, password: password);
-      if (_salonResponseModel.value.data?.id != null) {
+      if (_salonResponseModel.value.data?.accessToken != null) {
         userDataStoreToSharedPrefs(_salonResponseModel.value);
         callback.call();
       } else {

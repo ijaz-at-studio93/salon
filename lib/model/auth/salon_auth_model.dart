@@ -42,7 +42,7 @@ class Data {
       this.salonData});
 
   Data.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
+    id = json['id']?.toString();
     accessToken = json['accessToken'];
     accessTokenValidTill = json['accessTokenValidTill'];
     refreshToken = json['refreshToken'];
@@ -50,6 +50,25 @@ class Data {
     salonData = json['salonData'] != null
         ? SalonData.fromJson(json['salonData'])
         : null;
+  }
+
+  Data copyWith({
+    String? id,
+    String? accessToken,
+    String? accessTokenValidTill,
+    String? refreshToken,
+    String? refreshTokenValidTill,
+    SalonData? salonData,
+  }) {
+    return Data(
+      id: id ?? this.id,
+      accessToken: accessToken ?? this.accessToken,
+      accessTokenValidTill: accessTokenValidTill ?? this.accessTokenValidTill,
+      refreshToken: refreshToken ?? this.refreshToken,
+      refreshTokenValidTill:
+          refreshTokenValidTill ?? this.refreshTokenValidTill,
+      salonData: salonData ?? this.salonData,
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -113,8 +132,8 @@ class SalonData {
       this.homeService});
 
   SalonData.fromJson(Map<String, dynamic> json) {
-
-    rating = double.parse(json['rating'] ==  null ? "0.0":json['rating'].toString());
+    rating = double.parse(
+        json['rating'] == null ? "0.0" : json['rating'].toString());
     id = json['id'];
     name = json['name'];
     description = json['description'];
