@@ -29,7 +29,7 @@ Future<void> requestDndAccess() async {
 }
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
 Future<void> _setupAndroidChannels() async {
   // booking (sound)
@@ -40,7 +40,8 @@ Future<void> _setupAndroidChannels() async {
     importance: Importance.max,
     playSound: true,
     enableVibration: true,
-    sound: RawResourceAndroidNotificationSound('booking'), // res/raw/booking.wav
+    sound:
+        RawResourceAndroidNotificationSound('booking'), // res/raw/booking.wav
   );
 
   // General/Silent (for booked)
@@ -53,13 +54,13 @@ Future<void> _setupAndroidChannels() async {
     enableVibration: false,
   );
 
-  final impl = flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+  final impl =
+      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
 
   await impl?.createNotificationChannel(booking);
   await impl?.createNotificationChannel(generalSilent);
 }
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,10 +79,10 @@ void main() async {
 
   // 🔥 STEP 1 — Initialize local notifications plugin
   const AndroidInitializationSettings androidInit =
-  AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   const DarwinInitializationSettings iosInit = DarwinInitializationSettings();
   const InitializationSettings initSettings =
-  InitializationSettings(android: androidInit, iOS: iosInit);
+      InitializationSettings(android: androidInit, iOS: iosInit);
 
   await flutterLocalNotificationsPlugin.initialize(initSettings);
 
@@ -128,7 +129,7 @@ class _MyAppState extends State<MyApp> {
     debugPrint('BOOTSTRAP: start');
 
     // Ensure Firebase/FCM is ready first
-    await initFCM();
+    // await initFCM();
 
     // Initialize local notifications & channels (already done in main() but safe to call again)
     // await flutterLocalNotificationsPlugin.initialize(...); // already initialized in main
@@ -185,7 +186,8 @@ class _MyAppState extends State<MyApp> {
       debugPrint('notification: ${msg.notification}');
       debugPrint('android channelId: ${msg.notification?.android?.channelId}');
       debugPrint('android sound: ${msg.notification?.android?.sound}');
-      debugPrint('apns sound (data): ${msg.data['aps'] ?? msg.data['sound'] ?? msg.data['apns']}');
+      debugPrint(
+          'apns sound (data): ${msg.data['aps'] ?? msg.data['sound'] ?? msg.data['apns']}');
 
       // forward to your handler
       NotificationUtils.handleNotificationOnForeground(msg);
@@ -202,7 +204,8 @@ class _MyAppState extends State<MyApp> {
     final initialMsg = await FirebaseMessaging.instance.getInitialMessage();
     debugPrint('initNotification: initialMessage -> ${initialMsg?.data}');
     if (initialMsg != null) {
-      NotificationUtils.handleNotificationOnAppOpened(remoteMessage: initialMsg, isAppKilled: true);
+      NotificationUtils.handleNotificationOnAppOpened(
+          remoteMessage: initialMsg, isAppKilled: true);
     }
 
     debugPrint('initNotification: end');

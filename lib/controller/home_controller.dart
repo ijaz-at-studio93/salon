@@ -98,8 +98,8 @@ class HomeController extends GetxController {
   set setAllowPortfolioUploadModel(val) =>
       _allowPortfolioUploadModel.value = val;
 
-  final qrScanned = <String, bool>{}.obs;      // appointmentId -> scanned?
-  final qrToken   = <String, String>{}.obs;    // appointmentId -> token
+  final qrScanned = <String, bool>{}.obs; // appointmentId -> scanned?
+  final qrToken = <String, String>{}.obs; // appointmentId -> token
 
   void setQrScan(String appointmentId, String token) {
     qrScanned[appointmentId] = true;
@@ -116,9 +116,9 @@ class HomeController extends GetxController {
   /*-------------------- do Upload Image ------------------*/
   doUploadImage(
       {required String appointmentId,
-        required List<String> multiplePath,
-        required List<String> multiplePathVideo,
-        required VoidCallback callback}) async {
+      required List<String> multiplePath,
+      required List<String> multiplePathVideo,
+      required VoidCallback callback}) async {
     try {
       _showProgress.value = true;
       String result = await HomeAPI.uploadImage(
@@ -608,14 +608,23 @@ class HomeController extends GetxController {
   }
 
   /*------------------------ Approve Booking  ------------------------*/
-  doBookingApprove(
-      {required String appointmentId,
-        required String status,
-        required VoidCallback callback}) async {
+  doBookingApprove({
+    required String appointmentId,
+    required String status,
+    required VoidCallback callback,
+    String? artistId,
+    String? startsAt,
+    String? endsAt,
+  }) async {
     try {
       _showProgress.value = true;
       bool result = await HomeAPI.approveBooking(
-          appointmentId: appointmentId, status: status);
+        appointmentId: appointmentId,
+        status: status,
+        artistId: artistId,
+        startsAt: startsAt,
+        endsAt: endsAt,
+      );
       if (result) {
         callback.call();
       }
@@ -634,9 +643,10 @@ class HomeController extends GetxController {
     try {
       _showProgress.value = true;
       _allowPortfolioUploadModel.value =
-      await HomeAPI.qrcodeScan(appointmentId: appointmentId);
+          await HomeAPI.qrcodeScan(appointmentId: appointmentId);
 
-      final startsAt = _allowPortfolioUploadModel.value.data?.appointment?.startsAt;
+      final startsAt =
+          _allowPortfolioUploadModel.value.data?.appointment?.startsAt;
       if ((startsAt ?? '').isNotEmpty) {
         callback.call();
       }
@@ -646,7 +656,6 @@ class HomeController extends GetxController {
       _showProgress.value = false;
     }
   }
-
 
   /*-----------------------  Get Cancel Booking Data --------------*/
   doCancelData({required String distribution}) async {
@@ -739,11 +748,14 @@ class HomeController extends GetxController {
   }
 
   /*--------------------- Get Artiest Availability  -------------------*/
-  doBlockArtiestAvailability({required String artistId, required DateTime? start, required DateTime? end}) async {
+  doBlockArtiestAvailability(
+      {required String artistId,
+      required DateTime? start,
+      required DateTime? end}) async {
     try {
       _showProgress.value = true;
-      _artiestAvailabilityGetModel.value =
-      await HomeAPI.blockSlotForArtist(artistId: artistId, start: start, end: end);
+      _artiestAvailabilityGetModel.value = await HomeAPI.blockSlotForArtist(
+          artistId: artistId, start: start, end: end);
     } catch (e) {
       showError(e);
     } finally {
@@ -930,12 +942,12 @@ class HomeController extends GetxController {
       {required String name,
       required String description,
       required String serviceableGender,
-        required String profession,
+      required String profession,
       required File? maleImage,
       required File? femaleImage,
       required VoidCallback callback}) async {
     try {
-      print('profession is *****************'+profession);
+      print('profession is *****************$profession');
       _showProgress.value = true;
       bool result = await HomeAPI.addSalonCategory(
           name: name,

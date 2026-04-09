@@ -10,15 +10,17 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? callback;
   final List<Widget>? actions;
   final bool? fontSize;
+  final Widget? title;
 
   const AppBarWidget(
       {super.key,
-        required this.nameOfScreen,
-        this.callback,
-        this.isBackIcon = true,
-        this.actions,
-        this.fontSize = true,
-        this.rightWidget});
+      required this.nameOfScreen,
+      this.callback,
+      this.isBackIcon = true,
+      this.actions,
+      this.fontSize = true,
+      this.rightWidget,
+      this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -39,32 +41,33 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
       elevation: 1.0,
       backgroundColor: ColorConstant.whiteColor,
       centerTitle: true,
-      title: Text(nameOfScreen,
-          textScaler: const TextScaler.linear(0.85),
-          style: AppTextTheme.bold
-              .copyWith(color: ColorConstant.blackColor, fontSize: 19)),
+      title: title ??
+          Text(nameOfScreen,
+              textScaler: const TextScaler.linear(0.85),
+              style: AppTextTheme.bold
+                  .copyWith(color: ColorConstant.blackColor, fontSize: 19)),
       // show leading only when required
       leadingWidth: isBackIcon ? 80 : 0,
       leading: isBackIcon
           ? InkWell(
-        customBorder: const CircleBorder(),
-        onTap: () async {
-          Navigator.pop(context);
-          callback?.call();
-        },
-        child: Container(
-          width: 30,
-          height: 30,
-          margin: const EdgeInsets.all(7),
-          child: Padding(
-            padding: const EdgeInsets.all(10),
-            child: Image.asset(
-              AssetsConstant.arrowLeftIcon,
-              color: ColorConstant.blackColor,
-            ),
-          ),
-        ),
-      )
+              customBorder: const CircleBorder(),
+              onTap: () async {
+                Navigator.pop(context);
+                callback?.call();
+              },
+              child: Container(
+                width: 30,
+                height: 30,
+                margin: const EdgeInsets.all(7),
+                child: Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Image.asset(
+                    AssetsConstant.arrowLeftIcon,
+                    color: ColorConstant.blackColor,
+                  ),
+                ),
+              ),
+            )
           : const SizedBox.shrink(),
       actions: finalActions.isNotEmpty ? finalActions : [const SizedBox()],
     );

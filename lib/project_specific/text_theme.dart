@@ -6,6 +6,10 @@ class AppTextTheme {
       fontWeight: FontWeight.w700,
       color: ColorConstant.whiteColor,
       fontSize: 16);
+  static TextStyle extraBold = const TextStyle(
+      fontWeight: FontWeight.w700,
+      color: ColorConstant.whiteColor,
+      fontSize: 16);
   static TextStyle light = const TextStyle(
       fontWeight: FontWeight.w300,
       color: ColorConstant.whiteColor,
@@ -20,6 +24,10 @@ class AppTextTheme {
       fontSize: 16);
   static TextStyle italic = const TextStyle(
       fontWeight: FontWeight.w500,
+      color: ColorConstant.whiteColor,
+      fontSize: 16);
+  static TextStyle semibold = const TextStyle(
+      fontWeight: FontWeight.w600,
       color: ColorConstant.whiteColor,
       fontSize: 16);
 }

@@ -25,20 +25,75 @@ class SalonDashboardModel {
   }
 }
 
+// class Data {
+//   int? totalEarnings;
+//   RatingReview? ratingReview;
+//   DistributedRevenue? distributedRevenue;
+//   List<DistributedArtistAnalytics>? distributedArtistAnalytics;
+//
+//   Data(
+//       {this.totalEarnings,
+//       this.ratingReview,
+//       this.distributedRevenue,
+//       this.distributedArtistAnalytics});
+//
+//   Data.fromJson(Map<String, dynamic> json) {
+//     totalEarnings = json['totalEarnings'];
+//     ratingReview = json['ratingReview'] != null
+//         ? RatingReview.fromJson(json['ratingReview'])
+//         : null;
+//     distributedRevenue = json['distributedRevenue'] != null
+//         ? DistributedRevenue.fromJson(json['distributedRevenue'])
+//         : null;
+//     if (json['distributedArtistAnalytics'] != null) {
+//       distributedArtistAnalytics = <DistributedArtistAnalytics>[];
+//       json['distributedArtistAnalytics'].forEach((v) {
+//         distributedArtistAnalytics!.add(DistributedArtistAnalytics.fromJson(v));
+//       });
+//     }
+//   }
+//
+//   Map<String, dynamic> toJson() {
+//     final Map<String, dynamic> data = <String, dynamic>{};
+//     data['totalEarnings'] = totalEarnings;
+//     if (ratingReview != null) {
+//       data['ratingReview'] = ratingReview!.toJson();
+//     }
+//     if (distributedRevenue != null) {
+//       data['distributedRevenue'] = distributedRevenue!.toJson();
+//     }
+//     if (distributedArtistAnalytics != null) {
+//       data['distributedArtistAnalytics'] =
+//           distributedArtistAnalytics!.map((v) => v.toJson()).toList();
+//     }
+//     return data;
+//   }
+// }
+
 class Data {
   int? totalEarnings;
+  double? walletBalance; // ✅ NEW
+  bool? isUpfront; // ✅ NEW
   RatingReview? ratingReview;
   DistributedRevenue? distributedRevenue;
   List<DistributedArtistAnalytics>? distributedArtistAnalytics;
 
-  Data(
-      {this.totalEarnings,
-      this.ratingReview,
-      this.distributedRevenue,
-      this.distributedArtistAnalytics});
+  Data({
+    this.totalEarnings,
+    this.walletBalance,
+    this.isUpfront,
+    this.ratingReview,
+    this.distributedRevenue,
+    this.distributedArtistAnalytics,
+  });
 
   Data.fromJson(Map<String, dynamic> json) {
     totalEarnings = json['totalEarnings'];
+    // ✅ NEW
+    walletBalance = json['walletBalance'] != null
+        ? double.parse(json['walletBalance'].toString())
+        : 0;
+    isUpfront = json['isUpfront'] ?? false;
     ratingReview = json['ratingReview'] != null
         ? RatingReview.fromJson(json['ratingReview'])
         : null;
@@ -48,7 +103,8 @@ class Data {
     if (json['distributedArtistAnalytics'] != null) {
       distributedArtistAnalytics = <DistributedArtistAnalytics>[];
       json['distributedArtistAnalytics'].forEach((v) {
-        distributedArtistAnalytics!.add(DistributedArtistAnalytics.fromJson(v));
+        distributedArtistAnalytics!
+            .add(DistributedArtistAnalytics.fromJson(v));
       });
     }
   }
@@ -56,6 +112,9 @@ class Data {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['totalEarnings'] = totalEarnings;
+    // ✅ NEW
+    data['walletBalance'] = walletBalance;
+    data['isUpfront'] = isUpfront;
     if (ratingReview != null) {
       data['ratingReview'] = ratingReview!.toJson();
     }

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dash/flutter_dash.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -12,169 +10,121 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   const BookingHistoryPendingWidget(
       {super.key, required this.onPress, required this.orderData});
 
+  static const _labelStyle = TextStyle(
+    fontWeight: FontWeight.w700,
+    color: Colors.black,
+    fontSize: 14,
+  );
+
   @override
   Widget build(BuildContext context) {
+    final idx = orderData.idx?.trim() ?? '';
+
+    final dateSource =
+        (orderData.finalizedAt != null && orderData.finalizedAt!.isNotEmpty)
+            ? orderData.finalizedAt!
+            : (orderData.appointment?.startsAt ?? '');
+    final dateStr = convertBooingDateFormat(dateTime: dateSource);
+    final timeStr = _formatTimeLabel(orderData.appointment?.startsAt ?? '');
+    final stylistName = orderData.appointment?.artist?.name ?? '';
+    final priceStr =
+        '₹${orderData.items!.fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0)).toStringAsFixed(0)}';
+    final statusText = orderData.orderStatus ?? '';
+    final statusColor = _statusColor(statusText);
+
     return Container(
-      padding: const EdgeInsets.all(13),
+      padding: const EdgeInsets.all(14),
       margin: const EdgeInsets.symmetric(horizontal: 18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
         color: ColorConstant.whiteColor,
         border: Border.all(
-          color: ColorConstant.bankHistoryBorder,
+          color: ColorConstant.bookingCardBorderPurple,
+          width: 1,
         ),
+        boxShadow: const [
+          BoxShadow(
+            color: ColorConstant.bookingShadow,
+            offset: Offset(0, 2),
+            blurRadius: 6,
+            spreadRadius: 0,
+          ),
+        ],
       ),
-      child: Column(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Text(
-                    "ID :",
-                    textScaler: const TextScaler.linear(0.85),
-                    style: AppTextTheme.regular
-                        .copyWith(color: ColorConstant.idColor, fontSize: 16),
-                  ),
-                  Text(
-                    orderData.idx ?? "",
-                    textScaler: const TextScaler.linear(0.85),
-                    style: AppTextTheme.medium.copyWith(
-                        fontSize: 16, color: ColorConstant.blackColor),
-                  ),
-                ],
-              ),
-              Text(
-                "${convertDate(date: orderData.appointment?.startsAt ?? "")} - ${convertDate(date: orderData.appointment?.endsAt ?? "")}",
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.regular
-                    .copyWith(color: ColorConstant.grayTextColor, fontSize: 13),
-              )
-            ],
-          ),
-          const SizedBox(height: 12),
-          Dash(
-            direction: Axis.horizontal,
-            length: Get.width * 0.8,
-            dashLength: 2,
-            dashColor: const Color(0xffCFCFCF),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Date : ",
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.regular
-                    .copyWith(color: ColorConstant.idColor, fontSize: 16),
-              ),
-              Text(
-                convertBooingDateFormat(dateTime : orderData.finalizedAt ?? ''),
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.bold
-                    .copyWith(color: ColorConstant.primaryColor, fontSize: 16),
-              ),
-              const SizedBox(width: 50),
-              Text(
-                "Status : ",
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.regular
-                    .copyWith(color: ColorConstant.idColor, fontSize: 16),
-              ),
-              Text(
-                orderData.orderStatus ?? '',
-                textScaler: const TextScaler.linear(0.85),
-                style: AppTextTheme.bold
-                    .copyWith(color: ColorConstant.primaryColor, fontSize: 16),
-              ),
-            ],
-          ),
-          const SizedBox(height: 5),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Total",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.idColor, fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "₹${orderData.items!.fold<double>(0.0,
-                                (sum, item) => sum + (item.service?.price ?? 0))}/-",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 16),
-                      ),
-                    ],
-                  ),
-               /*   const SizedBox(width: 15),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Service",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.idColor, fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        "5",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 16),
-                      ),
-                    ],
-                  ),*/
-                  const SizedBox(width: 20),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Stylist",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.idColor, fontSize: 16),
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        orderData.appointment?.artist?.name ?? "",
-                        textScaler: const TextScaler.linear(0.85),
-                        style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              InkWell(
-                onTap: onPress,
-                child: Container(
-                  height: 34,
-                  width: 61,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    color: ColorConstant.bgViewColor,
-                    border: Border.all(color: ColorConstant.borderRedColor),
-                  ),
-                  child: Center(
-                    child: Text(
-                      "View",
-                      style: AppTextTheme.regular.copyWith(
-                          color: ColorConstant.redColor, fontSize: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (idx.isNotEmpty) ...[
+                  ColorFiltered(
+                    colorFilter: const ColorFilter.mode(
+                        Colors.transparent, BlendMode.srcIn),
+                    child: _inlineLabelValue(
+                      label: 'ID :',
+                      value: idx,
+                      valueColor: ColorConstant.bookingValuePurple,
                     ),
                   ),
+                  const SizedBox(height: 8),
+                ],
+                _inlineLabelValue(
+                  label: 'Date : ',
+                  value: dateStr,
+                  valueColor: ColorConstant.bookingValuePurple,
                 ),
-              )
+                const SizedBox(height: 8),
+                _inlineLabelValue(
+                  label: 'Stylist : ',
+                  value: stylistName,
+                  valueColor: ColorConstant.bookingValuePurple,
+                ),
+                const SizedBox(height: 8),
+                RichText(
+                  text: TextSpan(
+                    style: AppTextTheme.bold.copyWith(
+                      fontSize: 14,
+                      color: ColorConstant.bookingPriceMagenta2,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'Price : ',
+                        style: TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      TextSpan(text: priceStr),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _inlineLabelValue(
+                label: 'Time -',
+                value: timeStr,
+                valueColor: ColorConstant.bookingValuePurple,
+                alignEnd: true,
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('Status : ', style: _labelStyle.copyWith(fontSize: 13)),
+                  Text(
+                    statusText,
+                    style: AppTextTheme.bold.copyWith(
+                      fontSize: 13,
+                      color: statusColor,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              _respondButton(),
             ],
           ),
         ],
@@ -182,18 +132,98 @@ class BookingHistoryPendingWidget extends StatelessWidget {
     );
   }
 
-/*---------------- Convert Date tTime  ------------*/
-  String convertDate({required String date}) {
-    String dateTimeString = date;
-    DateTime dateTime = DateTime.parse(dateTimeString);
-    String formattedTime = DateFormat('h:mm a').format(dateTime);
-    return formattedTime;
+  Widget _inlineLabelValue({
+    required String label,
+    required String value,
+    required Color valueColor,
+    bool alignEnd = false,
+  }) {
+    if (alignEnd) {
+      return RichText(
+        textAlign: TextAlign.end,
+        text: TextSpan(
+          style: _labelStyle.copyWith(fontSize: 13),
+          children: [
+            TextSpan(text: label),
+            TextSpan(
+              text: value,
+              style: AppTextTheme.bold.copyWith(
+                fontSize: 13,
+                color: valueColor,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+    return RichText(
+      text: TextSpan(
+        style: _labelStyle.copyWith(fontSize: 13),
+        children: [
+          TextSpan(
+            text: label,
+            style: AppTextTheme.semibold.copyWith(
+              fontSize: 13,
+              color: Colors.black,
+            ),
+          ),
+          TextSpan(
+            text: value,
+            style: AppTextTheme.bold.copyWith(
+              fontSize: 13,
+              color: valueColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
-  /*------------------------ Convert Booking Date ---------------*/
+  Widget _respondButton() {
+    return Material(
+      color: ColorConstant.bgViewColor,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onPress,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: ColorConstant.borderRedColor),
+          ),
+          child: Text(
+            'Respond',
+            style: AppTextTheme.bold.copyWith(
+              color: ColorConstant.redColor,
+              fontSize: 13,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _statusColor(String status) {
+    final s = status.toLowerCase();
+    if (s.contains('cancel')) {
+      return ColorConstant.bookingStatusCancelled;
+    }
+    if (s.contains('complete')) {
+      return Colors.green.shade700;
+    }
+    return ColorConstant.redColor;
+  }
+
+  String _formatTimeLabel(String date) {
+    if (date.isEmpty) return '';
+    final dateTime = DateTime.parse(date);
+    return DateFormat('h : mm a').format(dateTime);
+  }
+
   String convertBooingDateFormat({required String dateTime}) {
-    if (dateTime == "") return "";
+    if (dateTime == '') return '';
     final date = DateTime.parse(dateTime);
-    return DateFormat('dd/MM/yyyy').format(date);
+    return DateFormat('MM/dd/yyyy').format(date);
   }
 }

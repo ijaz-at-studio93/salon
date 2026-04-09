@@ -1,5 +1,4 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -11,6 +10,7 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
 
+import '../../project_specific/custom_tab_bar.dart';
 import '../../project_specific/project_appbar.dart';
 import 'booking_history_view_page.dart';
 
@@ -43,12 +43,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(),
-                overall == "0" ? const SizedBox() : _noOfServiceYouOffer(),
+                // overall == "0" ? const SizedBox() :
+                _noOfServiceYouOffer(),
               ],
             ),
           ),
@@ -94,7 +95,39 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                   );
                                 })
                         : overall == "1"
-                            ? _homeController.getSalonCancelServedList.data
+                            ? _homeController
+                                        .getSalonServedList.data?.isEmpty ??
+                                    false
+                                ? const NoItemsWidget(
+                                    text: "No Any Complete Booking Found",
+                                  )
+                                : ListView.builder(
+                                    shrinkWrap: true,
+                                    itemCount: _homeController
+                                            .getSalonServedList.data?.length ??
+                                        0,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 5),
+                                        child: CompleteHistoryWidget(
+                                          orderData: _homeController
+                                              .getSalonServedList.data![index],
+                                          onPress: () {
+                                            Get.to(() => BookingHistoryViewpage(
+                                                  appointmentId: _homeController
+                                                          .getSalonServedList
+                                                          .data?[index]
+                                                          .appointment
+                                                          ?.id ??
+                                                      "",
+                                                  status: "Complete",
+                                                ));
+                                          },
+                                        ),
+                                      );
+                                    })
+                            : _homeController.getSalonCancelServedList.data
                                         ?.isEmpty ??
                                     false
                                 ? const NoItemsWidget(
@@ -128,38 +161,6 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                           },
                                         ),
                                       );
-                                    })
-                            : _homeController
-                                        .getSalonServedList.data?.isEmpty ??
-                                    false
-                                ? const NoItemsWidget(
-                                    text: "No Any Complete Booking Found",
-                                  )
-                                : ListView.builder(
-                                    shrinkWrap: true,
-                                    itemCount: _homeController
-                                            .getSalonServedList.data?.length ??
-                                        0,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 5),
-                                        child: CompleteHistoryWidget(
-                                          orderData: _homeController
-                                              .getSalonServedList.data![index],
-                                          onPress: () {
-                                            Get.to(() => BookingHistoryViewpage(
-                                                  appointmentId: _homeController
-                                                          .getSalonServedList
-                                                          .data?[index]
-                                                          .appointment
-                                                          ?.id ??
-                                                      "",
-                                                  status: "Complete",
-                                                ));
-                                          },
-                                        ),
-                                      );
                                     })),
           ),
         ],
@@ -189,6 +190,15 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(color: Color(0xFF01AB4D)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(color: Color(0xFF01AB4D)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(15),
+              borderSide: const BorderSide(color: Color(0xFF01AB4D)),
             ),
           ),
           hint: Text(
@@ -211,7 +221,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             return null;
           },
           onChanged: (value) {
-            if (overall == "1") {
+            if (overall == "2") {
               if (value == 'Today') {
                 _homeController.doCancelData(distribution: "today");
               } else if (value == 'yesterday') {
@@ -223,7 +233,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               } else if (value == 'This year') {
                 _homeController.doCancelData(distribution: "this_year");
               }
-            } else {
+            } else if (overall == "1") {
               if (value == 'Today') {
                 _homeController.doCompleteBookingData(distribution: "today");
               } else if (value == 'yesterday') {
@@ -249,7 +259,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
           ),
           iconStyleData: const IconStyleData(
             icon: Icon(
-              Icons.arrow_drop_down,
+              Icons.keyboard_arrow_down,
               color: Colors.black,
             ),
             iconSize: 24,
@@ -272,63 +282,29 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
 
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
-    return Container(
-      color: ColorConstant.whiteColor,
-      width: Get.width,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: CupertinoSlidingSegmentedControl(
-          backgroundColor: ColorConstant.gray,
-          padding: const EdgeInsets.all(6),
-          groupValue: overall,
-          thumbColor: ColorConstant.whiteColor,
-          children: {
-            "0": SizedBox(
-              width: Get.width,
-              height: Get.height * 0.06,
-              child: Center(
-                child: Text(
-                  "Upcoming",
-                  style: AppTextTheme.medium.copyWith(
-                      fontSize: 16,
-                      color: overall == "0"
-                          ? ColorConstant.blackColor
-                          : ColorConstant.grayTextColor),
-                ),
-              ),
-            ),
-            "1": Text(
-              "Cancelled",
-              style: AppTextTheme.medium.copyWith(
-                  fontSize: 16,
-                  color: overall == "1"
-                      ? ColorConstant.blackColor
-                      : ColorConstant.grayTextColor),
-            ),
-            "2": Text(
-              "Completed",
-              style: AppTextTheme.medium.copyWith(
-                  fontSize: 16,
-                  color: overall == "2"
-                      ? ColorConstant.blackColor
-                      : ColorConstant.grayTextColor),
-            ),
-          },
-          onValueChanged: (dynamic value) {
-            overall = value;
-            if (overall == "0") {
-              setState(() {
-                _homeController.doUpcomingData();
-              });
-            } else if (overall == "1") {
-              setState(() {
-                _homeController.doCancelData(distribution: "all_time");
-              });
-            } else {
-              setState(() {
-                _homeController.doCompleteBookingData(distribution: "all_time");
-              });
-            }
-          }),
+    return CustomTabBar(
+      tabs: const [
+        CustomTabItem(value: "0", label: "Upcoming"),
+        CustomTabItem(value: "1", label: "Completed"),
+        CustomTabItem(value: "2", label: "Cancelled"),
+      ],
+      selectedValue: overall ?? "0",
+      onChanged: (value) {
+        overall = value;
+        if (overall == "0") {
+          setState(() {
+            _homeController.doUpcomingData();
+          });
+        } else if (overall == "1") {
+          setState(() {
+            _homeController.doCompleteBookingData(distribution: "all_time");
+          });
+        } else {
+          setState(() {
+            _homeController.doCancelData(distribution: "all_time");
+          });
+        }
+      },
     );
   }
 }

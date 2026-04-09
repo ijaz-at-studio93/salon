@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ColorConstant {
   static const Color primaryColor = Color(0xFF8466CF);
+  static const Color primaryColor2 = Color(0xFF8454E5);
   static const Color blackColor = Color(0xFF222222);
   static const Color whiteColor = Colors.white;
   static const Color borderColor = Color(0xffE5E5E5);
@@ -9,17 +10,18 @@ class ColorConstant {
   static const Color grayTextColor = Color(0xff787878);
   static const Color bgColor = Color(0xffFAF8FF);
   static const Color redColor = Color(0xffD10A0D);
+  static const Color redColor2 = Color(0xffFF1A01);
   static const Color lightPisTaColor = Color(0xff92AD25);
   static const Color reviewCardColor = Color(0xffF5F5F5);
   static const Color borderColor2 = Color(0xffE1E1E1);
   static const Color dividerColor = Color(0xffDBDBDB);
   static const Color lightColor = Color(0xffE5DBFF);
   static const Color disAbleColor = Color(0xffEEE8FF);
-  static const Color  review = Color(0xffEFEFEF);
-  static const Color  bankHistoryBorder = Color(0xffE6E6E6);
-  static const Color  idColor = Color(0xffADADAD);
-  static const Color  bgViewColor = Color(0xffFFF2F2);
-  static const Color  borderRedColor = Color(0xffFFC0C1);
+  static const Color review = Color(0xffEFEFEF);
+  static const Color bankHistoryBorder = Color(0xffE6E6E6);
+  static const Color idColor = Color(0xffADADAD);
+  static const Color bgViewColor = Color(0xffFFF2F2);
+  static const Color borderRedColor = Color(0xffFFC0C1);
   static const Color experienceColor = Color(0xffBCBCBC);
   static const Color orangeDotColor = Color(0xffCF8C66);
   static const Color gray = Color(0xffF7F7F7);
@@ -37,5 +39,16 @@ class ColorConstant {
   static const Color topRatedColor = Color(0xff696A6B);
   static const Color skyBlueColor = Color(0xff2178FC);
   static const Color divider2Color = Color(0xffE8E8E8);
+  static const Color lightGreyColor = Color(0xFFD9D9D9);
 
+  /// Booking history cards (purple border, magenta price, mint View button)
+  static const Color bookingCardBorderPurple = Color(0xFF8B5CF6);
+  static const Color bookingValuePurple = Color(0xFF8B5CF6);
+  static const Color bookingPriceMagenta = Color(0xFFD946EF);
+  static const Color bookingPriceMagenta2 = Color(0xFFCD73B4);
+  static const Color bookingStatusCancelled = Color(0xFFB0B0B0);
+  static const Color bookingViewMintBg = Color(0xFFE8F8EF);
+  static const Color bookingViewGreen = Color(0xFF166534);
+  static const Color bookingShadow = Color(0x1A000000);
+  static const Color lightGreenColor = Color(0xFF01AB4D);
 }

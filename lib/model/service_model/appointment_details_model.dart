@@ -124,7 +124,7 @@ class Data {
 class DiscountDetails {
   String? code;
   String? type;
-  int? amount;
+  double? amount;
 
   DiscountDetails({
     this.code,
@@ -135,7 +135,8 @@ class DiscountDetails {
   DiscountDetails.fromJson(Map<String, dynamic> json) {
     code = json['code'];
     type = json['type'];
-    amount = json['amount'];
+    //amount = json['amount'];
+    amount = (json['amount'] as num?)?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
@@ -360,17 +361,66 @@ class Salon {
   }
 }
 
+/// One bookable time option (e.g. alternative slot from API).
+class AppointmentTimeSlot {
+  String? startsAt;
+  String? endsAt;
+
+  AppointmentTimeSlot({this.startsAt, this.endsAt});
+
+  AppointmentTimeSlot.fromJson(Map<String, dynamic> json) {
+    startsAt = json['startsAt'] as String?;
+    endsAt = json['endsAt'] as String?;
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'startsAt': startsAt,
+      'endsAt': endsAt,
+    };
+  }
+}
+
 class Appointment {
   String? startsAt;
   String? endsAt;
   User? artist;
+  /// When the API returns multiple assignable stylists.
+  List<User>? artists;
+  /// When the API returns multiple time options for this booking.
+  List<AppointmentTimeSlot>? timeSlots;
 
-  Appointment({this.startsAt, this.endsAt, this.artist});
+  Appointment({
+    this.startsAt,
+    this.endsAt,
+    this.artist,
+    this.artists,
+    this.timeSlots,
+  });
 
   Appointment.fromJson(Map<String, dynamic> json) {
     startsAt = json['startsAt'];
     endsAt = json['endsAt'];
     artist = json['artist'] != null ? User.fromJson(json['artist']) : null;
+    if (json['artists'] != null) {
+      artists = <User>[];
+      for (final v in json['artists'] as List<dynamic>) {
+        artists!.add(User.fromJson(v as Map<String, dynamic>));
+      }
+    }
+    if (json['timeSlots'] != null) {
+      timeSlots = <AppointmentTimeSlot>[];
+      for (final v in json['timeSlots'] as List<dynamic>) {
+        timeSlots!.add(
+            AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
+      }
+    } else if (json['slots'] != null) {
+      timeSlots = <AppointmentTimeSlot>[];
+      for (final v in json['slots'] as List<dynamic>) {
+        timeSlots!.add(
+            AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
+      }
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -379,6 +429,12 @@ class Appointment {
     data['endsAt'] = endsAt;
     if (artist != null) {
       data['artist'] = artist!.toJson();
+    }
+    if (artists != null) {
+      data['artists'] = artists!.map((e) => e.toJson()).toList();
+    }
+    if (timeSlots != null) {
+      data['timeSlots'] = timeSlots!.map((e) => e.toJson()).toList();
     }
     return data;
   }

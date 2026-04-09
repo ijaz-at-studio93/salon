@@ -67,7 +67,6 @@ class AssetsConstant {
 
   static const String noInterNet = "assets/images/nointernet_connection.png";
 
-
-
-
+  static const String appointmentAcceptedGif = "assets/gifs/success.gif";
+  static const String appointmentRejectedGif = "assets/gifs/reject.gif";
 }

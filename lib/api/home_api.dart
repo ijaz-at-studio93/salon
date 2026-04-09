@@ -76,7 +76,7 @@ class HomeAPI {
   /*===================== Delete Artiest =====================*/
   static Future<bool> deleteStylist({required String artistId}) async {
     final response =
-    await DioClient.client.delete("salon/artist/$artistId/delete");
+        await DioClient.client.delete("salon/artist/$artistId/delete");
     if (response.isSuccess) {
       return true;
     } else {
@@ -309,7 +309,7 @@ class HomeAPI {
       "homeService": homeService,
       "password": password,
       "gender": gender,
-      "address":"test"
+      "address": "test"
     });
 
     if (storeId.isNotEmpty) {
@@ -441,11 +441,26 @@ class HomeAPI {
   }
 
   /*-----------------------  Booking Approve -----------------------------*/
-  static Future<bool> approveBooking(
-      {required String appointmentId, required String status}) async {
+  static Future<bool> approveBooking({
+    required String appointmentId,
+    required String status,
+    String? artistId,
+    String? startsAt,
+    String? endsAt,
+  }) async {
+    final body = <String, dynamic>{'status': status};
+    if (artistId != null && artistId.isNotEmpty) {
+      body['artistId'] = artistId;
+    }
+    if (startsAt != null && startsAt.isNotEmpty) {
+      body['startsAt'] = startsAt;
+    }
+    if (endsAt != null && endsAt.isNotEmpty) {
+      body['endsAt'] = endsAt;
+    }
     final response = await DioClient.client.put(
         "salon/appointments/$appointmentId/status",
-        data: {"status": status});
+        data: body);
     if (response.isSuccess) {
       return true;
     } else {
@@ -477,8 +492,8 @@ class HomeAPI {
     if (multiplePath.isNotEmpty) {
       for (int i = 0; i < multiplePath.length; i++) {
         final mimeTypeData =
-        lookupMimeType(multiplePath[i], headerBytes: [0xFF, 0xD8])
-            ?.split('/');
+            lookupMimeType(multiplePath[i], headerBytes: [0xFF, 0xD8])
+                ?.split('/');
         final multipartFile = await MultipartFile.fromFile(multiplePath[i],
             contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
         formData.files.add(MapEntry('images', multipartFile));
@@ -586,9 +601,10 @@ class HomeAPI {
 
   /*---------------  Artiest Availability  Get Data ------------- */
   static Future<ArtiestAvailabilityGetModel> blockSlotForArtist(
-      {required String artistId, required DateTime? start, required DateTime? end}) async {
-    final response = await DioClient.client
-      .post(
+      {required String artistId,
+      required DateTime? start,
+      required DateTime? end}) async {
+    final response = await DioClient.client.post(
       "salon/availability/artist/$artistId/block-slot",
       data: {
         "start": start?.toIso8601String(),
@@ -852,22 +868,20 @@ class HomeAPI {
   //   }
   // }
 
-
   /*-------------------  get Salon  bank Account -------------------*/
-  static Future<SalonBankAccountList> getSalonBankAccount()async{
+  static Future<SalonBankAccountList> getSalonBankAccount() async {
     final response = await DioClient.client.get("salon/account");
     if (response.isSuccess) {
       return SalonBankAccountList.fromJson(response.data);
     } else {
       throw response.data;
     }
-
   }
-
 
   /*--------------------- Create Add Bank Account ------------------------*/
   static Future<bool> salonAccountCreate({required Map account}) async {
-    final response = await DioClient.client.post('salon/account', data: account);
+    final response =
+        await DioClient.client.post('salon/account', data: account);
     if (response.isSuccess) {
       return true;
     } else {
@@ -876,14 +890,12 @@ class HomeAPI {
   }
 
   /*-------------------------  Delete Account ------------------*/
-  static  Future<bool>  deleteBankAccount({required String accountId}) async{
+  static Future<bool> deleteBankAccount({required String accountId}) async {
     final response = await DioClient.client.delete('salon/account/$accountId');
     if (response.isSuccess) {
       return true;
     } else {
       throw response.data;
     }
-
   }
-
 }
