@@ -1,0 +1,279 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:salon/api/dio_client.dart';
+import 'package:salon/api/master_api.dart';
+import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/master_model/get_category_model.dart';
+import 'package:salon/project_specific/project_appbar.dart';
+import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/pick_image.dart';
+
+class AddProductPage extends StatefulWidget {
+  const AddProductPage({super.key});
+
+  @override
+  State<AddProductPage> createState() => _AddProductPageState();
+}
+
+class _AddProductPageState extends State<AddProductPage> {
+  final _description = TextEditingController();
+  final _homeController = Get.find<HomeController>();
+
+  List<GetCategoryData> _categories = [];
+  String _selectedCategoryId = "";
+  File _imagePath = File("");
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final list = await MasterApi.getCategory();
+      if (mounted) setState(() => _categories = list);
+    } catch (_) {}
+  }
+
+  void _submit() {
+    if (_selectedCategoryId.isEmpty) {
+      showMessage("Please select a category.");
+    } else {
+      _homeController.doAddProduct(
+        categoryId: _selectedCategoryId,
+        name: "",
+        description: _description.text,
+        price: "",
+        image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
+        callback: () {
+          Get.back();
+          _homeController.doGetProductListData();
+        },
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: ColorConstant.whiteColor,
+      appBar: const AppBarWidget(nameOfScreen: "Add Product"),
+      body: Obx(
+        () => _homeController.showProgress
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: ColorConstant.primaryColor,
+                ),
+              )
+            : Column(
+                children: [
+                  // ── Scrollable content ───────────────────────
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // ── Image Upload Box ─────────────────
+                          GestureDetector(
+                            onTap: () {
+                              FileUtils.openPlatformImagePicker(
+                                  onSelectImage: (file) {
+                                setState(() => _imagePath = file);
+                              });
+                            },
+                            child: Container(
+                              height: 180,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: ColorConstant.whiteColor,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                    color: ColorConstant.blackColor,
+                                    width: 1.5),
+                              ),
+                              child: _imagePath.path.isEmpty
+                                  ? Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.upload_rounded,
+                                          size: 52,
+                                          color: ColorConstant.blackColor,
+                                        ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          "Drop Image",
+                                          style: AppTextTheme.medium.copyWith(
+                                              fontSize: 15,
+                                              color: ColorConstant.blackColor),
+                                        ),
+                                      ],
+                                    )
+                                  : ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        _imagePath,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // ── Description (Optional) ───────────
+                          Text(
+                            "Description (Optional)",
+                            style: AppTextTheme.bold.copyWith(
+                                fontSize: 14, color: ColorConstant.blackColor),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            height: 70,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: ColorConstant.primaryColor,
+                                  width: 1.5),
+                            ),
+                            child: TextField(
+                              controller: _description,
+                              maxLines: 4,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.done,
+                              style: AppTextTheme.medium.copyWith(
+                                  color: ColorConstant.blackColor,
+                                  fontSize: 13),
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 10),
+                                border: InputBorder.none,
+                                hintStyle: AppTextTheme.regular.copyWith(
+                                    color: ColorConstant.grayColor,
+                                    fontSize: 13),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // ── Category Radio Buttons (Wrap) ────
+                          if (_categories.isEmpty)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8),
+                                child: CircularProgressIndicator(
+                                  color: ColorConstant.primaryColor,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            )
+                          else
+                            Wrap(
+                              spacing: 0,
+                              runSpacing: 4,
+                              children: _categories.map((cat) {
+                                return GestureDetector(
+                                  onTap: () => setState(
+                                      () => _selectedCategoryId = cat.id ?? ""),
+                                  child: SizedBox(
+                                    width: (MediaQuery.of(context).size.width -
+                                            40) /
+                                        3,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Radio<String>(
+                                          value: cat.id ?? "",
+                                          groupValue: _selectedCategoryId,
+                                          activeColor:
+                                              ColorConstant.primaryColor,
+                                          materialTapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                          visualDensity: VisualDensity.compact,
+                                          onChanged: (val) => setState(() =>
+                                              _selectedCategoryId = val ?? ""),
+                                        ),
+                                        Flexible(
+                                          child: Text(
+                                            cat.name ?? "",
+                                            style: AppTextTheme.bold.copyWith(
+                                                fontSize: 13,
+                                                color:
+                                                    ColorConstant.blackColor),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          const SizedBox(height: 24),
+
+                          // ── Create You Own Button ────────────
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                // TODO: open create custom category flow
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: ColorConstant.primaryColor
+                                    .withOpacity(0.18),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 32, vertical: 14),
+                              ),
+                              child: Text(
+                                "Create You Own",
+                                style: AppTextTheme.medium.copyWith(
+                                    fontSize: 14,
+                                    color: ColorConstant.primaryColor),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // ── Submit Button (pinned to bottom) ──────────
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 54,
+                      child: ElevatedButton(
+                        onPressed: _submit,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: ColorConstant.primaryColor,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          "Submit",
+                          style: AppTextTheme.bold.copyWith(
+                              fontSize: 17, color: ColorConstant.whiteColor),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+      ),
+    );
+  }
+}

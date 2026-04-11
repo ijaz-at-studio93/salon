@@ -124,12 +124,24 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              _respondButton(),
+              _actionButton(),
             ],
           ),
         ],
       ),
     );
+  }
+
+  bool get _isPending {
+    final s = (orderData.orderStatus ?? '').toLowerCase().trim();
+    return s == 'pending';
+  }
+
+  Widget _actionButton() {
+    if (_isPending) {
+      return _respondButton();
+    }
+    return _viewButton();
   }
 
   Widget _inlineLabelValue({
@@ -182,21 +194,46 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   Widget _respondButton() {
     return Material(
       color: ColorConstant.bgViewColor,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: onPress,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: ColorConstant.borderRedColor),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: ColorConstant.redColor2),
           ),
           child: Text(
             'Respond',
             style: AppTextTheme.bold.copyWith(
-              color: ColorConstant.redColor,
-              fontSize: 13,
+              color: ColorConstant.redColor2,
+              fontSize: 16,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _viewButton() {
+    return Material(
+      color: ColorConstant.bookingViewMintBg,
+      borderRadius: BorderRadius.circular(15),
+      child: InkWell(
+        onTap: onPress,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: ColorConstant.lightGreenColor),
+          ),
+          child: Text(
+            'View',
+            style: AppTextTheme.bold.copyWith(
+              color: ColorConstant.lightGreenColor,
+              fontSize: 16,
             ),
           ),
         ),

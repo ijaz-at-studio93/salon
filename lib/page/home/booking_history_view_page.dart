@@ -52,6 +52,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       _homeController.doGetAppointmentDetailsModel(
         appointmentId: widget.appointmentId,
       );
+      if (widget.status == 'pending') {
+        _homeController.doGetRejectionReasons();
+      }
     });
   }
 
@@ -800,12 +803,14 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     showDialog(
                       context: context,
                       builder: (dialogContext) => RejectServiceDiaLog(
+                        reasons: _homeController.getRejectionReasonsList,
                         tapNo: () => Navigator.of(dialogContext).pop(),
-                        tapYes: () {
+                        tapYes: (reasonId) {
                           Navigator.of(dialogContext).pop();
                           _homeController.doBookingApprove(
                             appointmentId: widget.appointmentId,
                             status: 'salon_artist_rejected',
+                            rejectionReasonId: reasonId.isNotEmpty ? reasonId : null,
                             callback: () {
                               _homeController.doGetAppointmentDetailsModel(
                                 appointmentId: widget.appointmentId,
@@ -867,7 +872,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     _homeController.doBookingApprove(
                       appointmentId: widget.appointmentId,
                       status: 'confirmed',
-                      artistId: artistId,
+                      stylistIds: [artistId!],
                       startsAt: slot.startsAt,
                       endsAt: slot.endsAt,
                       callback: () {

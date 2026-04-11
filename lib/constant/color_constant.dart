@@ -51,4 +51,22 @@ class ColorConstant {
   static const Color bookingViewGreen = Color(0xFF166534);
   static const Color bookingShadow = Color(0x1A000000);
   static const Color lightGreenColor = Color(0xFF01AB4D);
+
+  /// Set Stylist Availability (Figma)
+  static const Color stylistAvailabilityScreenBg = Color(0xFFEBEBEB);
+  static const Color stylistAvailabilityAvatarPlaceholder = Color(0xFFD175B2);
+  static const Color stylistStatusOff = Color(0xFFD15447);
+  static const Color stylistStatusAvailable = Color(0xFF21AB5F);
+  static const Color stylistStatusPartial = Color(0xFFF4D03F);
+  static const Color stylistManageButtonBg = Color(0xFFD1C4E9);
+  static const Color stylistManageButtonAccent = Color(0xFF9575CD);
+
+  /// Manage Stylists list screen background
+  static const Color manageStylistScreenBg = Color(0xFFF2F2F2);
+
+  /// Stylist exception (blocked) cards
+  static const Color exceptionDisabledLabel = Color(0xFFE53E3E);
+  static const Color exceptionDateViolet = Color(0xFF7C3AED);
+  static const Color exceptionTimePink = Color(0xFFD53F8C);
+  static const Color exceptionDeleteRed = Color(0xFFE53E3E);
 }

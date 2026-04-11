@@ -166,17 +166,14 @@ class _AvailabilitySettingPageState extends State<AvailabilitySettingPage> {
                 ),
               );
 
-
-
-              print( _homeController.getSalonAvailability.data?.tuesday?.isSwitchOn );
-              print( _homeController.getSalonAvailability.data?.tuesday?.start );
-              print( _homeController.getSalonAvailability.data?.tuesday?.end);
+              print(_homeController
+                  .getSalonAvailability.data?.tuesday?.isSwitchOn);
+              print(_homeController.getSalonAvailability.data?.tuesday?.start);
+              print(_homeController.getSalonAvailability.data?.tuesday?.end);
               print("=======/*/*/*/*/*/*/*/* =============");
 
               String jsonStr = jsonEncode(salonWorkingPlanModel);
               Map<String, dynamic> data = jsonDecode(jsonStr);
-
-
 
               _homeController.doUpdateSalonAvailability(
                   availability: data,

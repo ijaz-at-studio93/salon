@@ -28,6 +28,7 @@ import 'package:salon/model/stylist/artiest_list_model.dart';
 import 'package:salon/model/translation/translation_history_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
+import '../model/service_model/rejection_reason_model.dart';
 
 class HomeAPI {
   /*=================== eligibility =====================*/ static Future<
@@ -444,13 +445,14 @@ class HomeAPI {
   static Future<bool> approveBooking({
     required String appointmentId,
     required String status,
-    String? artistId,
+    List<String>? stylistIds,
     String? startsAt,
     String? endsAt,
+    String? rejectionReasonId,
   }) async {
     final body = <String, dynamic>{'status': status};
-    if (artistId != null && artistId.isNotEmpty) {
-      body['artistId'] = artistId;
+    if (stylistIds != null && stylistIds.isNotEmpty) {
+      body['stylistIds'] = stylistIds;
     }
     if (startsAt != null && startsAt.isNotEmpty) {
       body['startsAt'] = startsAt;
@@ -458,11 +460,24 @@ class HomeAPI {
     if (endsAt != null && endsAt.isNotEmpty) {
       body['endsAt'] = endsAt;
     }
-    final response = await DioClient.client.put(
-        "salon/appointments/$appointmentId/status",
-        data: body);
+    if (rejectionReasonId != null && rejectionReasonId.isNotEmpty) {
+      body['rejectionReasonId'] = rejectionReasonId;
+    }
+    final response = await DioClient.client
+        .put("salon/appointments/$appointmentId/status", data: body);
     if (response.isSuccess) {
       return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*-----------------------  Get Rejection Reasons -----------------------------*/
+  static Future<RejectionReasonModel> getRejectionReasons() async {
+    final response =
+        await DioClient.client.get("salon/appointments/rejection-reason");
+    if (response.isSuccess) {
+      return RejectionReasonModel.fromJson(response.data);
     } else {
       throw response.data;
     }
@@ -613,6 +628,41 @@ class HomeAPI {
     );
     if (response.isSuccess) {
       return ArtiestAvailabilityGetModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /// Removes a blocked interval. Requires the slot id from [ArtistBlockedSlot.id].
+  static Future<bool> deleteArtistBlockedSlot({
+    required String artistId,
+    required String blockId,
+  }) async {
+    final response = await DioClient.client.delete(
+      "salon/availability/artist/$artistId/blocked-slot/$blockId",
+    );
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------- Get Blocked Slots For Artist ----------*/
+  static Future<List<ArtistBlockedSlot>> getBlockedSlotsForArtist(
+      {required String artistId}) async {
+    final response = await DioClient.client
+        .get("salon/availability/artist/$artistId/blocked-slots");
+    if (response.isSuccess) {
+      final data = response.data['data'];
+      if (data is List) {
+        return data
+            .whereType<Map<String, dynamic>>()
+            .map((e) => ArtistBlockedSlot.fromJson(e))
+            .where((s) => s.start != null && s.end != null)
+            .toList();
+      }
+      return [];
     } else {
       throw response.data;
     }

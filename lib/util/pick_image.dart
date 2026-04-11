@@ -157,7 +157,7 @@ class FileUtils {
                       Expanded(
                         child: InkWell(
                           onTap: () async {
-                           Navigator.pop(context);
+                            Navigator.pop(context);
                             File selectedImage = await pickVideoGallery();
                             onSelectVideo.call(selectedImage);
                           },

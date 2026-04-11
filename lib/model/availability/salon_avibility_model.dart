@@ -9,7 +9,9 @@ class SalonAvailability {
   SalonAvailability.fromJson(Map<String, dynamic> json) {
     statusCode = json['statusCode'];
     success = json['success'];
-    data = json['data'] != null ? SalonAvailabilityData.fromJson(json['data']) : null;
+    data = json['data'] != null
+        ? SalonAvailabilityData.fromJson(json['data'])
+        : null;
     message = json['message'];
   }
 
@@ -90,11 +92,12 @@ class SalonDay {
   bool? isSwitchOn;
   List<SalonBreaks>? breaks;
 
-  SalonDay({this.start, this.end, this.breaks,this.isSwitchOn});
+  SalonDay({this.start, this.end, this.breaks, this.isSwitchOn});
 
   SalonDay.fromJson(Map<String, dynamic> json) {
     start = json['start'];
     end = json['end'];
+    isSwitchOn = true;
     if (json['breaks'] != null) {
       breaks = <SalonBreaks>[];
       json['breaks'].forEach((v) {

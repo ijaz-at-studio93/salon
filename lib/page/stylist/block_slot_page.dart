@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/util/app_snackbar.dart';
 
 import '../../controller/home_controller.dart';
 
@@ -87,17 +88,17 @@ class _BlockSlotPageState extends State<BlockSlotPage> {
 
   Future<void> _blockSlot() async {
     if (_start == null) {
-      Get.snackbar('Invalid', 'Please select start time',
+      showAppSnackbar('Invalid', 'Please select start time',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
     if (_end == null) {
-      Get.snackbar('Invalid', 'Please select end time',
+      showAppSnackbar('Invalid', 'Please select end time',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
     if (!_end!.isAfter(_start!)) {
-      Get.snackbar('Invalid', 'End time must be after start time',
+      showAppSnackbar('Invalid', 'End time must be after start time',
           snackPosition: SnackPosition.BOTTOM);
       return;
     }
@@ -113,7 +114,7 @@ class _BlockSlotPageState extends State<BlockSlotPage> {
       widget.onBlocked?.call();
       Get.back(result: true); // return true to caller
     } catch (e) {
-      Get.snackbar('Error', 'Failed to block slot. Try again.',
+      showAppSnackbar('Error', 'Failed to block slot. Try again.',
           snackPosition: SnackPosition.BOTTOM);
     } finally {
       if (mounted) setState(() => _loading = false);

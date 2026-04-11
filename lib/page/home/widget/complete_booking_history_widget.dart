@@ -210,14 +210,14 @@ class CompleteHistoryWidget extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: ColorConstant.bookingViewGreen),
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: ColorConstant.lightGreenColor),
           ),
           child: Text(
             'View',
             style: AppTextTheme.bold.copyWith(
-              color: ColorConstant.bookingViewGreen,
-              fontSize: 13,
+              color: ColorConstant.lightGreenColor,
+              fontSize: 16,
             ),
           ),
         ),

@@ -5,20 +5,20 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-import 'package:salon/page/blog/Insights_home_page.dart';
+import 'package:salon/page/setting/content_page.dart';
 import 'package:salon/page/review_rating/review_and_rating_page.dart';
-import 'package:salon/page/setting/about_app_page.dart';
-import 'package:salon/page/setting/availability_setting_page.dart';
+import 'package:salon/page/setting/menu_change_page.dart';
+import 'package:salon/page/setting/salon_availability_page.dart';
+import 'package:salon/page/stylist/manage_stylist_page.dart';
+import 'package:salon/page/stylist/set_stylist_availability_page.dart';
 import 'package:salon/page/setting/faq_page.dart';
 import 'package:salon/page/setting/product_list_page.dart';
-import 'package:salon/page/setting/service_list_page.dart';
 import 'package:salon/project_specific/progress_container_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
 import '../../project_specific/logout_dialog.dart';
 import '../stylist_all_module/stylist_home_page/edit_profile.dart';
-import 'category/categoty_page.dart';
 
 class MyDetailsPage extends StatefulWidget {
   const MyDetailsPage({super.key});
@@ -47,74 +47,63 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
           isProgressRunning: _authController.showProgress,
           child: SingleChildScrollView(
             child: Column(
+              spacing: 10,
               children: [
                 _imageRowWidget(),
-                _dividerCustom(),
                 _customRowWidget(
-                    titleName: "Availability",
-                    image: AssetsConstant.eye,
+                    titleName: "Set Stylist Availability",
+                    image: AssetsConstant.stylishAvailability,
                     onTap: () {
-                      Get.to(() => const AvailabilitySettingPage());
+                      Get.to(() => const SetStylistAvailabilityPage());
                     }),
-                 _dividerCustom(),
                 _customRowWidget(
-                    titleName: "Categories",
-                    image: AssetsConstant.categories,
+                    titleName: "Manage Stylists",
+                    image: AssetsConstant.manageStylishIcon,
                     onTap: () {
-                      Get.to(() => const CategoryPage());
+                      Get.to(() => const ManageStylistPage());
                     }),
-                _dividerCustom(),
                 _customRowWidget(
-                    titleName: "Product",
-                    image: AssetsConstant.product,
+                    titleName: "Salon Availability",
+                    image: AssetsConstant.salonAvailabilityIcon,
+                    onTap: () {
+                      Get.to(() => const SalonAvailabilityPage());
+                    }),
+                _customRowWidget(
+                    titleName: "Products",
+                    image: AssetsConstant.productsIcon,
                     onTap: () {
                       Get.to(() => const ProductListPage());
                     }),
-                _dividerCustom(),
                 _customRowWidget(
-                    titleName: "Service List",
-                    image: AssetsConstant.serviceList,
+                    titleName: "Review & Ratings",
+                    image: AssetsConstant.ratingsAndReviewIcon,
                     onTap: () {
-                      Get.to(() => const ServiceListPage());
+                      Get.to(() => const ReviewAndRatingPage());
                     }),
-                _dividerCustom(),
                 _customRowWidget(
-                    titleName: "Blog",
-                    image: AssetsConstant.insights,
+                    titleName: "Content",
+                    image: AssetsConstant.contentIcon,
                     onTap: () {
-                      Get.to(() => const InsightsHomePage(
-                            url: "salon/blog/list",
-                          ));
+                      Get.to(() => const ContentPage());
                     }),
-                _dividerCustom(),
                 /* _customRowWidget(
                     titleName: "Account Details",
                     image: AssetsConstant.accountDetails,
                     onTap: () {
                       Get.to(() => const AddNewFreshAccountPage());
-                    }),
-                _dividerCustom(),*/
+                    }),*/
                 _customRowWidget(
-                    titleName: "Review & Ratings",
-                    image: AssetsConstant.reviewRatings,
+                    titleName: "Request Menu change",
+                    image: AssetsConstant.requestMenuChangeIcon,
                     onTap: () {
-                      Get.to(() => const ReviewAndRatingPage());
+                      Get.to(() => const MenuChangePage());
                     }),
-                _dividerCustom(),
                 _customRowWidget(
-                    titleName: "FAQ’s & Support",
+                    titleName: "Support & FAQ’s",
                     image: AssetsConstant.faq,
                     onTap: () {
                       Get.to(() => const FaqPage());
                     }),
-                _dividerCustom(),
-                _customRowWidget(
-                    titleName: "About Us",
-                    image: AssetsConstant.info,
-                    onTap: () {
-                      Get.to(() => const AboutAppPage());
-                    }),
-                _dividerCustom(),
                 _customRowWidget(
                     titleName: "Sign Out",
                     image: AssetsConstant.logout,
@@ -173,34 +162,27 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
                     .copyWith(color: ColorConstant.blackColor, fontSize: 20),
               ),
               const SizedBox(height: 5),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EditProfile()));
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(68),
-                    border:
-                        Border.all(color: ColorConstant.primaryColor, width: 1),
+              OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: ColorConstant.primaryColor2),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        AssetsConstant.editIcon,
-                        width: 14,
-                        height: 14,
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Edit Details",
-                        style: AppTextTheme.regular.copyWith(
-                            color: ColorConstant.primaryColor, fontSize: 13),
-                      )
-                    ],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const EditProfile()),
+                  );
+                },
+                child: Text(
+                  "Edit Details",
+                  style: AppTextTheme.regular.copyWith(
+                    color: ColorConstant.primaryColor2,
+                    fontSize: 13,
                   ),
                 ),
               )
@@ -241,17 +223,6 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
           ],
         ),
       ),
-    );
-  }
-
-  /*---------------- Divider -----------------*/
-  _dividerCustom() {
-    return const Divider(
-      color: ColorConstant.dividerColor,
-      indent: 20,
-      endIndent: 20,
-      height: 25,
-      thickness: 1,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/util/app_snackbar.dart';
 // 👇 NEW
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart'; // to access flutterLocalNotificationsPlugin
@@ -67,17 +68,19 @@ class NotificationUtils {
           remoteMessage.data['message'] ?? "You have a new notification";
       debugPrint('Notification $remoteMessage');
       //_stylistController.doPendingAppointmentsListModel();
-      Get.snackbar(title, message,
-          snackPosition: SnackPosition.TOP,
-          icon: const Icon(Icons.notifications, color: Colors.white),
-          shouldIconPulse: true,
-          margin: const EdgeInsets.all(12),
-          duration: const Duration(seconds: 10),
-          backgroundColor: Colors.black87,
-          colorText: Colors.white, onTap: (_) {
-        Get.back();
-        handleNotificationNavigation(remoteMessage, false);
-      });
+      showAppSnackbar(
+        title,
+        message,
+        snackPosition: SnackPosition.TOP,
+        duration: const Duration(seconds: 10),
+        backgroundColor: Colors.black87,
+        textColor: Colors.white,
+        leading: const Icon(Icons.notifications, color: Colors.white),
+        onTap: () {
+          Get.back();
+          handleNotificationNavigation(remoteMessage, false);
+        },
+      );
     }
   }
 

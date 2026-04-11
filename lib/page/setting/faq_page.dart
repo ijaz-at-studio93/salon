@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../constant/color_constant.dart';
 import '../../project_specific/text_theme.dart';
@@ -21,7 +20,9 @@ class _FaqPageState extends State<FaqPage> {
         backgroundColor: ColorConstant.whiteColor,
         leading: IconButton(
           onPressed: () {
-            Get.back();
+            // Avoid Get.back(): it tries to close Get snackbars first and can throw
+            // LateInitializationError if SnackbarController queue is out of sync (GetX 4.x).
+            Navigator.of(context).pop();
           },
           icon: const Icon(
             Icons.arrow_back_ios,

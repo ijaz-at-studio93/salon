@@ -15,7 +15,7 @@ import 'package:salon/util/pick_image.dart';
 class UploadImagePage extends StatefulWidget {
   final String appointmentId;
 
-  const  UploadImagePage({super.key, required this.appointmentId});
+  const UploadImagePage({super.key, required this.appointmentId});
 
   @override
   State<UploadImagePage> createState() => _UploadImagePageState();
@@ -35,7 +35,7 @@ class _UploadImagePageState extends State<UploadImagePage> {
         isBackIcon: true,
       ),
       body: Obx(
-            () => ProgressContainerView(
+        () => ProgressContainerView(
           isProgressRunning: _homeController.showProgress,
           child: SingleChildScrollView(
             child: Column(
@@ -43,123 +43,123 @@ class _UploadImagePageState extends State<UploadImagePage> {
               children: [
                 gridVideo.isEmpty && gridImages.isEmpty
                     ? Column(
-                  children: [
-                    SizedBox(height: Get.height * 0.3),
-                    Center(
-                      child: _clickMorePhoto(),
-                    ),
-                  ],
-                )
+                        children: [
+                          SizedBox(height: Get.height * 0.3),
+                          Center(
+                            child: _clickMorePhoto(),
+                          ),
+                        ],
+                      )
                     : gridImages.isEmpty
-                    ? const SizedBox()
-                    : GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 15),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                  ),
-                  itemCount: gridImages.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(17),
-                            child: Stack(
-                              children: [
-                                Image.file(
-                                  File(gridImages[index]),
-                                  width: Get.width,
-                                  height: Get.height,
-                                  fit: BoxFit.cover,
-                                ),
-                                Positioned(
-                                  right: 7,
-                                  bottom: 3,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        gridImages.removeAt(index);
-                                      });
-                                    },
-                                    child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Image.asset(
-                                          AssetsConstant.crossSign,
-                                          width: 25,
-                                          height: 25,
-                                        )),
-                                  ),
-                                ),
-                              ],
+                        ? const SizedBox()
+                        : GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 15),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              mainAxisSpacing: 2,
+                              crossAxisSpacing: 2,
                             ),
-                          )),
-                    );
-                  },
-                ),
+                            itemCount: gridImages.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Center(
+                                    child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(17),
+                                  child: Stack(
+                                    children: [
+                                      Image.file(
+                                        File(gridImages[index]),
+                                        width: Get.width,
+                                        height: Get.height,
+                                        fit: BoxFit.cover,
+                                      ),
+                                      Positioned(
+                                        right: 7,
+                                        bottom: 3,
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              gridImages.removeAt(index);
+                                            });
+                                          },
+                                          child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Image.asset(
+                                                AssetsConstant.crossSign,
+                                                width: 25,
+                                                height: 25,
+                                              )),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                )),
+                              );
+                            },
+                          ),
                 gridVideo.isEmpty
                     ? const SizedBox()
                     : GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 15),
-                  gridDelegate:
-                  const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 2,
-                    crossAxisSpacing: 2,
-                  ),
-                  itemCount: gridVideo.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(17),
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: Get.width,
-                                  height: Get.height,
-                                  color: ColorConstant.editButtonColor,
-                                  child: Center(
-                                    child: Image.asset(
-                                      AssetsConstant.playIcon,
-                                      height: 40,
-                                      width: 40,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 15),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 2,
+                          crossAxisSpacing: 2,
+                        ),
+                        itemCount: gridVideo.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                                child: ClipRRect(
+                              borderRadius: BorderRadius.circular(17),
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    width: Get.width,
+                                    height: Get.height,
+                                    color: ColorConstant.editButtonColor,
+                                    child: Center(
+                                      child: Image.asset(
+                                        AssetsConstant.playIcon,
+                                        height: 40,
+                                        width: 40,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Positioned(
-                                  right: 7,
-                                  bottom: 3,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        gridVideo.removeAt(index);
-                                      });
-                                    },
-                                    child: Container(
-                                        padding: const EdgeInsets.all(4),
-                                        child: Image.asset(
-                                          AssetsConstant.crossSign,
-                                          width: 25,
-                                          height: 25,
-                                        )),
+                                  Positioned(
+                                    right: 7,
+                                    bottom: 3,
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          gridVideo.removeAt(index);
+                                        });
+                                      },
+                                      child: Container(
+                                          padding: const EdgeInsets.all(4),
+                                          child: Image.asset(
+                                            AssetsConstant.crossSign,
+                                            width: 25,
+                                            height: 25,
+                                          )),
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                          )),
-                    );
-                  },
-                ),
+                                ],
+                              ),
+                            )),
+                          );
+                        },
+                      ),
               ],
             ),
           ),
@@ -188,7 +188,8 @@ class _UploadImagePageState extends State<UploadImagePage> {
                           ElevatedButton(
                             onPressed: () async {
                               Navigator.pop(context);
-                              final file = await FileUtils.openCameraForImage(); // CAMERA ONLY
+                              final file = await FileUtils
+                                  .openCameraForImage(); // CAMERA ONLY
                               setState(() => gridImages.add(file.path));
                             },
                             child: const Text("Photo (Camera)"),
@@ -197,7 +198,8 @@ class _UploadImagePageState extends State<UploadImagePage> {
                           ElevatedButton(
                             onPressed: () async {
                               Navigator.pop(context);
-                              final file = await FileUtils.openCameraForVideo(); // CAMERA ONLY
+                              final file = await FileUtils
+                                  .openCameraForVideo(); // CAMERA ONLY
                               setState(() => gridVideo.add(file.path));
                             },
                             child: const Text("Video (Camera)"),
@@ -217,7 +219,8 @@ class _UploadImagePageState extends State<UploadImagePage> {
                   shape: BoxShape.circle,
                 ),
                 child: const Center(
-                  child: Icon(Icons.camera_alt, color: ColorConstant.whiteColor),
+                  child:
+                      Icon(Icons.camera_alt, color: ColorConstant.whiteColor),
                 ),
               ),
             ),
@@ -228,8 +231,10 @@ class _UploadImagePageState extends State<UploadImagePage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: ColorConstant.primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 28, vertical: 16),
               ),
               onPressed: () {
                 if (gridImages.isEmpty && gridVideo.isEmpty) {
@@ -258,7 +263,8 @@ class _UploadImagePageState extends State<UploadImagePage> {
               },
               child: Text(
                 "Upload",
-                style: AppTextTheme.bold.copyWith(fontSize: 16, color: Colors.white),
+                style: AppTextTheme.bold
+                    .copyWith(fontSize: 16, color: Colors.white),
               ),
             ),
           ],

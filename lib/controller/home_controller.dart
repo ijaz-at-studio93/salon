@@ -29,6 +29,7 @@ import 'package:salon/model/stylist/artiest_list_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
 import '../model/translation/translation_history_model.dart';
+import '../model/service_model/rejection_reason_model.dart';
 
 class HomeController extends GetxController {
   /*---------------  Show Progressbar --------------*/
@@ -607,23 +608,39 @@ class HomeController extends GetxController {
     }
   }
 
+  /*------------------------ Rejection Reasons  ------------------------*/
+  final Rx<RejectionReasonModel?> _rejectionReasons =
+      Rx<RejectionReasonModel?>(null);
+  List<RejectionReason> get getRejectionReasonsList =>
+      _rejectionReasons.value?.data ?? [];
+
+  doGetRejectionReasons() async {
+    try {
+      _rejectionReasons.value = await HomeAPI.getRejectionReasons();
+    } catch (e) {
+      showError(e);
+    }
+  }
+
   /*------------------------ Approve Booking  ------------------------*/
   doBookingApprove({
     required String appointmentId,
     required String status,
     required VoidCallback callback,
-    String? artistId,
+    List<String>? stylistIds,
     String? startsAt,
     String? endsAt,
+    String? rejectionReasonId,
   }) async {
     try {
       _showProgress.value = true;
       bool result = await HomeAPI.approveBooking(
         appointmentId: appointmentId,
         status: status,
-        artistId: artistId,
+        stylistIds: stylistIds,
         startsAt: startsAt,
         endsAt: endsAt,
+        rejectionReasonId: rejectionReasonId,
       );
       if (result) {
         callback.call();

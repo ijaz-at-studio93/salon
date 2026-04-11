@@ -65,8 +65,23 @@ class AssetsConstant {
   static const String reviewRatings = "assets/profile/reviewratings.png";
   static const String serviceList = "assets/profile/servicelist.png";
 
+  static const String stylishAvailability =
+      "assets/icon/stylish_availability_icon.png";
+  static const String manageStylishIcon = "assets/icon/manage_stylish_icon.png";
+  static const String salonAvailabilityIcon =
+      "assets/icon/salon_availability_icon.png";
+  static const String productsIcon = "assets/icon/products_icon.png";
+  static const String ratingsAndReviewIcon =
+      "assets/icon/ratings_and_review_icon.png";
+  static const String contentIcon = "assets/icon/content_icon.png";
+  static const String contentUploadIllustration =
+      "assets/icon/image_upload_icon.png";
+  static const String requestMenuChangeIcon = "assets/icon/menu_icon.png";
+  static const String menuChangeCloudIcon = "assets/icon/cloud-computing.png";
+
   static const String noInterNet = "assets/images/nointernet_connection.png";
 
   static const String appointmentAcceptedGif = "assets/gifs/success.gif";
   static const String appointmentRejectedGif = "assets/gifs/reject.gif";
+  static const String timeLeftIcon = "assets/icon/time-left.png";
 }

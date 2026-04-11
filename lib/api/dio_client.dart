@@ -4,11 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart' hide Response;
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-import 'package:salon/project_specific/text_theme.dart';
 
 import '../constant/api_constant.dart';
+import '../util/app_snackbar.dart';
 import '../util/shared_prefs.dart';
 import 'auth_api.dart';
 import 'dio_connectivity_request_retrier.dart';
@@ -214,19 +213,10 @@ Future<void> showError(error) async {
 }
 
 Future<void> showMessage(String message, {int duration = 2}) async {
-  if (Get.context != null) {
-    Get.showSnackbar(GetSnackBar(
-      messageText: Text(
-        message.isEmpty ? "Error" : message,
-        style: AppTextTheme.medium
-            .copyWith(fontSize: 15, color: ColorConstant.whiteColor),
-      ),
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(12),
-      duration: Duration(seconds: duration),
-      borderRadius: 16,
-    ));
-  }
+  showDioStyleSnackBar(
+    message.isEmpty ? "Error" : message,
+    duration: duration,
+  );
 }
 
 void showSnackBar({

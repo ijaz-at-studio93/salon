@@ -7,7 +7,7 @@ class AppTextTheme {
       color: ColorConstant.whiteColor,
       fontSize: 16);
   static TextStyle extraBold = const TextStyle(
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.w800,
       color: ColorConstant.whiteColor,
       fontSize: 16);
   static TextStyle light = const TextStyle(

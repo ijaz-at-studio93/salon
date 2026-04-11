@@ -147,9 +147,10 @@ class _StylistBookingOverViewPageState
                                                   context: context,
                                                   builder: (context) {
                                                     return RejectServiceDiaLog(
+                                                        reasons: const [],
                                                         tapNo: () {
                                                       Get.back();
-                                                    }, tapYes: () {
+                                                    }, tapYes: (_) {
                                                       _stylistController
                                                           .doBookingApprove(
                                                               appointmentId: _stylistController
