@@ -631,6 +631,7 @@ class HomeController extends GetxController {
     String? startsAt,
     String? endsAt,
     String? rejectionReasonId,
+    String? rejectionNote,
   }) async {
     try {
       _showProgress.value = true;
@@ -641,6 +642,7 @@ class HomeController extends GetxController {
         startsAt: startsAt,
         endsAt: endsAt,
         rejectionReasonId: rejectionReasonId,
+        rejectionNote: rejectionNote,
       );
       if (result) {
         callback.call();

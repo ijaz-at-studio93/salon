@@ -89,6 +89,18 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                       .data?[index]
                                                       .orderStatus ??
                                                   "",
+                                              listStylistName: _homeController
+                                                  .getSalonUpcomingList
+                                                  .data?[index]
+                                                  .appointment
+                                                  ?.artist
+                                                  ?.name,
+                                              listStylistId: _homeController
+                                                  .getSalonUpcomingList
+                                                  .data?[index]
+                                                  .appointment
+                                                  ?.artist
+                                                  ?.id,
                                             ));
                                       },
                                     ),
@@ -122,6 +134,18 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           ?.id ??
                                                       "",
                                                   status: "Complete",
+                                                  listStylistName: _homeController
+                                                      .getSalonServedList
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.artist
+                                                      ?.name,
+                                                  listStylistId: _homeController
+                                                      .getSalonServedList
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.artist
+                                                      ?.id,
                                                 ));
                                           },
                                         ),
@@ -157,6 +181,18 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           ?.id ??
                                                       "",
                                                   status: "Cancel",
+                                                  listStylistName: _homeController
+                                                      .getSalonCancelServedList
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.artist
+                                                      ?.name,
+                                                  listStylistId: _homeController
+                                                      .getSalonCancelServedList
+                                                      .data?[index]
+                                                      .appointment
+                                                      ?.artist
+                                                      ?.id,
                                                 ));
                                           },
                                         ),

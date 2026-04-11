@@ -150,7 +150,7 @@ class _StylistBookingOverViewPageState
                                                         reasons: const [],
                                                         tapNo: () {
                                                       Get.back();
-                                                    }, tapYes: (_) {
+                                                    }, tapYes: (_, __) {
                                                       _stylistController
                                                           .doBookingApprove(
                                                               appointmentId: _stylistController

@@ -6,7 +6,10 @@ import 'package:salon/project_specific/text_theme.dart';
 class RejectServiceDiaLog extends StatefulWidget {
   final List<RejectionReason> reasons;
   final VoidCallback tapNo;
-  final Function(String reasonId) tapYes;
+
+  /// [reasonId] is the selected reason's UUID.
+  /// [note] is only non-null when the salon typed a custom reason (OTHER selected).
+  final Function(String reasonId, String? note) tapYes;
 
   const RejectServiceDiaLog({
     super.key,
@@ -21,6 +24,20 @@ class RejectServiceDiaLog extends StatefulWidget {
 
 class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
   String? _selectedReasonId;
+  bool _isOtherSelected = false;
+  final _noteController = TextEditingController();
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
+
+  bool get _canConfirm {
+    if (_selectedReasonId == null) return false;
+    if (_isOtherSelected && _noteController.text.trim().isEmpty) return false;
+    return true;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +48,7 @@ class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
+            const Center(
               child: Icon(
                 Icons.cancel_outlined,
                 color: ColorConstant.redColor,
@@ -58,7 +75,7 @@ class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
             if (widget.reasons.isNotEmpty) ...[
               const SizedBox(height: 12),
               ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 240),
+                constraints: const BoxConstraints(maxHeight: 220),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
@@ -67,20 +84,43 @@ class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         title: Text(
-                          reason.reason ?? '',
+                          reason.label ?? '',
                           style: AppTextTheme.medium.copyWith(fontSize: 13),
                         ),
                         value: reason.id ?? '',
                         groupValue: _selectedReasonId,
                         activeColor: ColorConstant.primaryColor,
                         onChanged: (val) {
-                          setState(() => _selectedReasonId = val);
+                          setState(() {
+                            _selectedReasonId = val;
+                            _isOtherSelected = reason.isOther;
+                            if (!_isOtherSelected) _noteController.clear();
+                          });
                         },
                       );
                     }).toList(),
                   ),
                 ),
               ),
+              if (_isOtherSelected) ...[
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _noteController,
+                  maxLines: 2,
+                  onChanged: (_) => setState(() {}),
+                  decoration: InputDecoration(
+                    hintText: 'Enter your reason...',
+                    hintStyle: AppTextTheme.medium
+                        .copyWith(fontSize: 13, color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  style: AppTextTheme.medium.copyWith(fontSize: 13),
+                ),
+              ],
             ],
             const SizedBox(height: 8),
             Row(
@@ -95,13 +135,18 @@ class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
                   ),
                 ),
                 TextButton(
-                  onPressed: widget.reasons.isEmpty || _selectedReasonId != null
-                      ? () => widget.tapYes(_selectedReasonId ?? '')
+                  onPressed: (widget.reasons.isEmpty || _canConfirm)
+                      ? () => widget.tapYes(
+                            _selectedReasonId ?? '',
+                            _isOtherSelected
+                                ? _noteController.text.trim()
+                                : null,
+                          )
                       : null,
                   child: Text(
                     "Reject",
                     style: AppTextTheme.bold.copyWith(
-                      color: widget.reasons.isEmpty || _selectedReasonId != null
+                      color: (widget.reasons.isEmpty || _canConfirm)
                           ? ColorConstant.primaryColor
                           : Colors.grey,
                       fontSize: 15,

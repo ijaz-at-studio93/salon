@@ -18,14 +18,18 @@ class RejectionReasonModel {
 
 class RejectionReason {
   final String? id;
-  final String? reason;
+  final String? code;
+  final String? label;
 
-  RejectionReason({this.id, this.reason});
+  RejectionReason({this.id, this.code, this.label});
 
   factory RejectionReason.fromJson(Map<String, dynamic> json) {
     return RejectionReason(
       id: json['id'],
-      reason: json['reason'] ?? json['name'],
+      code: json['code'],
+      label: json['label'],
     );
   }
+
+  bool get isOther => code == 'OTHER';
 }

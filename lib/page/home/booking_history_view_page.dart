@@ -14,6 +14,7 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/appointment_accepted_dialog.dart';
 import 'package:salon/util/appointment_rejected_dialog.dart';
+import 'package:salon/util/booking_rejection_info_dialog.dart';
 import 'package:salon/util/reject_service_dialog.dart';
 
 import '../../project_specific/project_appbar.dart';
@@ -23,10 +24,16 @@ class BookingHistoryViewpage extends StatefulWidget {
   final String appointmentId;
   final String status;
 
+  /// From list row when opening details; used when the details API omits `appointment.artist` / `artists`.
+  final String? listStylistName;
+  final String? listStylistId;
+
   const BookingHistoryViewpage({
     super.key,
     required this.appointmentId,
     required this.status,
+    this.listStylistName,
+    this.listStylistId,
   });
 
   @override
@@ -44,6 +51,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   int _selectedSlotIndex = 0;
   String? _selectionSyncKey;
   bool _salonArtistsMerged = false;
+  bool _reasonDialogShown = false;
 
   @override
   void initState() {
@@ -77,10 +85,21 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     if (_selectionSyncKey == key) return;
 
     final appt = data.appointment;
-    if (appt == null) return;
+    if (appt == null) {
+      final fallback = _listStylistAsUser();
+      if (fallback != null) {
+        _stylistOptions = [fallback];
+        _slotOptions = [];
+        _selectedStylistIndex = 0;
+        _selectedSlotIndex = 0;
+        _selectionSyncKey = key;
+        setState(() {});
+      }
+      return;
+    }
 
     _slotOptions = _slotsFromAppointment(appt);
-    _stylistOptions = _stylistsFromAppointment(appt);
+    _stylistOptions = _stylistsFromAppointmentWithListFallback(appt);
 
     _selectedStylistIndex = _defaultStylistIndex(appt.artist?.id);
     _selectedSlotIndex = _defaultSlotIndex(appt);
@@ -101,6 +120,20 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       return [appt.artist!];
     }
     return [];
+  }
+
+  /// Same as [_stylistsFromAppointment], but uses list-row stylist when details omit artist data.
+  List<User> _stylistsFromAppointmentWithListFallback(Appointment appt) {
+    final base = _stylistsFromAppointment(appt);
+    if (base.isNotEmpty) return base;
+    final fallback = _listStylistAsUser();
+    return fallback != null ? [fallback] : [];
+  }
+
+  User? _listStylistAsUser() {
+    final name = widget.listStylistName?.trim() ?? '';
+    if (name.isEmpty) return null;
+    return User(id: widget.listStylistId, name: name);
   }
 
   List<AppointmentTimeSlot> _slotsFromAppointment(Appointment appt) {
@@ -155,7 +188,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       setState(() {
         _salonArtistsMerged = true;
         _stylistOptions = _mergeStylistLists(
-          _stylistsFromAppointment(appt),
+          _stylistsFromAppointmentWithListFallback(appt),
           salonUsers,
         );
         _selectedStylistIndex = _defaultStylistIndex(appt.artist?.id);
@@ -204,6 +237,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             _syncSelectionsIfNeeded(data);
+            _maybeShowRejectionDialog(data);
           });
         }
         return Scaffold(
@@ -772,6 +806,35 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     );
   }
 
+  static const _cancelledStatuses = {
+    'salon_artist_rejected',
+    'user_cancelled',
+    'cancelled',
+  };
+
+  void _maybeShowRejectionDialog(Data data) {
+    if (_reasonDialogShown) return;
+    // Guard against stale data from a previously viewed appointment
+    if (data.appointmentId != widget.appointmentId) return;
+    final status = data.orderStatus ?? '';
+    if (!_cancelledStatuses.contains(status)) return;
+
+    final reason = data.cancellationReason;
+    final label = reason?.label ?? '';
+    if (label.isEmpty) return;
+
+    _reasonDialogShown = true;
+    final isSalonRejected = status == 'salon_artist_rejected';
+    showDialog(
+      context: context,
+      builder: (_) => BookingRejectionInfoDialog(
+        reasonLabel: label,
+        note: data.cancellationNote,
+        isSalonRejected: isSalonRejected,
+      ),
+    );
+  }
+
   Widget _buildBottomActions() {
     final orderStatus =
         _homeController.getAppointmentDetailsModel.data?.orderStatus;
@@ -805,12 +868,14 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                       builder: (dialogContext) => RejectServiceDiaLog(
                         reasons: _homeController.getRejectionReasonsList,
                         tapNo: () => Navigator.of(dialogContext).pop(),
-                        tapYes: (reasonId) {
+                        tapYes: (reasonId, note) {
                           Navigator.of(dialogContext).pop();
                           _homeController.doBookingApprove(
                             appointmentId: widget.appointmentId,
                             status: 'salon_artist_rejected',
-                            rejectionReasonId: reasonId.isNotEmpty ? reasonId : null,
+                            rejectionReasonId:
+                                reasonId.isNotEmpty ? reasonId : null,
+                            rejectionNote: note,
                             callback: () {
                               _homeController.doGetAppointmentDetailsModel(
                                 appointmentId: widget.appointmentId,

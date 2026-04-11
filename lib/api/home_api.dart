@@ -449,6 +449,7 @@ class HomeAPI {
     String? startsAt,
     String? endsAt,
     String? rejectionReasonId,
+    String? rejectionNote,
   }) async {
     final body = <String, dynamic>{'status': status};
     if (stylistIds != null && stylistIds.isNotEmpty) {
@@ -462,6 +463,9 @@ class HomeAPI {
     }
     if (rejectionReasonId != null && rejectionReasonId.isNotEmpty) {
       body['rejectionReasonId'] = rejectionReasonId;
+    }
+    if (rejectionNote != null && rejectionNote.isNotEmpty) {
+      body['rejectionNote'] = rejectionNote;
     }
     final response = await DioClient.client
         .put("salon/appointments/$appointmentId/status", data: body);
@@ -639,7 +643,7 @@ class HomeAPI {
     required String blockId,
   }) async {
     final response = await DioClient.client.delete(
-      "salon/availability/artist/$artistId/blocked-slot/$blockId",
+      "salon/availability/artist/$artistId/blocked-slots/$blockId",
     );
     if (response.isSuccess) {
       return true;

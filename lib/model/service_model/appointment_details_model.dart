@@ -26,6 +26,24 @@ class AppointmentDetailsModel {
   }
 }
 
+class CancellationReason {
+  String? id;
+  String? code;
+  String? label;
+
+  CancellationReason({this.id, this.code, this.label});
+
+  CancellationReason.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    code = json['code'];
+    label = json['label'];
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'code': code, 'label': label};
+  }
+}
+
 class Data {
   double? orderAmount;
   String? bookingId;
@@ -41,6 +59,8 @@ class Data {
   Salon? salon;
   Appointment? appointment;
   List<Items>? items;
+  CancellationReason? cancellationReason;
+  String? cancellationNote;
 
   Data(
       {this.orderAmount,
@@ -56,7 +76,9 @@ class Data {
       this.user,
       this.salon,
       this.appointment,
-      this.items});
+      this.items,
+      this.cancellationReason,
+      this.cancellationNote});
 
   Data.fromJson(Map<String, dynamic> json) {
     orderAmount = double.parse(json['orderAmount'].toString());
@@ -85,6 +107,12 @@ class Data {
         items!.add(Items.fromJson(v));
       });
     }
+    final reasonJson = json['cancellationReason'] ?? json['rejectionReason'];
+    cancellationReason = reasonJson != null
+        ? CancellationReason.fromJson(reasonJson)
+        : null;
+    cancellationNote =
+        json['cancellationNote'] ?? json['rejectionNote'];
   }
 
   Map<String, dynamic> toJson() {
@@ -116,6 +144,12 @@ class Data {
     }
     if (items != null) {
       data['items'] = items!.map((v) => v.toJson()).toList();
+    }
+    if (cancellationReason != null) {
+      data['cancellationReason'] = cancellationReason!.toJson();
+    }
+    if (cancellationNote != null) {
+      data['cancellationNote'] = cancellationNote;
     }
     return data;
   }
