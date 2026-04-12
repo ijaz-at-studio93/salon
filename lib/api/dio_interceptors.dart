@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart' hide Response;
@@ -15,17 +16,33 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
   Future onError(DioException err, ErrorInterceptorHandler handler) async {
     if (_shouldRetry(err)) {
       try {
+        // ─────────────────────────────────────────────────────────────────
+        // Only enter the NoInternet / retry flow when the device genuinely
+        // has no connectivity.  If the device is already online the problem
+        // is the server (e.g. staging server down), NOT the local network.
+        // Passing the error straight through prevents an infinite retry loop
+        // where ConnectedGetBack keeps re-submitting a doomed request.
+        // ─────────────────────────────────────────────────────────────────
+        final connectivityResult =
+            await requestRetrier.connectivity.checkConnectivity();
+        final bool deviceIsOffline;
+        if (connectivityResult is List) {
+          deviceIsOffline = (connectivityResult as List<ConnectivityResult>)
+              .every((r) => r == ConnectivityResult.none);
+        } else {
+          deviceIsOffline = connectivityResult == ConnectivityResult.none;
+        }
+
+        if (!deviceIsOffline) {
+          // Device has internet — server is unreachable, not us.
+          // Let the error propagate so the controller can show a message.
+          return handler.next(err);
+        }
+
         Get.find<AuthController>().setShowProgress = false;
 
         if (Get.find<AuthController>().isDialogShow) {
           Get.to(() => const NoInternetConnection());
-          /*Get.dialog(
-            NoInternetConnectionDialog(callbackPosBtn: () {
-              Get.find<AuthController>().setIsDialogShow = true;
-              Get.back();
-            }),
-            barrierDismissible: false,
-          );*/
           Get.find<AuthController>().setIsDialogShow = false;
         }
         Response response =
@@ -35,7 +52,6 @@ class RetryOnConnectionChangeInterceptor extends Interceptor {
         debugPrint(e.toString());
         debugPrint(e.runtimeType.toString());
         // Let any new error from the retrier pass through
-        // return handler.resolve(e);
       }
     }
     // Let the error pass through if it's not the error we're looking for

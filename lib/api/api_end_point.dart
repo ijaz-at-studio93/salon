@@ -21,6 +21,14 @@ class APIEndPoint {
   static const String getServiceList = "salon/service/list?status[]=active";
   static const String salonArtist = "salon/artist/add";
 
+  /*-------------------- Content / Blog API --------------------*/
+  static const String salonContentList = "salon/blog/salon-blogs";
+  static const String salonContentAdd = "salon/blog/add";
+  // update → PUT "salon/blog/$id"   delete → DELETE "salon/blog/$id"
+
   /*------------- Artiest AUTH  -------------*/
   static const String salonArtiestLoginPassword = "auth/artist/login/password";
+
+  /*------------- Menu Change API ---------*/
+  static const String menuChangeRequest = "salon/account/menu/change-request";
 }

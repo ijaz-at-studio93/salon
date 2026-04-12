@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
@@ -19,6 +20,7 @@ class ManageStylistPage extends StatefulWidget {
 
 class _ManageStylistPageState extends State<ManageStylistPage> {
   final _homeController = Get.find<HomeController>();
+  final _addBtnKey = GlobalKey();
 
   @override
   void initState() {
@@ -26,6 +28,176 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _homeController.doSalonArtistList();
     });
+  }
+
+  void _showAddStylistMenu(BuildContext context) {
+    final box = _addBtnKey.currentContext!.findRenderObject() as RenderBox;
+    final offset = box.localToGlobal(Offset.zero);
+    final size = box.size;
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        offset.dx,
+        offset.dy + size.height + 4,
+        offset.dx + size.width,
+        0,
+      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      items: [
+        PopupMenuItem(
+          value: 'new',
+          child: Text(
+            'New',
+            style: AppTextTheme.medium.copyWith(
+              fontSize: 14,
+              color: ColorConstant.blackColor,
+            ),
+          ),
+        ),
+        PopupMenuItem(
+          value: 'existing',
+          child: Text(
+            'Existing',
+            style: AppTextTheme.medium.copyWith(
+              fontSize: 14,
+              color: ColorConstant.blackColor,
+            ),
+          ),
+        ),
+      ],
+    ).then((value) {
+      if (value == 'new') {
+        Get.to(
+          () => const AddStylistPage(
+            isBasicInfoUpdate: false,
+            artistId: '',
+          ),
+        );
+      } else if (value == 'existing') {
+        _showExistingStylistDialog(context);
+      }
+    });
+  }
+
+  void _showExistingStylistDialog(BuildContext context) {
+    final sidController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          title: Text(
+            "Add Existing Stylist",
+            style: AppTextTheme.bold
+                .copyWith(color: ColorConstant.blackColor, fontSize: 16),
+          ),
+          content: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Enter the Stylist ID (SID) to add an existing stylist to your salon.",
+                  style: AppTextTheme.regular.copyWith(
+                    color: ColorConstant.grayTextColor,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: sidController,
+                  textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    labelText: "Stylist ID",
+                    hintText: "e.g. SID123456",
+                    labelStyle: AppTextTheme.medium.copyWith(
+                      color: ColorConstant.grayTextColor,
+                      fontSize: 13,
+                    ),
+                    hintStyle: AppTextTheme.regular.copyWith(
+                      color: ColorConstant.grayTextColor,
+                      fontSize: 13,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: ColorConstant.borderColor,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(
+                        color: ColorConstant.primaryColor,
+                        width: 1.5,
+                      ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: const BorderSide(color: Colors.red),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide:
+                          const BorderSide(color: Colors.red, width: 1.5),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                  ),
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) {
+                      return "Please enter a Stylist ID";
+                    }
+                    if (!v.trim().toUpperCase().startsWith('SID')) {
+                      return "ID must start with SID";
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Get.back(),
+              child: Text(
+                "Cancel",
+                style: AppTextTheme.medium.copyWith(
+                  color: ColorConstant.grayTextColor,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                if (formKey.currentState?.validate() ?? false) {
+                  final sid = sidController.text.trim().toUpperCase();
+                  Get.back();
+                  _homeController.doAddExistingArtistBySId(
+                    sId: sid,
+                    callback: () {
+                      showMessage("Stylist added successfully");
+                      _homeController.doSalonArtistList();
+                    },
+                  );
+                }
+              },
+              child: Text(
+                "Add",
+                style: AppTextTheme.medium.copyWith(
+                  color: ColorConstant.primaryColor,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void _confirmRemove(BuildContext context, String artistId) {
@@ -111,17 +283,11 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                       ),
                     ),
                     Material(
+                      key: _addBtnKey,
                       color: ColorConstant.lightColor,
                       borderRadius: BorderRadius.circular(10),
                       child: InkWell(
-                        onTap: () {
-                          Get.to(
-                            () => const AddStylistPage(
-                              isBasicInfoUpdate: false,
-                              artistId: "",
-                            ),
-                          );
-                        },
+                        onTap: () => _showAddStylistMenu(context),
                         borderRadius: BorderRadius.circular(10),
                         child: Container(
                           padding: const EdgeInsets.symmetric(

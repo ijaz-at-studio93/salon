@@ -67,8 +67,9 @@ class _StylistEditBottomSheetState extends State<StylistEditBottomSheet> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  icon: const Icon(CupertinoIcons.xmark_circle,
-                  color: Colors.transparent,
+                  icon: const Icon(
+                    CupertinoIcons.xmark_circle,
+                    color: Colors.transparent,
                   ),
                 ),
               ],
@@ -80,6 +81,7 @@ class _StylistEditBottomSheetState extends State<StylistEditBottomSheet> {
               onTap: () {
                 Navigator.pop(context);
                 Get.to(() => SelectServicePage(
+                      sId: "",
                       isUpdate: true,
                       artistId: widget.artistId,
                       name: "",

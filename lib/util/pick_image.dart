@@ -200,7 +200,7 @@ class FileUtils {
                   CupertinoDialogAction(
                     onPressed: () async {
                       Navigator.pop(context);
-                      File selectedImage = await openCameraForVideo();
+                      File selectedImage = await pickVideoGallery();
                       onSelectVideo.call(selectedImage);
                     },
                     child: const Text("Select from gallery"),

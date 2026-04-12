@@ -116,13 +116,6 @@ class _UpdateProductState extends State<UpdateProduct> {
                           textInputAction: TextInputAction.next,
                           title: "Description"),
                       const SizedBox(height: 16),
-                      SimpleTextFieldWidget(
-                          textEditingController: _price,
-                          hintText: "for Ex 100",
-                          textInputType: TextInputType.number,
-                          textInputAction: TextInputAction.done,
-                          title: "Product Price"),
-                      const SizedBox(height: 16),
                       _serviceImage(),
                       const SizedBox(height: 50),
                       Padding(

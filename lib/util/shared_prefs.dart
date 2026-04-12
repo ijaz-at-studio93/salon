@@ -38,4 +38,6 @@ class PrefConstants {
   static const String isStylist = 'isStylist';
   static const String isSalon = 'isSalon';
   static const String deviceId = 'DeviceId';
+  /// True when a menu change request was submitted or GET reports one pending.
+  static const String menuChangeRequestSubmitted = 'menuChangeRequestSubmitted';
 }

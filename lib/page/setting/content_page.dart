@@ -1,9 +1,17 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/artist_model/blog_data_get_model.dart';
+import 'package:salon/page/setting/content_view_page.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/blog/network_video_view_widget.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/blog/offline_video_widget.dart';
+import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
@@ -16,7 +24,29 @@ class ContentPage extends StatefulWidget {
 }
 
 class _ContentPageState extends State<ContentPage> {
-  Future<void> _showUploadOptions() async {
+  final _homeController = Get.find<HomeController>();
+  final _descriptionController = TextEditingController();
+
+  final Rx<File?> _pickedFile = Rx<File?>(null);
+  final RxBool _isVideo = false.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _homeController.doGetSalonContentList();
+    });
+  }
+
+  @override
+  void dispose() {
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  // ── File selection ───────────────────────────────────────────────────────
+
+  Future<void> _showPickOptions() async {
     await showModalBottomSheet<void>(
       context: context,
       backgroundColor: ColorConstant.whiteColor,
@@ -31,29 +61,21 @@ class _ContentPageState extends State<ContentPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  title: Text(
-                    'Picture',
-                    style: AppTextTheme.medium.copyWith(
-                      color: ColorConstant.blackColor,
-                      fontSize: 16,
-                    ),
-                  ),
+                  title: Text('Picture',
+                      style: AppTextTheme.medium.copyWith(
+                          color: ColorConstant.blackColor, fontSize: 16)),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    await _pickPicture();
+                    await _pickFile(isVideo: false);
                   },
                 ),
                 ListTile(
-                  title: Text(
-                    'Video',
-                    style: AppTextTheme.medium.copyWith(
-                      color: ColorConstant.blackColor,
-                      fontSize: 16,
-                    ),
-                  ),
+                  title: Text('Video',
+                      style: AppTextTheme.medium.copyWith(
+                          color: ColorConstant.blackColor, fontSize: 16)),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    await _pickVideo();
+                    await _pickFile(isVideo: true);
                   },
                 ),
               ],
@@ -64,63 +86,455 @@ class _ContentPageState extends State<ContentPage> {
     );
   }
 
-  Future<void> _pickPicture() async {
+  Future<void> _pickFile({required bool isVideo}) async {
     try {
-      await FileUtils.openPlatformImagePicker(onSelectImage: (File file) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Picture selected',
-              style: AppTextTheme.regular
-                  .copyWith(color: ColorConstant.whiteColor),
-            ),
-          ),
+      if (isVideo) {
+        await FileUtils.openPlatformVideoPicker(
+          onSelectVideo: (File file) {
+            _pickedFile.value = file;
+            _isVideo.value = true;
+          },
         );
-      });
+      } else {
+        await FileUtils.openPlatformImagePicker(
+          onSelectImage: (File file) {
+            _pickedFile.value = file;
+            _isVideo.value = false;
+          },
+        );
+      }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Could not select picture',
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not select file',
               style: AppTextTheme.regular
-                  .copyWith(color: ColorConstant.whiteColor),
-            ),
-          ),
-        );
+                  .copyWith(color: ColorConstant.whiteColor)),
+        ));
       }
     }
   }
 
-  Future<void> _pickVideo() async {
-    try {
-      await FileUtils.openPlatformVideoPicker(onSelectVideo: (File file) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Video selected',
-              style: AppTextTheme.regular
-                  .copyWith(color: ColorConstant.whiteColor),
-            ),
-          ),
-        );
-      });
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Could not select video',
-              style: AppTextTheme.regular
-                  .copyWith(color: ColorConstant.whiteColor),
-            ),
-          ),
-        );
-      }
+  // ── Upload ───────────────────────────────────────────────────────────────
+
+  void _doUpload({required BuildContext sheetContext}) {
+    if (_pickedFile.value == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please select a picture or video first',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
+      ));
+      return;
     }
+
+    _homeController.doCreateSalonContent(
+      description: _descriptionController.text.trim(),
+      file: _pickedFile.value,
+      isVideo: _isVideo.value,
+      callback: () {
+        _pickedFile.value = null;
+        _isVideo.value = false;
+        _descriptionController.clear();
+        _homeController.doGetSalonContentList();
+      },
+    );
   }
+
+  // ── Upload bottom sheet (used by "+" button on grid) ─────────────────────
+
+  void _showUploadSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: ColorConstant.whiteColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetCtx) {
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(sheetCtx).viewInsets.bottom),
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // illustration / preview — tappable
+                GestureDetector(
+                  onTap: _showPickOptions,
+                  child: Center(
+                    child: Obx(
+                      () => _pickedFile.value == null
+                          ? Image.asset(
+                              AssetsConstant.contentUploadIllustration,
+                              width: 140,
+                              fit: BoxFit.contain,
+                            )
+                          : ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: SizedBox(
+                                height: 140,
+                                width: 140,
+                                child: _isVideo.value
+                                    ? OfflineVideoWidget(
+                                        videoString: _pickedFile.value!.path)
+                                    : Image.file(_pickedFile.value!,
+                                        fit: BoxFit.cover),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // tappable text
+                GestureDetector(
+                  onTap: _showPickOptions,
+                  child: Center(
+                    child: Text(
+                      'Upload a Picture or Video',
+                      textAlign: TextAlign.center,
+                      textScaler: const TextScaler.linear(0.85),
+                      style: AppTextTheme.extraBold.copyWith(
+                        decoration: TextDecoration.underline,
+                        color: ColorConstant.grayTextColor,
+                        fontSize: 22,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  'Write Description (Optional)',
+                  style: AppTextTheme.medium
+                      .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+                ),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: _descriptionController,
+                  maxLines: 3,
+                  textInputAction: TextInputAction.done,
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: ColorConstant.primaryColor2),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide:
+                          const BorderSide(color: ColorConstant.primaryColor2),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: const BorderSide(
+                          color: ColorConstant.primaryColor2, width: 2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Obx(
+                  () => SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _homeController.showContentProgress
+                          ? null
+                          : () {
+                              _doUpload(sheetContext: sheetCtx);
+                              if (Navigator.canPop(sheetCtx)) {
+                                Navigator.pop(sheetCtx);
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        elevation: 0,
+                        backgroundColor: ColorConstant.primaryColor2,
+                        foregroundColor: ColorConstant.whiteColor,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _homeController.showContentProgress
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: ColorConstant.whiteColor,
+                              ),
+                            )
+                          : Text(
+                              'Upload',
+                              style: AppTextTheme.extraBold.copyWith(
+                                color: ColorConstant.whiteColor,
+                                fontSize: 16,
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  // ── Delete ───────────────────────────────────────────────────────────────
+
+  void _confirmDelete(BlogData item) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete',
+            style:
+                AppTextTheme.medium.copyWith(color: ColorConstant.blackColor)),
+        content: Text('Are you sure you want to delete this content?',
+            style: AppTextTheme.medium
+                .copyWith(color: ColorConstant.blueGrayColor, fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: Text('Cancel',
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.redColor, fontSize: 14)),
+          ),
+          TextButton(
+            onPressed: () {
+              _homeController.doDeleteSalonContent(
+                contentId: item.id ?? '',
+                callback: () {
+                  Get.back();
+                  _homeController.doGetSalonContentList();
+                },
+              );
+            },
+            child: Text('Yes',
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.primaryColor, fontSize: 14)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Widgets ──────────────────────────────────────────────────────────────
+
+  Widget _emptyState() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: _showPickOptions,
+            child: Center(
+              child: Obx(
+                () => _pickedFile.value == null
+                    ? Image.asset(
+                        AssetsConstant.contentUploadIllustration,
+                        width: 160,
+                        fit: BoxFit.contain,
+                      )
+                    : ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: SizedBox(
+                          height: 160,
+                          width: 160,
+                          child: _isVideo.value
+                              ? OfflineVideoWidget(
+                                  videoString: _pickedFile.value!.path)
+                              : Image.file(_pickedFile.value!,
+                                  fit: BoxFit.cover),
+                        ),
+                      ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: _showPickOptions,
+            child: Center(
+              child: Text(
+                'Upload a Picture or Video',
+                textAlign: TextAlign.center,
+                textScaler: const TextScaler.linear(0.85),
+                style: AppTextTheme.extraBold.copyWith(
+                  decoration: TextDecoration.underline,
+                  color: ColorConstant.grayTextColor,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 28),
+          Text(
+            'Write Description (Optional)',
+            style: AppTextTheme.medium
+                .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            controller: _descriptionController,
+            maxLines: 3,
+            textInputAction: TextInputAction.done,
+            decoration: InputDecoration(
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    const BorderSide(color: ColorConstant.primaryColor2),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide:
+                    const BorderSide(color: ColorConstant.primaryColor2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(
+                    color: ColorConstant.primaryColor2, width: 2),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _uploadButton() {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+          20, 0, 20, 16 + MediaQuery.paddingOf(context).bottom),
+      child: Obx(
+        () => SizedBox(
+          width: Get.width,
+          child: ElevatedButton(
+            onPressed: _homeController.showContentProgress
+                ? null
+                : () => _doUpload(sheetContext: context),
+            style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: ColorConstant.primaryColor2,
+              foregroundColor: ColorConstant.whiteColor,
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: _homeController.showContentProgress
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: ColorConstant.whiteColor,
+                    ),
+                  )
+                : Text(
+                    'Upload',
+                    style: AppTextTheme.extraBold.copyWith(
+                      color: ColorConstant.whiteColor,
+                      fontSize: 16,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _contentCard(BlogData item) {
+    final bool isVideo = item.video != null && item.video!.isNotEmpty;
+    return GestureDetector(
+      onTap: () => Get.to(() => ContentViewPage(item: item)),
+      child: ClipRRect(
+      borderRadius: BorderRadius.circular(4),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // media
+          if (isVideo)
+            NetworkVideoViewWidget(
+              videoString: '${APIConstants.image}${item.video}',
+            )
+          else
+            CachedNetworkImage(
+              imageUrl: '${APIConstants.image}${item.image ?? ""}',
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: Colors.grey.shade200,
+                child: const Image(
+                  image: AssetImage(AssetsConstant.placeHolder),
+                  fit: BoxFit.cover,
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Colors.grey.shade200,
+                child: const Image(
+                  image: AssetImage(AssetsConstant.placeHolder),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          // bottom gradient
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                  colors: [Colors.black54, Colors.transparent],
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // view count
+                  Row(
+                    children: [
+                      const Icon(Icons.remove_red_eye_outlined,
+                          color: Colors.white, size: 11),
+                      const SizedBox(width: 3),
+                      Text(
+                        '${item.viewCount ?? 0}',
+                        style: AppTextTheme.regular
+                            .copyWith(color: Colors.white, fontSize: 10),
+                      ),
+                    ],
+                  ),
+                  // delete
+                  GestureDetector(
+                    onTap: () => _confirmDelete(item),
+                    child: Container(
+                      padding: const EdgeInsets.all(3),
+                      decoration: const BoxDecoration(
+                        color: Colors.white24,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.delete_outline,
+                          color: Colors.white, size: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      ),
+    );
+  }
+
+  // ── Build ────────────────────────────────────────────────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -130,61 +544,67 @@ class _ContentPageState extends State<ContentPage> {
         nameOfScreen: 'Content',
         isBackIcon: true,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      AssetsConstant.contentUploadIllustration,
-                      width: 160,
-                      fit: BoxFit.contain,
-                    ),
-                    Text(
-                      'Upload a Picture or Video',
-                      textAlign: TextAlign.center,
-                      textScaler: const TextScaler.linear(0.85),
-                      style: AppTextTheme.extraBold.copyWith(
-                        color: ColorConstant.grayTextColor,
-                        fontSize: 24,
+      body: Obx(
+        () {
+          if (_homeController.showContentProgress) {
+            return const ProgressBarView();
+          }
+
+          final items = _homeController.getBlogDataGetModel.data;
+
+          // ── Empty state ──
+          if (items == null || items.isEmpty) {
+            return Column(
+              children: [
+                Expanded(child: _emptyState()),
+                _uploadButton(),
+              ],
+            );
+          }
+
+          // ── Grid with floating "+" button ──
+          return Stack(
+            children: [
+              GridView.builder(
+                padding: EdgeInsets.zero,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 2,
+                  mainAxisSpacing: 2,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, i) => _contentCard(items[i]),
+              ),
+              // centered "+" button
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  child: GestureDetector(
+                    onTap: _showUploadSheet,
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        color: ColorConstant.whiteColor,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: ColorConstant.primaryColor2,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.add,
+                        color: ColorConstant.primaryColor2,
+                        size: 32,
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-                20, 0, 20, 16 + MediaQuery.paddingOf(context).bottom),
-            child: SizedBox(
-              width: Get.width,
-              child: ElevatedButton(
-                onPressed: _showUploadOptions,
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  backgroundColor: ColorConstant.bookingCardBorderPurple,
-                  foregroundColor: ColorConstant.whiteColor,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  'Upload',
-                  style: AppTextTheme.extraBold.copyWith(
-                    color: ColorConstant.whiteColor,
-                    fontSize: 16,
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }

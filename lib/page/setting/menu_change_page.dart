@@ -1,10 +1,12 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:salon/api/home_api.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
+import 'package:salon/util/shared_prefs.dart';
 
 class MenuChangePage extends StatefulWidget {
   const MenuChangePage({super.key});
@@ -18,7 +20,34 @@ class _MenuChangePageState extends State<MenuChangePage> {
   String? _selectedFileName;
 
   /// After submit succeeds, UI switches to the design’s centered-only screen.
-  bool _uploadComplete = false;
+  /// Read from cache first so reopening the screen does not flash the upload UI.
+  bool _uploadComplete =
+      SharedPrefs.readBoolValue(PrefConstants.menuChangeRequestSubmitted);
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkExistingRequest();
+  }
+
+  Future<void> _checkExistingRequest() async {
+    try {
+      final exists = await HomeAPI.getMenuChangeRequest();
+      if (!mounted) return;
+      if (exists) {
+        await SharedPrefs.writeValue(
+            PrefConstants.menuChangeRequestSubmitted, true);
+        if (!_uploadComplete) setState(() => _uploadComplete = true);
+      } else {
+        await SharedPrefs.writeValue(
+            PrefConstants.menuChangeRequestSubmitted, false);
+        if (_uploadComplete) setState(() => _uploadComplete = false);
+      }
+    } catch (_) {
+      // Network error — keep showing cached state (avoids flashing to upload).
+    }
+  }
 
   Future<void> _pickMenuFile() async {
     final result = await FilePicker.platform.pickFiles(
@@ -35,7 +64,7 @@ class _MenuChangePageState extends State<MenuChangePage> {
     }
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_selectedFilePath == null || _selectedFileName == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -48,18 +77,37 @@ class _MenuChangePageState extends State<MenuChangePage> {
       );
       return;
     }
-    // TODO: call upload API with _selectedFilePath; on success:
-    setState(() {
-      _uploadComplete = true;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Menu change request submitted',
-          style: AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor),
+    setState(() => _isLoading = true);
+    try {
+      await HomeAPI.submitMenuChangeRequest(filePath: _selectedFilePath!);
+      if (!mounted) return;
+      await SharedPrefs.writeValue(
+          PrefConstants.menuChangeRequestSubmitted, true);
+      if (!mounted) return;
+      setState(() => _uploadComplete = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Menu change request submitted',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor),
+          ),
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to submit request. Please try again.',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   /// Figma-aligned block: purple cloud + primary + secondary copy only.
@@ -182,7 +230,7 @@ class _MenuChangePageState extends State<MenuChangePage> {
             child: SizedBox(
               width: Get.width,
               child: ElevatedButton(
-                onPressed: _submit,
+                onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
                   backgroundColor: ColorConstant.bookingCardBorderPurple,
@@ -192,13 +240,22 @@ class _MenuChangePageState extends State<MenuChangePage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
-                child: Text(
-                  'Submit',
-                  style: AppTextTheme.extraBold.copyWith(
-                    color: ColorConstant.whiteColor,
-                    fontSize: 18,
-                  ),
-                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        'Submit',
+                        style: AppTextTheme.extraBold.copyWith(
+                          color: ColorConstant.whiteColor,
+                          fontSize: 18,
+                        ),
+                      ),
               ),
             ),
           ),

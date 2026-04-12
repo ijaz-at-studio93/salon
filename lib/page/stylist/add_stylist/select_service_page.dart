@@ -22,6 +22,10 @@ class SelectServicePage extends StatefulWidget {
   final bool isUpdate;
   final String artistId;
   final File image;
+  final String sId;
+  final String profession;
+  final List<String> languagesKnown;
+  final List<File> portfolioFiles;
   const SelectServicePage(
       {super.key,
       required this.name,
@@ -33,7 +37,11 @@ class SelectServicePage extends StatefulWidget {
       required this.gender,
       required this.image,
       required this.isUpdate,
-      required this.artistId});
+      required this.artistId,
+      required this.sId,
+      this.profession = '',
+      this.languagesKnown = const [],
+      this.portfolioFiles = const []});
 
   @override
   State<SelectServicePage> createState() => _SelectServicePageState();
@@ -162,9 +170,9 @@ class _SelectServicePageState extends State<SelectServicePage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: ButtonWidget(
-                buttonTitleText: "ADD",
+                buttonTitleText: "Add",
                 onPress: () {
                   if (widget.isUpdate) {
                     if (_homeController.serviceId.isEmpty &&
@@ -220,13 +228,17 @@ class _SelectServicePageState extends State<SelectServicePage> {
                           password: widget.password,
                           gender: widget.gender,
                           image: widget.image,
+                          portfolioFiles: widget.portfolioFiles,
                           storeId: storeServiceId,
                           genderDataList: genderStore,
+                          sId: widget.sId,
+                          profession: widget.profession,
+                          languagesKnown: widget.languagesKnown,
                           callback: () {
-                            Get.back();
-                            Get.back();
-                            Get.back();
-                            _homeController.doSalonArtistList();
+                            // Get.back();
+                            // Get.back();
+                            // Get.back();
+                            // _homeController.doSalonArtistList();
                           });
                     }
                   }

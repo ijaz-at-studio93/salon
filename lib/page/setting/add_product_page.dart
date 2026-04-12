@@ -18,6 +18,7 @@ class AddProductPage extends StatefulWidget {
 }
 
 class _AddProductPageState extends State<AddProductPage> {
+  final _productName = TextEditingController();
   final _description = TextEditingController();
   final _homeController = Get.find<HomeController>();
 
@@ -39,12 +40,14 @@ class _AddProductPageState extends State<AddProductPage> {
   }
 
   void _submit() {
-    if (_selectedCategoryId.isEmpty) {
+    if (_productName.text.isEmpty) {
+      showMessage("Please enter product name.");
+    } else if (_selectedCategoryId.isEmpty) {
       showMessage("Please select a category.");
     } else {
       _homeController.doAddProduct(
         categoryId: _selectedCategoryId,
-        name: "",
+        name: _productName.text,
         description: _description.text,
         price: "",
         image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
@@ -78,6 +81,38 @@ class _AddProductPageState extends State<AddProductPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // ── Product Name ─────────────────────
+                          Text(
+                            "Product Name",
+                            style: AppTextTheme.bold.copyWith(
+                                fontSize: 14, color: ColorConstant.blackColor),
+                          ),
+                          const SizedBox(height: 10),
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                  color: ColorConstant.primaryColor, width: 1.5),
+                            ),
+                            child: TextField(
+                              controller: _productName,
+                              keyboardType: TextInputType.text,
+                              textInputAction: TextInputAction.next,
+                              style: AppTextTheme.medium.copyWith(
+                                  color: ColorConstant.blackColor, fontSize: 13),
+                              decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 14),
+                                border: InputBorder.none,
+                                hintText: "Enter product name",
+                                hintStyle: AppTextTheme.regular.copyWith(
+                                    color: ColorConstant.grayColor, fontSize: 13),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+
                           // ── Image Upload Box ─────────────────
                           GestureDetector(
                             onTap: () {

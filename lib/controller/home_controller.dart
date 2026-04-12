@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/service_model/setting_salon_service_list_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
+import 'package:salon/model/stylist/all_salon_staff_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
 import '../model/translation/translation_history_model.dart';
@@ -40,6 +42,9 @@ class HomeController extends GetxController {
   final Rx<bool> _showProgressCategory = false.obs;
   bool get showProgressCategory => _showProgressCategory.value;
   set setShowProgressCategory(val) => _showProgressCategory.value = val;
+
+  final Rx<bool> _showContentProgress = false.obs;
+  bool get showContentProgress => _showContentProgress.value;
 
   /*-----------------  Eligibility Store  ---------------*/
   final Rx<EligibilityModel> _eligibility = EligibilityModel().obs;
@@ -157,6 +162,11 @@ class HomeController extends GetxController {
   SalonArtistListModel get getSalonArtistListModel =>
       _salonArtistListModel.value;
   set setSalonArtistListModel(val) => _salonArtistListModel.value = val;
+
+  /*---------------------  All Salon Staff List  -----------------------------*/
+  final Rx<AllSalonStaffModel> _allSalonStaffModel = AllSalonStaffModel().obs;
+  AllSalonStaffModel get getAllSalonStaffModel => _allSalonStaffModel.value;
+  set setAllSalonStaffModel(val) => _allSalonStaffModel.value = val;
 
   /*--------------------- Over All Rating -----------------*/
   final Rx<OverallReviewListModel> _overallReviewListModel =
@@ -512,8 +522,12 @@ class HomeController extends GetxController {
     required String password,
     required String gender,
     required File image,
+    required List<File> portfolioFiles,
     required List<String> storeId,
     required List<String> genderDataList,
+    required String sId,
+    required String profession,
+    required List<String> languagesKnown,
     required VoidCallback callback,
   }) async {
     try {
@@ -528,12 +542,17 @@ class HomeController extends GetxController {
           password: password,
           gender: gender,
           image: image,
+          portfolioFiles: portfolioFiles,
           storeId: storeId,
-          genderDataList: genderDataList);
+          genderDataList: genderDataList,
+          sId: sId,
+          profession: profession,
+          languagesKnown: languagesKnown);
       if (result) {
         callback.call();
       }
     } catch (e) {
+      print(e);
       showError(e);
     } finally {
       _showProgress.value = false;
@@ -728,6 +747,32 @@ class HomeController extends GetxController {
     }
   }
 
+  /*-----------------  All Salon Staff List ----------------*/
+  Future<AllSalonStaffModel> doGetAllSalonStaffList() async {
+    try {
+      _allSalonStaffModel.value = await HomeAPI.getAllSalonStaffList();
+    } catch (_) {}
+    return _allSalonStaffModel.value;
+  }
+
+  /*-----------------  Add Existing Artist by SId ----------------*/
+  doAddExistingArtistBySId({
+    required String sId,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showProgress.value = true;
+      final result = await HomeAPI.addExistingArtistBySId(sId: sId);
+      if (result) {
+        callback();
+      }
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
   /*------------------  Get Over All Review ------------------*/
   doGetOverallReview() async {
     try {
@@ -870,6 +915,79 @@ class HomeController extends GetxController {
       showError(e);
     } finally {
       _showProgress.value = false;
+    }
+  }
+
+  /*---------------  Salon Content Get  ------------ */
+  doGetSalonContentList() async {
+    try {
+      _showContentProgress.value = true;
+      _salonBlogDataGetModel.value = await HomeAPI.getSalonContentList();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showContentProgress.value = false;
+    }
+  }
+
+  /*---------------  Salon Content Create  ------------ */
+  doCreateSalonContent({
+    required String description,
+    File? file,
+    bool isVideo = false,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showContentProgress.value = true;
+      bool result = await HomeAPI.createSalonContent(
+        description: description,
+        content: file,
+      );
+      if (result) callback.call();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showContentProgress.value = false;
+    }
+  }
+
+  /*---------------  Salon Content Update  ------------ */
+  doUpdateSalonContent({
+    required String contentId,
+    String? description,
+    File? file,
+    bool isVideo = false,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showContentProgress.value = true;
+      bool result = await HomeAPI.updateSalonContent(
+        contentId: contentId,
+        description: description,
+        file: file,
+        isVideo: isVideo,
+      );
+      if (result) callback.call();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showContentProgress.value = false;
+    }
+  }
+
+  /*---------------  Salon Content Delete  ------------ */
+  doDeleteSalonContent({
+    required String contentId,
+    required VoidCallback callback,
+  }) async {
+    try {
+      _showContentProgress.value = true;
+      bool result = await HomeAPI.deleteSalonContent(contentId: contentId);
+      if (result) callback.call();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showContentProgress.value = false;
     }
   }
 

@@ -39,6 +39,7 @@ class BlogData {
   String? createdAt;
   String? body;
   int? viewCount;
+  int? likeCount;
   Artist? artist;
 
   BlogData(
@@ -49,6 +50,8 @@ class BlogData {
       this.video,
       this.createdAt,
       this.body,
+      this.viewCount,
+      this.likeCount,
       this.artist});
 
   BlogData.fromJson(Map<String, dynamic> json) {
@@ -60,6 +63,7 @@ class BlogData {
     createdAt = json['createdAt'];
     body = json['body'];
     viewCount = json['viewCount'];
+    likeCount = json['likeCount'];
     artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
   }
 
@@ -73,6 +77,7 @@ class BlogData {
     data['createdAt'] = createdAt;
     data['body'] = body;
     data['viewCount'] = viewCount;
+    data['likeCount'] = likeCount;
     if (artist != null) {
       data['artist'] = artist!.toJson();
     }

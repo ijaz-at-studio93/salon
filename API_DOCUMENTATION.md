@@ -445,7 +445,7 @@ API to check if SID is available
 API to check if number linked any of SID
 Update existing API to receive profession, languages known and portfolio
 Update Product API
-Update content API to receive image and video
+~~Update content API to receive image and video~~ ✅ Done — salon/blog routes now accept image + video
 New API for  menu change
 
 ---
@@ -609,6 +609,52 @@ Get artist portfolio.
 Update a portfolio item.
 
 **Request (FormData):** image or video file.
+
+**Response:** `boolean`
+
+---
+
+## Salon Blog / Content APIs
+
+### GET `salon/blog/salon-blogs`
+List all salon content/blog items.
+
+**Response:** `BlogDataGetModel`
+
+---
+
+### POST `salon/blog/add`
+Create a new salon content item.
+
+**Request (FormData)**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| description | string | Yes | |
+| file | file | No | Multipart — image or video |
+
+**MIME detection:** images use `lookupMimeType(path, headerBytes: [0xFF, 0xD8])`; videos use `lookupMimeType(path)` (no magic bytes).
+
+**Response:** `boolean`
+
+---
+
+### PUT `salon/blog/{id}`
+Update an existing salon content item. All fields optional.
+
+**Request (FormData)**
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| description | string | No | |
+| file | file | No | Multipart — image or video |
+
+**Response:** `boolean`
+
+---
+
+### DELETE `salon/blog/{id}`
+Delete a salon content item.
 
 **Response:** `boolean`
 

@@ -25,6 +25,7 @@ import 'package:salon/model/service_model/service_preview_model.dart';
 import 'package:salon/model/service_model/setting_salon_service_list_model.dart';
 import 'package:salon/model/stylist/artiest_details_model.dart';
 import 'package:salon/model/stylist/artiest_list_model.dart';
+import 'package:salon/model/stylist/all_salon_staff_model.dart';
 import 'package:salon/model/translation/translation_history_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
@@ -96,8 +97,7 @@ class HomeAPI {
     final formData = FormData.fromMap({
       "serviceCategoryId": categoryId,
       "name": name,
-      "describe": description,
-      "price": price,
+      "description": description,
     });
 
     if (image != null) {
@@ -128,7 +128,6 @@ class HomeAPI {
     final formData = FormData.fromMap({
       "name": name,
       "description": description,
-      "price": price,
     });
 
     if (image != null) {
@@ -298,36 +297,54 @@ class HomeAPI {
     required String password,
     required String gender,
     required File image,
+    required List<File> portfolioFiles,
     required List<String> storeId,
     required List<String> genderDataList,
+    required String sId,
+    required String profession,
+    required List<String> languagesKnown,
   }) async {
-    final formData = FormData.fromMap({
-      "name": name,
-      "mobile": mobile,
-      "countryCode": countryCode,
-      "experience": experience,
-      "whatsapp": whatsapp,
-      "homeService": homeService,
-      "password": password,
-      "gender": gender,
-      "address": "test"
-    });
-
-    if (storeId.isNotEmpty) {
-      for (int i = 0; i < storeId.length; i++) {
-        formData.fields.add(MapEntry("salonService[$i][id]", storeId[i]));
-        formData.fields.add(
-            MapEntry("salonService[$i][serviceableGender]", genderDataList[i]));
-      }
-    }
+    final List<MultipartFile> files = [];
 
     if (image.path.isNotEmpty) {
       final mimeTypeData =
           lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
-      final multipartFile = await MultipartFile.fromFile(image.path,
-          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
-      formData.files.add(MapEntry('image', multipartFile));
+      files.add(await MultipartFile.fromFile(image.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1])));
     }
+
+    for (final file in portfolioFiles) {
+      if (file.path.isEmpty) continue;
+      final mimeTypeData =
+          lookupMimeType(file.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      if (mimeTypeData == null || mimeTypeData.length < 2) continue;
+      files.add(await MultipartFile.fromFile(file.path,
+          contentType: MediaType(mimeTypeData[0], mimeTypeData[1])));
+    }
+
+    final formData = FormData.fromMap({
+      "name": name,
+      "sId": sId,
+      "mobile": mobile,
+      "countryCode": countryCode,
+      "password": password,
+      "gender": gender,
+      "profession": profession,
+      "homeService": homeService,
+      "files": files,
+    });
+
+    for (int i = 0; i < languagesKnown.length; i++) {
+      formData.fields.add(MapEntry("languagesKnown[$i]", languagesKnown[i]));
+    }
+
+    // if (storeId.isNotEmpty) {
+    //   for (int i = 0; i < storeId.length; i++) {
+    //     formData.fields.add(MapEntry("salonService[$i][id]", storeId[i]));
+    //     formData.fields.add(
+    //         MapEntry("salonService[$i][serviceableGender]", genderDataList[i]));
+    //   }
+    // }
 
     final response = await DioClient.client.post(
       APIEndPoint.salonArtist,
@@ -399,7 +416,7 @@ class HomeAPI {
           lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
       final multipartFile = await MultipartFile.fromFile(image.path,
           contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
-      formData.files.add(MapEntry('image', multipartFile));
+      formData.files.add(MapEntry('file', multipartFile));
     }
 
     final response = await DioClient.client.patch(
@@ -425,6 +442,116 @@ class HomeAPI {
     final response = await DioClient.client.get(url);
     if (response.isSuccess) {
       return BlogDataGetModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Salon Content List  -------------*/
+  static Future<BlogDataGetModel> getSalonContentList() async {
+    final response = await DioClient.client.get(APIEndPoint.salonContentList);
+    if (response.isSuccess) {
+      return BlogDataGetModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Salon Content Add  -------------*/
+  static Future<bool> createSalonContent({
+    required String description,
+    File? content,
+  }) async {
+    if (content == null || content.path.isEmpty) return false;
+
+    final formData = FormData.fromMap({
+      "description": description,
+    });
+
+    final mimeType = lookupMimeType(content.path) ?? 'application/octet-stream';
+    final mimeTypeParts = mimeType.split('/');
+
+    final multipartFile = await MultipartFile.fromFile(
+      content.path,
+      contentType: MediaType(mimeTypeParts[0], mimeTypeParts[1]),
+    );
+    formData.files.add(MapEntry('file', multipartFile));
+
+    final response = await DioClient.client
+        .post(APIEndPoint.salonContentAdd, data: formData);
+
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Menu Change Request  -------------*/
+  static Future<bool> submitMenuChangeRequest({
+    required String filePath,
+  }) async {
+    final mimeType = lookupMimeType(filePath) ?? 'application/octet-stream';
+    final mimeTypeParts = mimeType.split('/');
+
+    final multipartFile = await MultipartFile.fromFile(
+      filePath,
+      contentType: MediaType(mimeTypeParts[0], mimeTypeParts[1]),
+    );
+
+    final formData = FormData.fromMap({});
+    formData.files.add(MapEntry('file', multipartFile));
+
+    final response = await DioClient.client
+        .post(APIEndPoint.menuChangeRequest, data: formData);
+
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  static Future<bool> getMenuChangeRequest() async {
+    final response = await DioClient.client.get(APIEndPoint.menuChangeRequest);
+    return response.isSuccess;
+  }
+
+  /*---------------  Salon Content Update  -------------*/
+  static Future<bool> updateSalonContent({
+    required String contentId,
+    String? description,
+    File? file,
+    bool isVideo = false,
+  }) async {
+    final formData = FormData.fromMap({});
+    if (description != null && description.isNotEmpty) {
+      formData.fields.add(MapEntry('description', description));
+    }
+    if (file != null) {
+      final mimeTypeData = isVideo
+          ? lookupMimeType(file.path)?.split('/')
+          : lookupMimeType(file.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      formData.files.add(MapEntry(
+        'file',
+        await MultipartFile.fromFile(file.path,
+            contentType: MediaType(mimeTypeData![0], mimeTypeData[1])),
+      ));
+    }
+    final response =
+        await DioClient.client.put("salon/blog/$contentId", data: formData);
+    if (response.isSuccess) {
+      return true;
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*---------------  Salon Content Delete  -------------*/
+  static Future<bool> deleteSalonContent({required String contentId}) async {
+    final response = await DioClient.client.delete("salon/blog/$contentId");
+    if (response.isSuccess) {
+      return true;
     } else {
       throw response.data;
     }
@@ -581,6 +708,29 @@ class HomeAPI {
     final response = await DioClient.client.get("salon/artist/list");
     if (response.isSuccess) {
       return SalonArtistListModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*------------------- All Salon Staff List ----------------------*/
+  static Future<AllSalonStaffModel> getAllSalonStaffList() async {
+    final response = await DioClient.client.get("salon/artist/all-salon-list");
+    if (response.isSuccess) {
+      return AllSalonStaffModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*------------------- Add Existing Artist by SId ----------------------*/
+  static Future<bool> addExistingArtistBySId({required String sId}) async {
+    final response = await DioClient.client.post(
+      "salon/artist/import",
+      data: {"sId": sId},
+    );
+    if (response.isSuccess) {
+      return true;
     } else {
       throw response.data;
     }
