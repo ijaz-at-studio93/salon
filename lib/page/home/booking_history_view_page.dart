@@ -418,7 +418,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
           children: _stylistOptions.isEmpty
               ? [
                   Text(
-                    '—',
+                    'No stylist preference',
                     style: AppTextTheme.medium.copyWith(
                       color: ColorConstant.grayTextColor,
                       fontSize: 14,

@@ -79,13 +79,16 @@ class OrderData {
     appointment = json['appointment'] != null
         ? Appointment.fromJson(json['appointment'])
         : null;
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    // user and items may be at root level (old API) or inside appointment (new API)
+    user = json['user'] != null ? User.fromJson(json['user']) : appointment?.user;
     if (json['items'] != null) {
       items = <ServiceItem>[];
-      json['items'].forEach((v) {
+      (json['items'] as List).forEach((v) {
         items!.add(ServiceItem.fromJson(v));
       });
-    } // Parsed
+    } else {
+      items = appointment?.items;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -118,14 +121,44 @@ class Appointment {
   String? startsAt;
   String? endsAt;
   Artist? artist;
+  List<String>? stylistIds;
+  List<String>? selectedSlots;
+  List<StylistDetail>? stylistDetails;
+  User? user;
+  List<ServiceItem>? items;
 
-  Appointment({this.id, this.startsAt, this.endsAt, this.artist});
+  Appointment({
+    this.id,
+    this.startsAt,
+    this.endsAt,
+    this.artist,
+    this.stylistIds,
+    this.selectedSlots,
+    this.stylistDetails,
+    this.user,
+    this.items,
+  });
 
   Appointment.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     startsAt = json['startsAt'];
     endsAt = json['endsAt'];
     artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
+    stylistIds = (json['stylistIds'] as List?)?.map((e) => e.toString()).toList();
+    selectedSlots = (json['selectedSlots'] as List?)?.map((e) => e.toString()).toList();
+    if (json['stylistDetails'] != null) {
+      stylistDetails = <StylistDetail>[];
+      (json['stylistDetails'] as List).forEach((v) {
+        stylistDetails!.add(StylistDetail.fromJson(v));
+      });
+    }
+    user = json['user'] != null ? User.fromJson(json['user']) : null;
+    if (json['items'] != null) {
+      items = <ServiceItem>[];
+      (json['items'] as List).forEach((v) {
+        items!.add(ServiceItem.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -133,9 +166,12 @@ class Appointment {
     data['id'] = id;
     data['startsAt'] = startsAt;
     data['endsAt'] = endsAt;
-    if (artist != null) {
-      data['artist'] = artist!.toJson();
-    }
+    if (artist != null) data['artist'] = artist!.toJson();
+    if (stylistIds != null) data['stylistIds'] = stylistIds;
+    if (selectedSlots != null) data['selectedSlots'] = selectedSlots;
+    if (stylistDetails != null) data['stylistDetails'] = stylistDetails!.map((v) => v.toJson()).toList();
+    if (user != null) data['user'] = user!.toJson();
+    if (items != null) data['items'] = items!.map((v) => v.toJson()).toList();
     return data;
   }
 }
@@ -155,6 +191,28 @@ class Artist {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['name'] = name;
+    return data;
+  }
+}
+
+class StylistDetail {
+  String? id;
+  String? name;
+  String? profileImage;
+
+  StylistDetail({this.id, this.name, this.profileImage});
+
+  StylistDetail.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    profileImage = json['profileImage'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
+    data['name'] = name;
+    data['profileImage'] = profileImage;
     return data;
   }
 }

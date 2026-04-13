@@ -77,30 +77,22 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                       orderData: _homeController
                                           .getSalonUpcomingList.data![index],
                                       onPress: () {
+                                        final appt = _homeController
+                                            .getSalonUpcomingList
+                                            .data?[index]
+                                            .appointment;
+                                        final firstStylist = appt?.stylistDetails?.isNotEmpty == true
+                                            ? appt!.stylistDetails!.first
+                                            : null;
                                         Get.to(() => BookingHistoryViewpage(
-                                              appointmentId: _homeController
-                                                      .getSalonUpcomingList
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.id ??
-                                                  "",
+                                              appointmentId: appt?.id ?? "",
                                               status: _homeController
                                                       .getSalonUpcomingList
                                                       .data?[index]
                                                       .orderStatus ??
                                                   "",
-                                              listStylistName: _homeController
-                                                  .getSalonUpcomingList
-                                                  .data?[index]
-                                                  .appointment
-                                                  ?.artist
-                                                  ?.name,
-                                              listStylistId: _homeController
-                                                  .getSalonUpcomingList
-                                                  .data?[index]
-                                                  .appointment
-                                                  ?.artist
-                                                  ?.id,
+                                              listStylistName: firstStylist?.name ?? appt?.artist?.name,
+                                              listStylistId: firstStylist?.id ?? appt?.artist?.id,
                                             ));
                                       },
                                     ),
@@ -126,26 +118,18 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                           orderData: _homeController
                                               .getSalonServedList.data![index],
                                           onPress: () {
+                                            final appt = _homeController
+                                                .getSalonServedList
+                                                .data?[index]
+                                                .appointment;
+                                            final firstStylist = appt?.stylistDetails?.isNotEmpty == true
+                                                ? appt!.stylistDetails!.first
+                                                : null;
                                             Get.to(() => BookingHistoryViewpage(
-                                                  appointmentId: _homeController
-                                                          .getSalonServedList
-                                                          .data?[index]
-                                                          .appointment
-                                                          ?.id ??
-                                                      "",
+                                                  appointmentId: appt?.id ?? "",
                                                   status: "Complete",
-                                                  listStylistName: _homeController
-                                                      .getSalonServedList
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.artist
-                                                      ?.name,
-                                                  listStylistId: _homeController
-                                                      .getSalonServedList
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.artist
-                                                      ?.id,
+                                                  listStylistName: firstStylist?.name ?? appt?.artist?.name,
+                                                  listStylistId: firstStylist?.id ?? appt?.artist?.id,
                                                 ));
                                           },
                                         ),
@@ -173,26 +157,18 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                               .getSalonCancelServedList
                                               .data![index],
                                           onPress: () {
+                                            final appt = _homeController
+                                                .getSalonCancelServedList
+                                                .data?[index]
+                                                .appointment;
+                                            final firstStylist = appt?.stylistDetails?.isNotEmpty == true
+                                                ? appt!.stylistDetails!.first
+                                                : null;
                                             Get.to(() => BookingHistoryViewpage(
-                                                  appointmentId: _homeController
-                                                          .getSalonCancelServedList
-                                                          .data?[index]
-                                                          .appointment
-                                                          ?.id ??
-                                                      "",
+                                                  appointmentId: appt?.id ?? "",
                                                   status: "Cancel",
-                                                  listStylistName: _homeController
-                                                      .getSalonCancelServedList
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.artist
-                                                      ?.name,
-                                                  listStylistId: _homeController
-                                                      .getSalonCancelServedList
-                                                      .data?[index]
-                                                      .appointment
-                                                      ?.artist
-                                                      ?.id,
+                                                  listStylistName: firstStylist?.name ?? appt?.artist?.name,
+                                                  listStylistId: firstStylist?.id ?? appt?.artist?.id,
                                                 ));
                                           },
                                         ),
