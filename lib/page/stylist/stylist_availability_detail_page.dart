@@ -8,8 +8,6 @@ import 'package:salon/api/home_api.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/working_plan_model.dart';
-import 'package:salon/page/stylist/availiblity_stylist_page.dart';
-import 'package:salon/page/stylist/block_slot_page.dart';
 import 'package:salon/project_specific/button_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -259,17 +257,11 @@ class _StylistAvailabilityDetailPageState
   }
 
   Future<void> _openWeeklyEditor() async {
-    await Get.to(() => AvailabilitySheetPage(artiestId: widget.artistId));
-    if (!mounted) return;
-    await _load();
+    setState(() => _tabIndex = 1);
   }
 
   Future<void> _openBlockSlot() async {
-    final result = await Get.to(
-      () => BlockSlotPage(artistId: widget.artistId),
-    );
-    if (!mounted) return;
-    if (result == true) await _load();
+    setState(() => _tabIndex = 2);
   }
 
   DateTime get _todayDateOnly {
