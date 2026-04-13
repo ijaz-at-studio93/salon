@@ -794,107 +794,113 @@ class _DisabledExceptionCard extends StatelessWidget {
     final useRangeLayout =
         !isSameCalendarDay(s, e) || isLikelyFullDayBlock(s, e);
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: ColorConstant.whiteColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Disabled',
-                  style: AppTextTheme.bold.copyWith(
-                    color: ColorConstant.exceptionDisabledLabel,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                if (useRangeLayout)
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 6,
-                    children: [
-                      _kv(
-                        'From : ',
-                        _dateFmt.format(s),
-                        valueColor: ColorConstant.exceptionDateViolet,
-                      ),
-                      _kv(
-                        'To : ',
-                        _dateFmt.format(e),
-                        valueColor: ColorConstant.exceptionDateViolet,
-                      ),
-                    ],
-                  )
-                else ...[
-                  _kv(
-                    'On : ',
-                    _dateFmt.format(s),
-                    valueColor: ColorConstant.exceptionDateViolet,
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 6,
-                    children: [
-                      _kv(
-                        'From : ',
-                        DateFormat('h:mm a').format(s),
-                        valueColor: ColorConstant.exceptionTimePink,
-                      ),
-                      _kv(
-                        'To : ',
-                        DateFormat('h:mm a').format(e),
-                        valueColor: ColorConstant.exceptionTimePink,
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (onDelete != null) ...[
-            const SizedBox(width: 8),
-            Material(
-              color: ColorConstant.exceptionDeleteRed,
-              borderRadius: BorderRadius.circular(8),
-              child: InkWell(
-                onTap: deleting ? null : onDelete,
-                borderRadius: BorderRadius.circular(8),
-                child: SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: deleting
-                      ? const Padding(
-                          padding: EdgeInsets.all(12),
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: ColorConstant.whiteColor,
-                          ),
-                        )
-                      : const Icon(
-                          Icons.delete_outline,
-                          color: ColorConstant.whiteColor,
-                          size: 22,
-                        ),
-                ),
-              ),
+    return Material(
+      color: ColorConstant.whiteColor,
+      elevation: 1,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: ColorConstant.whiteColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
-        ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Disabled',
+                    style: AppTextTheme.bold.copyWith(
+                      color: ColorConstant.exceptionDisabledLabel,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  if (useRangeLayout)
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 6,
+                      children: [
+                        _kv(
+                          'From : ',
+                          _dateFmt.format(s),
+                          valueColor: ColorConstant.exceptionDateViolet,
+                        ),
+                        _kv(
+                          'To : ',
+                          _dateFmt.format(e),
+                          valueColor: ColorConstant.exceptionDateViolet,
+                        ),
+                      ],
+                    )
+                  else ...[
+                    _kv(
+                      'On : ',
+                      _dateFmt.format(s),
+                      valueColor: ColorConstant.exceptionDateViolet,
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 16,
+                      runSpacing: 6,
+                      children: [
+                        _kv(
+                          'From : ',
+                          DateFormat('h:mm a').format(s),
+                          valueColor: ColorConstant.exceptionTimePink,
+                        ),
+                        _kv(
+                          'To : ',
+                          DateFormat('h:mm a').format(e),
+                          valueColor: ColorConstant.exceptionTimePink,
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (onDelete != null) ...[
+              const SizedBox(width: 8),
+              Material(
+                color: ColorConstant.exceptionDeleteRed,
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  onTap: deleting ? null : onDelete,
+                  borderRadius: BorderRadius.circular(8),
+                  child: SizedBox(
+                    width: 44,
+                    height: 44,
+                    child: deleting
+                        ? const Padding(
+                            padding: EdgeInsets.all(12),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: ColorConstant.whiteColor,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.delete_outline,
+                            color: ColorConstant.whiteColor,
+                            size: 22,
+                          ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -942,8 +948,10 @@ class _WeeklyDaySwitchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: ColorConstant.whiteColor,
       elevation: 1,
       borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
@@ -1112,56 +1120,62 @@ class _TodayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: ColorConstant.whiteColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              color: available
-                  ? ColorConstant.stylistStatusAvailable
-                  : ColorConstant.stylistStatusOff,
-              shape: BoxShape.circle,
+    return Material(
+      color: ColorConstant.whiteColor,
+      elevation: 1,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: ColorConstant.whiteColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              available ? "Available Today" : "Unavailable Today",
-              style: AppTextTheme.bold.copyWith(
-                color: ColorConstant.blackColor,
-                fontSize: 15,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: available
+                    ? ColorConstant.stylistStatusAvailable
+                    : ColorConstant.stylistStatusOff,
+                shape: BoxShape.circle,
               ),
             ),
-          ),
-          if (busy)
-            const SizedBox(
-              width: 22,
-              height: 22,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          else
-            CupertinoSwitch(
-              value: available,
-              onChanged: onToggle,
-              activeTrackColor: ColorConstant.stylistStatusAvailable,
-              inactiveTrackColor: ColorConstant.gray.withValues(alpha: 0.38),
-              thumbColor: ColorConstant.whiteColor,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                available ? "Available Today" : "Unavailable Today",
+                style: AppTextTheme.bold.copyWith(
+                  color: ColorConstant.blackColor,
+                  fontSize: 15,
+                ),
+              ),
             ),
-        ],
+            if (busy)
+              const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else
+              CupertinoSwitch(
+                value: available,
+                onChanged: onToggle,
+                activeTrackColor: ColorConstant.stylistStatusAvailable,
+                inactiveTrackColor: ColorConstant.gray.withValues(alpha: 0.38),
+                thumbColor: ColorConstant.whiteColor,
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -1214,21 +1228,19 @@ class _WeeklyList extends StatelessWidget {
     final a = availability;
     const radius = 10.0;
     return Material(
+      color: ColorConstant.whiteColor,
       elevation: 1,
       borderRadius: BorderRadius.circular(radius),
+      clipBehavior: Clip.antiAlias,
       child: Container(
         decoration: BoxDecoration(
           color: ColorConstant.whiteColor,
           borderRadius: BorderRadius.circular(radius),
-          // border: Border.all(
-          //   color: ColorConstant.borderColor,
-          //   width: 1,
-          // ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 6,
-              offset: const Offset(0, 2),
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
             ),
           ],
         ),
@@ -1418,7 +1430,10 @@ class _ExceptionScreenshotField extends StatelessWidget {
     final hasDetail = detail != null && detail!.isNotEmpty;
 
     return Material(
-      color: Colors.transparent,
+      color: ColorConstant.whiteColor,
+      elevation: 1,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
