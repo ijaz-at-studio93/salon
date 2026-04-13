@@ -49,7 +49,22 @@ class ColorConstant {
   static const Color bookingStatusCancelled = Color(0xFFB0B0B0);
   static const Color bookingViewMintBg = Color(0xFFE8F8EF);
   static const Color bookingViewGreen = Color(0xFF166534);
-  static const Color bookingShadow = Color(0x1A000000);
+
+  /// Layered shadow similar to Material [Card] elevation (~3) for appointment tiles.
+  static const List<BoxShadow> appointmentCardElevation = [
+    BoxShadow(
+      color: Color(0x1F000000),
+      offset: Offset(0, 1),
+      blurRadius: 4,
+      spreadRadius: 0,
+    ),
+    BoxShadow(
+      color: Color(0x14000000),
+      offset: Offset(0, 3),
+      blurRadius: 10,
+      spreadRadius: 0,
+    ),
+  ];
   static const Color lightGreenColor = Color(0xFF01AB4D);
 
   /// Set Stylist Availability (Figma)

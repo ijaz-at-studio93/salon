@@ -35,7 +35,10 @@ class _AcceptBookingOverViewWidgetState
     return Container(
       padding: const EdgeInsets.only(bottom: 20, top: 20, left: 13, right: 13),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(7), color: ColorConstant.gray),
+        borderRadius: BorderRadius.circular(7),
+        color: ColorConstant.gray,
+        boxShadow: ColorConstant.appointmentCardElevation,
+      ),
       child: Column(
         children: [
           Row(

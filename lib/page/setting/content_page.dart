@@ -282,44 +282,6 @@ class _ContentPageState extends State<ContentPage> {
     );
   }
 
-  // ── Delete ───────────────────────────────────────────────────────────────
-
-  void _confirmDelete(BlogData item) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Delete',
-            style:
-                AppTextTheme.medium.copyWith(color: ColorConstant.blackColor)),
-        content: Text('Are you sure you want to delete this content?',
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.blueGrayColor, fontSize: 14)),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel',
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.redColor, fontSize: 14)),
-          ),
-          TextButton(
-            onPressed: () {
-              _homeController.doDeleteSalonContent(
-                contentId: item.id ?? '',
-                callback: () {
-                  Get.back();
-                  _homeController.doGetSalonContentList();
-                },
-              );
-            },
-            child: Text('Yes',
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.primaryColor, fontSize: 14)),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ── Widgets ──────────────────────────────────────────────────────────────
 
   Widget _emptyState() {
@@ -484,7 +446,7 @@ class _ContentPageState extends State<ContentPage> {
             // bottom gradient
             Positioned(
               bottom: 0,
-              left: 0,
+              // left: 0,
               right: 0,
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
@@ -501,8 +463,11 @@ class _ContentPageState extends State<ContentPage> {
                     // view count
                     Row(
                       children: [
-                        const Icon(Icons.remove_red_eye_outlined,
-                            color: Colors.white, size: 11),
+                        Image.asset(
+                          AssetsConstant.viewIcon,
+                          width: 11,
+                          height: 11,
+                        ),
                         const SizedBox(width: 3),
                         Text(
                           '${item.viewCount ?? 0}',
@@ -511,18 +476,41 @@ class _ContentPageState extends State<ContentPage> {
                         ),
                       ],
                     ),
-                    // delete
-                    GestureDetector(
-                      onTap: () => _confirmDelete(item),
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: const BoxDecoration(
-                          color: Colors.white24,
-                          shape: BoxShape.circle,
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 0,
+              // left: 0,
+              left: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black54, Colors.transparent],
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // view count
+                    Row(
+                      children: [
+                        Image.asset(
+                          AssetsConstant.likeIcon,
+                          width: 11,
+                          height: 11,
                         ),
-                        child: const Icon(Icons.delete_outline,
-                            color: Colors.white, size: 14),
-                      ),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${item.likeCount ?? 0}',
+                          style: AppTextTheme.regular
+                              .copyWith(color: Colors.white, fontSize: 10),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -539,7 +527,7 @@ class _ContentPageState extends State<ContentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstant.whiteColor,
+      backgroundColor: ColorConstant.blackColor,
       appBar: const AppBarWidget(
         nameOfScreen: 'Content',
         isBackIcon: true,
@@ -571,6 +559,7 @@ class _ContentPageState extends State<ContentPage> {
                   crossAxisCount: 3,
                   crossAxisSpacing: 2,
                   mainAxisSpacing: 2,
+                  mainAxisExtent: 180,
                 ),
                 itemCount: items.length,
                 itemBuilder: (context, i) => _contentCard(items[i]),
@@ -586,16 +575,15 @@ class _ContentPageState extends State<ContentPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: ColorConstant.whiteColor,
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: ColorConstant.primaryColor2,
+                          color: ColorConstant.whiteColor,
                           width: 6,
                         ),
                       ),
                       child: const Icon(
                         Icons.add_rounded,
-                        color: ColorConstant.primaryColor2,
+                        color: ColorConstant.whiteColor,
                         size: 54,
                         fontWeight: FontWeight.w600,
                       ),

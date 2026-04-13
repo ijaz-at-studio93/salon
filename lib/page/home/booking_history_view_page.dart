@@ -638,6 +638,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       decoration: BoxDecoration(
         color: ColorConstant.lightGreyColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: ColorConstant.appointmentCardElevation,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,12 +672,24 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Service Name : ',
-                      style: AppTextTheme.medium.copyWith(
-                        color: ColorConstant.blackColor.withValues(alpha: 0.6),
-                        fontSize: 14,
-                      ),
+                    Column(
+                      children: [
+                        Text(
+                          'Service Name : ',
+                          style: AppTextTheme.medium.copyWith(
+                            color:
+                                ColorConstant.blackColor.withValues(alpha: 0.6),
+                            fontSize: 14,
+                          ),
+                        ),
+                        Text(
+                          '(Mens)',
+                          style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.primaryColor2,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
                     ),
                     Expanded(
                       child: Text(
@@ -725,6 +738,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       decoration: BoxDecoration(
         color: ColorConstant.reviewCardColor,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: ColorConstant.appointmentCardElevation,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

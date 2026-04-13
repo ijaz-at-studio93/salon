@@ -56,14 +56,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
           color: ColorConstant.bookingCardBorderPurple,
           width: 1,
         ),
-        boxShadow: const [
-          BoxShadow(
-            color: ColorConstant.bookingShadow,
-            offset: Offset(0, 2),
-            blurRadius: 6,
-            spreadRadius: 0,
-          ),
-        ],
+        boxShadow: ColorConstant.appointmentCardElevation,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,

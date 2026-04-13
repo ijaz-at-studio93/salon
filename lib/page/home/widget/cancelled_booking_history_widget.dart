@@ -34,7 +34,7 @@ class _CancelledBookingHistoryWidgetState
     final dateStr = _convertBookingDate(dateSource);
     final timeStr = _formatTimeLabel(o.appointment?.startsAt ?? '');
     final stylistName = o.appointment?.artist?.name ?? '';
-    final priceStr = '₹${o.orderAmount?.toStringAsFixed(0) ?? '0'}';
+    final priceStr = o.orderAmount?.toStringAsFixed(0) ?? '0';
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -46,14 +46,7 @@ class _CancelledBookingHistoryWidgetState
           color: ColorConstant.bookingCardBorderPurple,
           width: 1,
         ),
-        boxShadow: const [
-          BoxShadow(
-            color: ColorConstant.bookingShadow,
-            offset: Offset(0, 2),
-            blurRadius: 6,
-            spreadRadius: 0,
-          ),
-        ],
+        boxShadow: ColorConstant.appointmentCardElevation,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,7 +80,7 @@ class _CancelledBookingHistoryWidgetState
                   text: TextSpan(
                     style: AppTextTheme.bold.copyWith(
                       fontSize: 14,
-                      color: ColorConstant.bookingPriceMagenta,
+                      color: ColorConstant.bookingPriceMagenta2,
                     ),
                     children: [
                       const TextSpan(
