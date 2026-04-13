@@ -1,17 +1,24 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/master_api.dart';
+import 'package:salon/constant/api_constant.dart';
+import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/model/master_model/get_category_model.dart';
+import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
 
 class AddProductPage extends StatefulWidget {
-  const AddProductPage({super.key});
+  /// When set, the page is used to update an existing product (same fields as create).
+  final Product? product;
+
+  const AddProductPage({super.key, this.product});
 
   @override
   State<AddProductPage> createState() => _AddProductPageState();
@@ -26,10 +33,27 @@ class _AddProductPageState extends State<AddProductPage> {
   String _selectedCategoryId = "";
   File _imagePath = File("");
 
+  bool get _isEdit => widget.product != null;
+
+  String? get _existingImagePath => widget.product?.image;
+
   @override
   void initState() {
     super.initState();
+    final p = widget.product;
+    if (p != null) {
+      _productName.text = p.name ?? "";
+      _description.text = p.description ?? "";
+      _selectedCategoryId = p.serviceCategoryId ?? "";
+    }
     _loadCategories();
+  }
+
+  @override
+  void dispose() {
+    _productName.dispose();
+    _description.dispose();
+    super.dispose();
   }
 
   Future<void> _loadCategories() async {
@@ -45,25 +69,90 @@ class _AddProductPageState extends State<AddProductPage> {
     } else if (_selectedCategoryId.isEmpty) {
       showMessage("Please select a category.");
     } else {
-      _homeController.doAddProduct(
-        categoryId: _selectedCategoryId,
-        name: _productName.text,
-        description: _description.text,
-        price: "",
-        image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
-        callback: () {
-          Get.back();
-          _homeController.doGetProductListData();
-        },
+      if (_isEdit) {
+        _homeController.doUpdateProduct(
+          productId: widget.product!.id ?? "",
+          name: _productName.text,
+          description: _description.text,
+          serviceCategoryId: _selectedCategoryId,
+          image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
+          callback: () {
+            Get.back();
+            _homeController.doGetProductListData();
+          },
+        );
+      } else {
+        _homeController.doAddProduct(
+          categoryId: _selectedCategoryId,
+          name: _productName.text,
+          description: _description.text,
+          price: "",
+          image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
+          callback: () {
+            Get.back();
+            _homeController.doGetProductListData();
+          },
+        );
+      }
+    }
+  }
+
+  Widget _buildImageArea() {
+    if (_imagePath.path.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.file(
+          _imagePath,
+          fit: BoxFit.cover,
+          width: double.infinity,
+        ),
       );
     }
+    if (_isEdit &&
+        _existingImagePath != null &&
+        _existingImagePath!.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: CachedNetworkImage(
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: 180,
+          imageUrl: "${APIConstants.image}$_existingImagePath",
+          placeholder: (context, url) => const Image(
+            image: AssetImage(AssetsConstant.placeHolder),
+            fit: BoxFit.cover,
+          ),
+          errorWidget: (context, url, error) => const Image(
+            image: AssetImage(AssetsConstant.placeHolder),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(
+          Icons.upload_rounded,
+          size: 52,
+          color: ColorConstant.blackColor,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          "Drop Image",
+          style: AppTextTheme.medium
+              .copyWith(fontSize: 15, color: ColorConstant.blackColor),
+        ),
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
-      appBar: const AppBarWidget(nameOfScreen: "Add Product"),
+      appBar: AppBarWidget(
+          nameOfScreen: _isEdit ? "Update Product" : "Add Product"),
       body: Obx(
         () => _homeController.showProgress
             ? const Center(
@@ -93,21 +182,24 @@ class _AddProductPageState extends State<AddProductPage> {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                  color: ColorConstant.primaryColor, width: 1.5),
+                                  color: ColorConstant.primaryColor,
+                                  width: 1.5),
                             ),
                             child: TextField(
                               controller: _productName,
                               keyboardType: TextInputType.text,
                               textInputAction: TextInputAction.next,
                               style: AppTextTheme.medium.copyWith(
-                                  color: ColorConstant.blackColor, fontSize: 13),
+                                  color: ColorConstant.blackColor,
+                                  fontSize: 13),
                               decoration: InputDecoration(
                                 contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 14),
                                 border: InputBorder.none,
                                 hintText: "Enter product name",
                                 hintStyle: AppTextTheme.regular.copyWith(
-                                    color: ColorConstant.grayColor, fontSize: 13),
+                                    color: ColorConstant.grayColor,
+                                    fontSize: 13),
                               ),
                             ),
                           ),
@@ -131,33 +223,7 @@ class _AddProductPageState extends State<AddProductPage> {
                                     color: ColorConstant.blackColor,
                                     width: 1.5),
                               ),
-                              child: _imagePath.path.isEmpty
-                                  ? Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        const Icon(
-                                          Icons.upload_rounded,
-                                          size: 52,
-                                          color: ColorConstant.blackColor,
-                                        ),
-                                        const SizedBox(height: 10),
-                                        Text(
-                                          "Drop Image",
-                                          style: AppTextTheme.medium.copyWith(
-                                              fontSize: 15,
-                                              color: ColorConstant.blackColor),
-                                        ),
-                                      ],
-                                    )
-                                  : ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.file(
-                                        _imagePath,
-                                        fit: BoxFit.cover,
-                                        width: double.infinity,
-                                      ),
-                                    ),
+                              child: _buildImageArea(),
                             ),
                           ),
                           const SizedBox(height: 24),
@@ -299,7 +365,7 @@ class _AddProductPageState extends State<AddProductPage> {
                           ),
                         ),
                         child: Text(
-                          "Submit",
+                          _isEdit ? "Update" : "Submit",
                           style: AppTextTheme.bold.copyWith(
                               fontSize: 17, color: ColorConstant.whiteColor),
                         ),

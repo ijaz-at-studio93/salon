@@ -372,8 +372,8 @@ class HomeController extends GetxController {
     required String productId,
     required String name,
     required String description,
-    required String price,
     required File? image,
+    String? serviceCategoryId,
     required VoidCallback callback,
   }) async {
     try {
@@ -382,8 +382,8 @@ class HomeController extends GetxController {
           productId: productId,
           name: name,
           description: description,
-          price: price,
-          image: image);
+          image: image,
+          serviceCategoryId: serviceCategoryId);
 
       if (result) {
         callback.call();
@@ -616,10 +616,15 @@ class HomeController extends GetxController {
   }
 
   /*----------------- Upcoming Booking  Data ----------------*/
-  doUpcomingData() async {
+  String _lastUpcomingDistribution = 'today';
+
+  doUpcomingData({String? distribution}) async {
     try {
       _showProgress.value = true;
-      _salonUpcomingList.value = await HomeAPI.getPendingAppointments();
+      final d = distribution ?? _lastUpcomingDistribution;
+      _lastUpcomingDistribution = d;
+      _salonUpcomingList.value =
+          await HomeAPI.getPendingAppointments(distribution: d);
     } catch (e) {
       showError(e);
     } finally {

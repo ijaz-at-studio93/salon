@@ -122,12 +122,14 @@ class HomeAPI {
     required String productId,
     required String name,
     required String description,
-    required String price,
     required File? image,
+    String? serviceCategoryId,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
       "description": description,
+      if (serviceCategoryId != null && serviceCategoryId.isNotEmpty)
+        "serviceCategoryId": serviceCategoryId,
     });
 
     if (image != null) {
@@ -570,9 +572,13 @@ class HomeAPI {
   }
 
   /*--------------------------- Get Pending Appointments Model ---------------------*/
-  static Future<PendingAppointmentsListModel> getPendingAppointments() async {
-    final response =
-        await DioClient.client.get("salon/appointments/pending-appointments");
+  static Future<PendingAppointmentsListModel> getPendingAppointments({
+    String distribution = 'today',
+  }) async {
+    final response = await DioClient.client.get(
+      "salon/appointments/pending-appointments",
+      queryParameters: {'distribution': distribution},
+    );
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {

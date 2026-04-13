@@ -16,21 +16,21 @@ class PaymentInstructionDialog extends StatelessWidget {
           color: ColorConstant.whiteColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: ColorConstant.grayColor.withValues(alpha: 0.5),
-            width: 1.5,
+            color: ColorConstant.primaryColor2,
+            width: 2,
           ),
         ),
-        child: Column(
+        child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             _InstructionText(
               'Tell the complete Bill Amount to the customer after the Service',
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _InstructionText(
               'Ask them to enter the Amount in the App & Pay it.',
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             _InstructionText(
               'Check the Payment In the Customer Phone',
             ),

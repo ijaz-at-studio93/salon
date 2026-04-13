@@ -204,7 +204,7 @@ class _ContentPageState extends State<ContentPage> {
                 ),
                 const SizedBox(height: 24),
                 Text(
-                  'Write Description (Optional)',
+                  'Write Description',
                   style: AppTextTheme.medium
                       .copyWith(color: ColorConstant.blackColor, fontSize: 14),
                 ),
@@ -372,7 +372,7 @@ class _ContentPageState extends State<ContentPage> {
           ),
           const SizedBox(height: 28),
           Text(
-            'Write Description (Optional)',
+            'Write Description',
             style: AppTextTheme.medium
                 .copyWith(color: ColorConstant.blackColor, fontSize: 14),
           ),
@@ -453,83 +453,83 @@ class _ContentPageState extends State<ContentPage> {
     return GestureDetector(
       onTap: () => Get.to(() => ContentViewPage(item: item)),
       child: ClipRRect(
-      borderRadius: BorderRadius.circular(4),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // media
-          if (isVideo)
-            NetworkVideoViewWidget(
-              videoString: '${APIConstants.image}${item.video}',
-            )
-          else
-            CachedNetworkImage(
-              imageUrl: '${APIConstants.image}${item.image ?? ""}',
-              fit: BoxFit.cover,
-              placeholder: (context, url) => Container(
-                color: Colors.grey.shade200,
-                child: const Image(
-                  image: AssetImage(AssetsConstant.placeHolder),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              errorWidget: (context, url, error) => Container(
-                color: Colors.grey.shade200,
-                child: const Image(
-                  image: AssetImage(AssetsConstant.placeHolder),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          // bottom gradient
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black54, Colors.transparent],
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // view count
-                  Row(
-                    children: [
-                      const Icon(Icons.remove_red_eye_outlined,
-                          color: Colors.white, size: 11),
-                      const SizedBox(width: 3),
-                      Text(
-                        '${item.viewCount ?? 0}',
-                        style: AppTextTheme.regular
-                            .copyWith(color: Colors.white, fontSize: 10),
-                      ),
-                    ],
+        borderRadius: BorderRadius.circular(4),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // media
+            if (isVideo)
+              NetworkVideoViewWidget(
+                videoString: '${APIConstants.image}${item.video}',
+              )
+            else
+              CachedNetworkImage(
+                imageUrl: '${APIConstants.image}${item.image ?? ""}',
+                fit: BoxFit.cover,
+                placeholder: (context, url) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    fit: BoxFit.cover,
                   ),
-                  // delete
-                  GestureDetector(
-                    onTap: () => _confirmDelete(item),
-                    child: Container(
-                      padding: const EdgeInsets.all(3),
-                      decoration: const BoxDecoration(
-                        color: Colors.white24,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.delete_outline,
-                          color: Colors.white, size: 14),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  color: Colors.grey.shade200,
+                  child: const Image(
+                    image: AssetImage(AssetsConstant.placeHolder),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+            // bottom gradient
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 4),
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black54, Colors.transparent],
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // view count
+                    Row(
+                      children: [
+                        const Icon(Icons.remove_red_eye_outlined,
+                            color: Colors.white, size: 11),
+                        const SizedBox(width: 3),
+                        Text(
+                          '${item.viewCount ?? 0}',
+                          style: AppTextTheme.regular
+                              .copyWith(color: Colors.white, fontSize: 10),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                    // delete
+                    GestureDetector(
+                      onTap: () => _confirmDelete(item),
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(
+                          color: Colors.white24,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.delete_outline,
+                            color: Colors.white, size: 14),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -579,24 +579,25 @@ class _ContentPageState extends State<ContentPage> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
+                  padding: const EdgeInsets.only(bottom: 24),
                   child: GestureDetector(
                     onTap: _showUploadSheet,
                     child: Container(
-                      width: 64,
-                      height: 64,
+                      width: 80,
+                      height: 80,
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteColor,
                         shape: BoxShape.circle,
                         border: Border.all(
                           color: ColorConstant.primaryColor2,
-                          width: 2,
+                          width: 6,
                         ),
                       ),
                       child: const Icon(
-                        Icons.add,
+                        Icons.add_rounded,
                         color: ColorConstant.primaryColor2,
-                        size: 32,
+                        size: 54,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

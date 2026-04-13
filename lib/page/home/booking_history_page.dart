@@ -180,7 +180,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     );
   }
 
-  /*--------------- Dummy Data ---------*/
+  /*--------------- Date filters: Upcoming vs Completed/Cancelled ---------*/
+  final List<String> upcomingDataList = [
+    'Today',
+    'Tomorrow',
+    'This Week',
+  ];
+
   final List<String> dataList = [
     'Today',
     'yesterday',
@@ -191,12 +197,15 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
 
   /*--------------------- No. Of Service You Offer ------------------*/
   _noOfServiceYouOffer() {
+    final filterList =
+        overall == "0" ? upcomingDataList : dataList;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         height: 50,
         width: Get.width * 0.4,
         child: DropdownButtonFormField2<String>(
+          key: ValueKey<String?>(overall),
           isExpanded: true,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.symmetric(vertical: 16),
@@ -218,7 +227,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             style: AppTextTheme.medium
                 .copyWith(color: ColorConstant.grayColor, fontSize: 13),
           ),
-          items: dataList
+          items: filterList
               .map((item) => DropdownMenuItem<String>(
                     value: item,
                     child: Text(item,
@@ -233,7 +242,15 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             return null;
           },
           onChanged: (value) {
-            if (overall == "2") {
+            if (overall == "0") {
+              if (value == 'Today') {
+                _homeController.doUpcomingData(distribution: "today");
+              } else if (value == 'Tomorrow') {
+                _homeController.doUpcomingData(distribution: "tomorrow");
+              } else if (value == 'This Week') {
+                _homeController.doUpcomingData(distribution: "this_week");
+              }
+            } else if (overall == "2") {
               if (value == 'Today') {
                 _homeController.doCancelData(distribution: "today");
               } else if (value == 'yesterday') {

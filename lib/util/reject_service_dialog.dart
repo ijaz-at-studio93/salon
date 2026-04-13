@@ -42,121 +42,185 @@ class _RejectServiceDiaLogState extends State<RejectServiceDiaLog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+        decoration: BoxDecoration(
+          color: ColorConstant.whiteColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: ColorConstant.primaryColor2,
+            width: 2,
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
-              child: Icon(
-                Icons.cancel_outlined,
-                color: ColorConstant.redColor,
-                size: 32,
-              ),
-            ),
-            const SizedBox(height: 10),
             Center(
               child: Text(
-                "Reject Booking",
-                style: AppTextTheme.bold
-                    .copyWith(fontSize: 16, color: ColorConstant.blackColor),
-              ),
-            ),
-            const SizedBox(height: 8),
-            Center(
-              child: Text(
-                "Please select a reason for rejection.",
-                style: AppTextTheme.medium
-                    .copyWith(fontSize: 13, color: ColorConstant.blackColor),
-                textAlign: TextAlign.center,
+                "Reason For Rejection",
+                style: AppTextTheme.bold.copyWith(
+                  color: ColorConstant.primaryColor2,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
               ),
             ),
             if (widget.reasons.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               ConstrainedBox(
                 constraints: const BoxConstraints(maxHeight: 220),
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: widget.reasons.map((reason) {
-                      return RadioListTile<String>(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          reason.label ?? '',
-                          style: AppTextTheme.medium.copyWith(fontSize: 13),
+                      final isSelected = _selectedReasonId == reason.id;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedReasonId = reason.id;
+                              _isOtherSelected = reason.isOther;
+                              if (!_isOtherSelected) _noteController.clear();
+                            });
+                          },
+                          child: Row(
+                            children: [
+                              _RadioCircle(
+                                selected: isSelected,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedReasonId = reason.id;
+                                    _isOtherSelected = reason.isOther;
+                                    if (!_isOtherSelected) {
+                                      _noteController.clear();
+                                    }
+                                  });
+                                },
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  reason.label ?? '',
+                                  style: AppTextTheme.medium.copyWith(
+                                    color: ColorConstant.primaryColor2,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                        value: reason.id ?? '',
-                        groupValue: _selectedReasonId,
-                        activeColor: ColorConstant.primaryColor,
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedReasonId = val;
-                            _isOtherSelected = reason.isOther;
-                            if (!_isOtherSelected) _noteController.clear();
-                          });
-                        },
                       );
                     }).toList(),
                   ),
                 ),
               ),
               if (_isOtherSelected) ...[
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
-                  maxLines: 2,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    hintText: 'Enter your reason...',
-                    hintStyle: AppTextTheme.medium
-                        .copyWith(fontSize: 13, color: Colors.grey),
-                    border: OutlineInputBorder(
+                const SizedBox(height: 4),
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: ColorConstant.grayColor.withValues(alpha: 0.35),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    child: TextField(
+                      controller: _noteController,
+                      autofocus: true,
+                      maxLines: 2,
+                      onChanged: (_) => setState(() {}),
+                      style: AppTextTheme.semibold.copyWith(
+                        color: ColorConstant.blackColor,
+                        fontSize: 14,
+                      ),
+                      decoration: InputDecoration.collapsed(
+                        hintText: 'Write Your Own Remarks',
+                        hintStyle: AppTextTheme.semibold.copyWith(
+                          color: ColorConstant.grayTextColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
                   ),
-                  style: AppTextTheme.medium.copyWith(fontSize: 13),
                 ),
               ],
             ],
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: widget.tapNo,
-                  child: Text(
-                    "Cancel",
-                    style: AppTextTheme.bold
-                        .copyWith(color: ColorConstant.redColor, fontSize: 15),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: (widget.reasons.isEmpty || _canConfirm)
+                    ? () => widget.tapYes(
+                          _selectedReasonId ?? '',
+                          _isOtherSelected ? _noteController.text.trim() : null,
+                        )
+                    : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorConstant.primaryColor2,
+                  disabledBackgroundColor:
+                      ColorConstant.primaryColor2.withValues(alpha: 0.4),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  "Confirm",
+                  style: AppTextTheme.bold.copyWith(
+                    color: ColorConstant.whiteColor,
+                    fontSize: 16,
                   ),
                 ),
-                TextButton(
-                  onPressed: (widget.reasons.isEmpty || _canConfirm)
-                      ? () => widget.tapYes(
-                            _selectedReasonId ?? '',
-                            _isOtherSelected
-                                ? _noteController.text.trim()
-                                : null,
-                          )
-                      : null,
-                  child: Text(
-                    "Reject",
-                    style: AppTextTheme.bold.copyWith(
-                      color: (widget.reasons.isEmpty || _canConfirm)
-                          ? ColorConstant.primaryColor
-                          : Colors.grey,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RadioCircle extends StatelessWidget {
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _RadioCircle({required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: selected
+                ? ColorConstant.primaryColor2
+                : ColorConstant.grayColor,
+            width: 2,
+          ),
+        ),
+        child: selected
+            ? Center(
+                child: Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: ColorConstant.primaryColor2,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              )
+            : null,
       ),
     );
   }

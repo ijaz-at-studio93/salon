@@ -7,7 +7,6 @@ import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/model/service_model/product_list_data_model.dart';
 import 'package:salon/page/setting/add_product_page.dart';
-import 'package:salon/page/setting/widget/update_product.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 
@@ -35,22 +34,8 @@ class _ProductListPageState extends State<ProductListPage> {
     Get.to(() => const AddProductPage());
   }
 
-  void _openEditSheet(Product product) {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(32),
-          topRight: Radius.circular(32),
-        ),
-      ),
-      context: context,
-      builder: (context) => Padding(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: UpdateProduct(product: product),
-      ),
-    );
+  void _openEditPage(Product product) {
+    Get.to(() => AddProductPage(product: product));
   }
 
   void _confirmDelete(Product product) {
@@ -59,8 +44,7 @@ class _ProductListPageState extends State<ProductListPage> {
       builder: (context) => AlertDialog(
         title: Text(
           "Delete",
-          style:
-              AppTextTheme.medium.copyWith(color: ColorConstant.blackColor),
+          style: AppTextTheme.medium.copyWith(color: ColorConstant.blackColor),
         ),
         content: Text(
           "Are you sure you want to delete this product?",
@@ -203,7 +187,7 @@ class _ProductListPageState extends State<ProductListPage> {
                 children: [
                   // Edit
                   GestureDetector(
-                    onTap: () => _openEditSheet(product),
+                    onTap: () => _openEditPage(product),
                     child: Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(

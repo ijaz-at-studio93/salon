@@ -9,16 +9,14 @@ import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/model/service_model/appointment_details_model.dart';
-import 'package:salon/page/home/upload_image.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/appointment_accepted_dialog.dart';
 import 'package:salon/util/appointment_rejected_dialog.dart';
 import 'package:salon/util/booking_rejection_info_dialog.dart';
+import 'package:salon/util/payment_instruction_dialog.dart';
 import 'package:salon/util/reject_service_dialog.dart';
-
 import '../../project_specific/project_appbar.dart';
-import '../stylist_all_module/stylist_home_page/bokking_overview/widget/portfolio_permission_dialog.dart';
 
 class BookingHistoryViewpage extends StatefulWidget {
   final String appointmentId;
@@ -47,11 +45,13 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
   List<User> _stylistOptions = [];
   List<AppointmentTimeSlot> _slotOptions = [];
-  int _selectedStylistIndex = 0;
+  Set<String> _selectedStylistIds = {};
+  int _maxStylistSelection = 0;
   int _selectedSlotIndex = 0;
   String? _selectionSyncKey;
   bool _salonArtistsMerged = false;
   bool _reasonDialogShown = false;
+  bool _paymentInstructionDialogShown = false;
 
   @override
   void initState() {
@@ -70,11 +70,13 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   void didUpdateWidget(BookingHistoryViewpage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.appointmentId != widget.appointmentId) {
+      _paymentInstructionDialogShown = false;
       _selectionSyncKey = null;
       _salonArtistsMerged = false;
       _stylistOptions = [];
       _slotOptions = [];
-      _selectedStylistIndex = 0;
+      _selectedStylistIds = {};
+      _maxStylistSelection = 0;
       _selectedSlotIndex = 0;
     }
   }
@@ -86,28 +88,31 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
     final appt = data.appointment;
     if (appt == null) {
-      final fallback = _listStylistAsUser();
-      if (fallback != null) {
-        _stylistOptions = [fallback];
-        _slotOptions = [];
-        _selectedStylistIndex = 0;
-        _selectedSlotIndex = 0;
-        _selectionSyncKey = key;
-        setState(() {});
-      }
+      _stylistOptions = [];
+      _slotOptions = [];
+      _selectedStylistIds = {};
+      _maxStylistSelection = 0;
+      _selectedSlotIndex = 0;
+      _selectionSyncKey = key;
+      setState(() {});
       return;
     }
 
     _slotOptions = _slotsFromAppointment(appt);
     _stylistOptions = _stylistsFromAppointmentWithListFallback(appt);
 
-    _selectedStylistIndex = _defaultStylistIndex(appt.artist?.id);
+    final preferredIds = appt.stylistIds ?? [];
+    _maxStylistSelection = preferredIds.length;
+    _selectedStylistIds = preferredIds.toSet();
+
     _selectedSlotIndex = _defaultSlotIndex(appt);
 
     _selectionSyncKey = key;
     setState(() {});
 
-    if (data.orderStatus == 'pending' && !_salonArtistsMerged) {
+    if (data.orderStatus == 'pending' &&
+        !_salonArtistsMerged &&
+        (appt.artists == null || appt.artists!.isEmpty)) {
       _mergeSalonArtistsIfNeeded(data);
     }
   }
@@ -148,15 +153,6 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     return [];
   }
 
-  int _defaultStylistIndex(String? preferredArtistId) {
-    if (_stylistOptions.isEmpty) return 0;
-    if (preferredArtistId != null) {
-      final i = _stylistOptions.indexWhere((u) => u.id == preferredArtistId);
-      if (i >= 0) return i;
-    }
-    return 0;
-  }
-
   int _defaultSlotIndex(Appointment appt) {
     if (_slotOptions.isEmpty) return 0;
     final idx = _slotOptions.indexWhere((s) => s.startsAt == appt.startsAt);
@@ -191,7 +187,6 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
           _stylistsFromAppointmentWithListFallback(appt),
           salonUsers,
         );
-        _selectedStylistIndex = _defaultStylistIndex(appt.artist?.id);
       });
     } catch (_) {
       if (mounted) {
@@ -238,6 +233,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
             if (!mounted) return;
             _syncSelectionsIfNeeded(data);
             _maybeShowRejectionDialog(data);
+            _maybeShowPaymentInstructionDialog(data);
           });
         }
         return Scaffold(
@@ -326,13 +322,33 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                           ],
                         ),
                       ),
-                      const Divider(
-                        color: ColorConstant.blackColor,
-                        thickness: 2,
-                        height: 1,
-                      ),
-                      _buildTotalRow(),
-                      _buildBottomActions(),
+                      if (data?.cancellationReason != null &&
+                          isCustomerCancelled)
+                        Text(
+                          'Cancelled!',
+                          style: AppTextTheme.extraBold.copyWith(
+                            color: ColorConstant.redColor2,
+                            fontSize: 30,
+                          ),
+                        )
+                      else if (data?.cancellationReason != null &&
+                          isSalonRejected)
+                        Text(
+                          'Rejected!',
+                          style: AppTextTheme.extraBold.copyWith(
+                            color: ColorConstant.redColor2,
+                            fontSize: 30,
+                          ),
+                        )
+                      else ...[
+                        const Divider(
+                          color: ColorConstant.blackColor,
+                          thickness: 2,
+                          height: 1,
+                        ),
+                        _buildTotalRow(),
+                        _buildBottomActions(),
+                      ]
                     ],
                   ),
                 ),
@@ -340,6 +356,14 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       },
     );
   }
+
+  bool get isCustomerCancelled =>
+      _homeController.getAppointmentDetailsModel.data?.orderStatus ==
+      'user_cancelled';
+
+  bool get isSalonRejected =>
+      _homeController.getAppointmentDetailsModel.data?.orderStatus ==
+      'salon_rejected';
 
   Widget _buildIdHeader() {
     final idx = _homeController.getAppointmentDetailsModel.data?.idx ?? '';
@@ -412,31 +436,46 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
           ),
         ),
         const SizedBox(height: 6),
-        Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: _stylistOptions.isEmpty
-              ? [
-                  Text(
-                    'No stylist preference',
-                    style: AppTextTheme.medium.copyWith(
-                      color: ColorConstant.grayTextColor,
-                      fontSize: 14,
-                    ),
-                  ),
-                ]
-              : List.generate(_stylistOptions.length, (i) {
-                  final u = _stylistOptions[i];
-                  final label = u.name ?? '—';
-                  return _selectionChip(
-                    label,
-                    selected: i == _selectedStylistIndex,
-                    onTap: _pendingSelectable
-                        ? () => setState(() => _selectedStylistIndex = i)
-                        : null,
-                  );
-                }),
-        ),
+        if (_maxStylistSelection == 0)
+          Text(
+            'No stylist preference',
+            style: AppTextTheme.medium.copyWith(
+              color: ColorConstant.grayTextColor,
+              fontSize: 14,
+            ),
+          )
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: List.generate(_stylistOptions.length, (i) {
+              final u = _stylistOptions[i];
+              final id = u.id ?? '';
+              final label = u.name ?? '—';
+              final isSelected = _selectedStylistIds.contains(id);
+              return _selectionChip(
+                label,
+                selected: isSelected,
+                onTap: _pendingSelectable
+                    ? () {
+                        setState(() {
+                          if (isSelected) {
+                            _selectedStylistIds.remove(id);
+                          } else if (_selectedStylistIds.length <
+                              _maxStylistSelection) {
+                            _selectedStylistIds.add(id);
+                          } else {
+                            showSnackBar(
+                              message:
+                                  'Max $_maxStylistSelection stylist(s) allowed.',
+                            );
+                          }
+                        });
+                      }
+                    : null,
+              );
+            }),
+          ),
       ],
     );
   }
@@ -807,7 +846,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   }
 
   static const _cancelledStatuses = {
-    'salon_artist_rejected',
+    'salon_rejected',
     'user_cancelled',
     'cancelled',
   };
@@ -824,7 +863,6 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     if (label.isEmpty) return;
 
     _reasonDialogShown = true;
-    final isSalonRejected = status == 'salon_artist_rejected';
     showDialog(
       context: context,
       builder: (_) => BookingRejectionInfoDialog(
@@ -835,11 +873,22 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     );
   }
 
+  void _maybeShowPaymentInstructionDialog(Data data) {
+    if (_paymentInstructionDialogShown) return;
+    if (data.appointmentId != widget.appointmentId) return;
+    if (data.orderStatus != 'confirmed') return;
+
+    _paymentInstructionDialogShown = true;
+    showDialog(
+      context: context,
+      builder: (_) => const PaymentInstructionDialog(),
+    );
+  }
+
   Widget _buildBottomActions() {
     final orderStatus =
         _homeController.getAppointmentDetailsModel.data?.orderStatus;
-    final hideForTerminal =
-        orderStatus == 'completed' || orderStatus == 'user_cancelled';
+    final hideForTerminal = orderStatus == 'completed' || isCustomerCancelled;
 
     if (hideForTerminal) {
       return const SizedBox.shrink();
@@ -872,7 +921,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                           Navigator.of(dialogContext).pop();
                           _homeController.doBookingApprove(
                             appointmentId: widget.appointmentId,
-                            status: 'salon_artist_rejected',
+                            status: 'salon_rejected',
                             rejectionReasonId:
                                 reasonId.isNotEmpty ? reasonId : null,
                             rejectionNote: note,
@@ -914,16 +963,11 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     ),
                   ),
                   onPressed: () {
-                    if (_stylistOptions.isEmpty ||
-                        _selectedStylistIndex < 0 ||
-                        _selectedStylistIndex >= _stylistOptions.length) {
-                      showSnackBar(message: 'Please select a stylist.');
-                      return;
-                    }
-                    final artistId = _stylistOptions[_selectedStylistIndex].id;
-                    if ((artistId ?? '').isEmpty) {
+                    if (_maxStylistSelection > 0 &&
+                        _selectedStylistIds.length < _maxStylistSelection) {
                       showSnackBar(
-                        message: 'Selected stylist is missing an id.',
+                        message:
+                            'Please select $_maxStylistSelection stylist(s).',
                       );
                       return;
                     }
@@ -937,7 +981,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     _homeController.doBookingApprove(
                       appointmentId: widget.appointmentId,
                       status: 'confirmed',
-                      stylistIds: [artistId!],
+                      stylistIds: _maxStylistSelection > 0
+                          ? _selectedStylistIds.toList()
+                          : null,
                       startsAt: slot.startsAt,
                       endsAt: slot.endsAt,
                       callback: () {
@@ -967,64 +1013,64 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       );
     }
 
-    if (orderStatus == 'confirmed') {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorConstant.primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () async {
-              _homeController.doScanQrcode(
-                appointmentId: widget.appointmentId,
-                callback: () {
-                  final allow = _homeController.getAllowPortfolioUploadModel
-                          .data?.allowPortfolioUpload ==
-                      true;
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (allow) {
-                      Get.dialog(
-                        PortfolioPermissionDialog(
-                          yes: () {
-                            Get.back();
-                            Get.to(() => UploadImagePage(
-                                appointmentId: widget.appointmentId));
-                          },
-                          cancel: () {
-                            Get.back();
-                            Get.back();
-                          },
-                        ),
-                        barrierDismissible: false,
-                      );
-                    } else {
-                      Get.back();
-                    }
-                  });
-                  _homeController.doUpcomingData();
-                  showSnackBar(
-                    message: 'Booking completed successfully!',
-                  );
-                },
-              );
-            },
-            child: Text(
-              'Mark As Done',
-              style: AppTextTheme.bold.copyWith(
-                fontSize: 16,
-                color: Colors.white,
-              ),
-            ),
-          ),
-        ),
-      );
-    }
+    // if (orderStatus == 'confirmed') {
+    //   return Padding(
+    //     padding: const EdgeInsets.symmetric(horizontal: 20),
+    //     child: SizedBox(
+    //       width: double.infinity,
+    //       height: 48,
+    //       child: ElevatedButton(
+    //         style: ElevatedButton.styleFrom(
+    //           backgroundColor: ColorConstant.primaryColor,
+    //           shape: RoundedRectangleBorder(
+    //             borderRadius: BorderRadius.circular(12),
+    //           ),
+    //         ),
+    //         onPressed: () async {
+    //           _homeController.doScanQrcode(
+    //             appointmentId: widget.appointmentId,
+    //             callback: () {
+    //               final allow = _homeController.getAllowPortfolioUploadModel
+    //                       .data?.allowPortfolioUpload ==
+    //                   true;
+    //               WidgetsBinding.instance.addPostFrameCallback((_) {
+    //                 if (allow) {
+    //                   Get.dialog(
+    //                     PortfolioPermissionDialog(
+    //                       yes: () {
+    //                         Get.back();
+    //                         Get.to(() => UploadImagePage(
+    //                             appointmentId: widget.appointmentId));
+    //                       },
+    //                       cancel: () {
+    //                         Get.back();
+    //                         Get.back();
+    //                       },
+    //                     ),
+    //                     barrierDismissible: false,
+    //                   );
+    //                 } else {
+    //                   Get.back();
+    //                 }
+    //               });
+    //               _homeController.doUpcomingData();
+    //               showSnackBar(
+    //                 message: 'Booking completed successfully!',
+    //               );
+    //             },
+    //           );
+    //         },
+    //         child: Text(
+    //           'Mark As Done',
+    //           style: AppTextTheme.bold.copyWith(
+    //             fontSize: 16,
+    //             color: Colors.white,
+    //           ),
+    //         ),
+    //       ),
+    //     ),
+    //   );
+    // }
 
     return const SizedBox.shrink();
   }

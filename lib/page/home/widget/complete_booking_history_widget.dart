@@ -99,7 +99,7 @@ class CompleteHistoryWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               _inlineLabelValue(
-                label: 'Time -',
+                label: 'Time - ',
                 value: timeStr,
                 valueColor: ColorConstant.bookingValuePurple,
                 alignEnd: true,

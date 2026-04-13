@@ -423,6 +423,8 @@ class Appointment {
   List<User>? artists;
   /// When the API returns multiple time options for this booking.
   List<AppointmentTimeSlot>? timeSlots;
+  /// Customer's pre-selected stylist IDs (0, 1, or 2 entries).
+  List<String>? stylistIds;
 
   Appointment({
     this.startsAt,
@@ -430,6 +432,7 @@ class Appointment {
     this.artist,
     this.artists,
     this.timeSlots,
+    this.stylistIds,
   });
 
   Appointment.fromJson(Map<String, dynamic> json) {
@@ -441,6 +444,9 @@ class Appointment {
       for (final v in json['artists'] as List<dynamic>) {
         artists!.add(User.fromJson(v as Map<String, dynamic>));
       }
+    }
+    if (json['stylistIds'] != null) {
+      stylistIds = List<String>.from(json['stylistIds'] as List<dynamic>);
     }
     if (json['timeSlots'] != null) {
       timeSlots = <AppointmentTimeSlot>[];
@@ -454,6 +460,10 @@ class Appointment {
         timeSlots!.add(
             AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
       }
+    } else if (json['selectedSlots'] != null) {
+      timeSlots = (json['selectedSlots'] as List<dynamic>)
+          .map((s) => AppointmentTimeSlot(startsAt: s as String))
+          .toList();
     }
   }
 
@@ -469,6 +479,9 @@ class Appointment {
     }
     if (timeSlots != null) {
       data['timeSlots'] = timeSlots!.map((e) => e.toJson()).toList();
+    }
+    if (stylistIds != null) {
+      data['stylistIds'] = stylistIds;
     }
     return data;
   }

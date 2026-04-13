@@ -172,7 +172,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             textInputType: TextInputType.phone,
                             textInputAction: TextInputAction.next,
                             title: "Phone Number"),
-                        const SizedBox(height: 20),
                         if (isOTPField) _otpField(),
                         if (isOTPField) const SizedBox(height: 20),
                         if (!widget.isBasicInfoUpdate)
@@ -367,8 +366,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                     style: AppTextTheme.bold.copyWith(
                         fontSize: 13, color: ColorConstant.grayTextColor)),
                 const SizedBox(width: 5),
-                SizedBox(
-                  width: Get.width * 0.6,
+                Expanded(
                   child: TextField(
                     onChanged: (val) {
                       if (val.length == 10) {
@@ -411,7 +409,18 @@ class _AddStylistPageState extends State<AddStylistPage> {
                     child: Text("Get OTP",
                         style: AppTextTheme.bold.copyWith(
                             color: ColorConstant.primaryColor, fontSize: 13)),
-                  )
+                  ),
+                if (!_phoneFocusNode.hasFocus)
+                  TextButton(
+                    onPressed: () {
+                      FocusScope.of(context).requestFocus(_phoneFocusNode);
+                    },
+                    child: const Icon(
+                      Icons.edit,
+                      color: ColorConstant.primaryColor2,
+                      size: 20,
+                    ),
+                  ),
               ],
             ),
           )
