@@ -78,6 +78,8 @@ class AssetsConstant {
       "assets/icon/image_upload_icon.png";
   static const String requestMenuChangeIcon = "assets/icon/menu_icon.png";
   static const String menuChangeCloudIcon = "assets/icon/cloud-computing.png";
+  static const String viewIcon = "assets/icon/view.png";
+  static const String likeIcon = "assets/icon/love.png";
 
   static const String noInterNet = "assets/images/nointernet_connection.png";
 

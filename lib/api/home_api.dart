@@ -524,22 +524,34 @@ class HomeAPI {
     File? file,
     bool isVideo = false,
   }) async {
-    final formData = FormData.fromMap({});
-    if (description != null && description.isNotEmpty) {
-      formData.fields.add(MapEntry('description', description));
-    }
+    dynamic data;
+
     if (file != null) {
+      // Only use multipart when a new file is actually being uploaded.
+      // The PUT route must have a file parser middleware for this to work.
       final mimeTypeData = isVideo
           ? lookupMimeType(file.path)?.split('/')
           : lookupMimeType(file.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final formData = FormData.fromMap({
+        if (description != null && description.isNotEmpty)
+          'description': description,
+      });
       formData.files.add(MapEntry(
         'file',
         await MultipartFile.fromFile(file.path,
             contentType: MediaType(mimeTypeData![0], mimeTypeData[1])),
       ));
+      data = formData;
+    } else {
+      // No file — send plain JSON so the server body-parser can read it.
+      data = {
+        if (description != null && description.isNotEmpty)
+          'description': description,
+      };
     }
+
     final response =
-        await DioClient.client.put("salon/blog/$contentId", data: formData);
+        await DioClient.client.put("salon/blog/$contentId", data: data);
     if (response.isSuccess) {
       return true;
     } else {

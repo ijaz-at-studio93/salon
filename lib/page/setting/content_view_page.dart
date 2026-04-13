@@ -24,6 +24,9 @@ class ContentViewPage extends StatefulWidget {
 class _ContentViewPageState extends State<ContentViewPage> {
   final _homeController = Get.find<HomeController>();
 
+  // reactive local copy of the item so the page reflects edits immediately
+  late final Rx<BlogData> _item;
+
   // edit state
   final _editDescController = TextEditingController();
   final Rx<File?> _editPickedFile = Rx<File?>(null);
@@ -32,6 +35,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
   @override
   void initState() {
     super.initState();
+    _item = widget.item.obs;
     _editDescController.text = widget.item.description ?? '';
   }
 
@@ -58,8 +62,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
             children: [
               ListTile(
                 title: Text('Picture',
-                    style: AppTextTheme.medium
-                        .copyWith(color: ColorConstant.blackColor, fontSize: 16)),
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 16)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   await _pickEditFile(isVideo: false);
@@ -67,8 +71,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
               ),
               ListTile(
                 title: Text('Video',
-                    style: AppTextTheme.medium
-                        .copyWith(color: ColorConstant.blackColor, fontSize: 16)),
+                    style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor, fontSize: 16)),
                 onTap: () async {
                   Navigator.pop(ctx);
                   await _pickEditFile(isVideo: true);
@@ -157,10 +161,10 @@ class _ContentViewPageState extends State<ContentViewPage> {
                         imageUrl:
                             '${APIConstants.image}${widget.item.image ?? ""}',
                         fit: BoxFit.cover,
-                        placeholder: (_, __) => Container(
-                            color: Colors.grey.shade200),
-                        errorWidget: (_, __, ___) => Container(
-                            color: Colors.grey.shade200),
+                        placeholder: (_, __) =>
+                            Container(color: Colors.grey.shade200),
+                        errorWidget: (_, __, ___) =>
+                            Container(color: Colors.grey.shade200),
                       );
                     }),
                   ),
@@ -186,8 +190,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
                 decoration: InputDecoration(
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
                     borderSide: const BorderSide(
@@ -213,12 +217,30 @@ class _ContentViewPageState extends State<ContentViewPage> {
                     onPressed: _homeController.showContentProgress
                         ? null
                         : () {
+                            final newDesc = _editDescController.text.trim();
+                            final newFile = _editPickedFile.value;
+                            final newIsVideo = _editIsVideo.value;
                             _homeController.doUpdateSalonContent(
-                              contentId: widget.item.id ?? '',
-                              description: _editDescController.text.trim(),
-                              file: _editPickedFile.value,
-                              isVideo: _editIsVideo.value,
+                              contentId: _item.value.id ?? '',
+                              description: newDesc,
+                              file: newFile,
+                              isVideo: newIsVideo,
                               callback: () {
+                                // optimistically update the local item
+                                _item.value = BlogData(
+                                  id: _item.value.id,
+                                  title: _item.value.title,
+                                  description: newDesc.isNotEmpty
+                                      ? newDesc
+                                      : _item.value.description,
+                                  image: _item.value.image,
+                                  video: _item.value.video,
+                                  createdAt: _item.value.createdAt,
+                                  body: _item.value.body,
+                                  viewCount: _item.value.viewCount,
+                                  likeCount: _item.value.likeCount,
+                                  artist: _item.value.artist,
+                                );
                                 _editPickedFile.value = null;
                                 if (Navigator.canPop(sheetCtx)) {
                                   Navigator.pop(sheetCtx);
@@ -266,8 +288,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Delete',
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.blackColor)),
+            style:
+                AppTextTheme.medium.copyWith(color: ColorConstant.blackColor)),
         content: Text('Are you sure you want to delete this content?',
             style: AppTextTheme.medium
                 .copyWith(color: ColorConstant.blueGrayColor, fontSize: 14)),
@@ -284,14 +306,14 @@ class _ContentViewPageState extends State<ContentViewPage> {
                 contentId: widget.item.id ?? '',
                 callback: () {
                   Navigator.pop(ctx); // close dialog
-                  Get.back();         // go back to grid
+                  Get.back(); // go back to grid
                   _homeController.doGetSalonContentList();
                 },
               );
             },
             child: Text('Yes',
-                style: AppTextTheme.medium.copyWith(
-                    color: ColorConstant.primaryColor, fontSize: 14)),
+                style: AppTextTheme.medium
+                    .copyWith(color: ColorConstant.primaryColor, fontSize: 14)),
           ),
         ],
       ),
@@ -301,25 +323,31 @@ class _ContentViewPageState extends State<ContentViewPage> {
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   Widget _statBadge({
-    required IconData icon,
+    required String icon,
     required Color bgColor,
     required int count,
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: bgColor,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 15),
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              color: bgColor,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: Image.asset(icon, width: 20, height: 20),
+          ),
           const SizedBox(width: 5),
           Text(
             '$count',
-            style: AppTextTheme.bold
-                .copyWith(color: Colors.white, fontSize: 13),
+            style:
+                AppTextTheme.bold.copyWith(color: Colors.white, fontSize: 13),
           ),
         ],
       ),
@@ -330,172 +358,175 @@ class _ContentViewPageState extends State<ContentViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
-    final isVideo = item.video != null && item.video!.isNotEmpty;
     final safeTop = MediaQuery.of(context).padding.top;
     final safeBottom = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
+      body: Obx(() {
+        final item = _item.value;
+        final isVideo = item.video != null && item.video!.isNotEmpty;
 
-          // ── Full-screen media ──────────────────────────────────────────
-          if (isVideo)
-            NetworkVideoViewWidget(
-              videoString: '${APIConstants.image}${item.video}',
-            )
-          else
-            CachedNetworkImage(
-              imageUrl: '${APIConstants.image}${item.image ?? ""}',
-              fit: BoxFit.cover,
-              placeholder: (_, __) =>
-                  Container(color: Colors.grey.shade800),
-              errorWidget: (_, __, ___) =>
-                  Container(color: Colors.grey.shade800),
-            ),
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            // ── Full-screen media ──────────────────────────────────────────
+            if (isVideo)
+              NetworkVideoViewWidget(
+                videoString: '${APIConstants.image}${item.video}',
+              )
+            else
+              CachedNetworkImage(
+                imageUrl: '${APIConstants.image}${item.image ?? ""}',
+                fit: BoxFit.cover,
+                placeholder: (_, __) => Container(color: Colors.grey.shade800),
+                errorWidget: (_, __, ___) =>
+                    Container(color: Colors.grey.shade800),
+              ),
 
-          // ── Top gradient scrim ─────────────────────────────────────────
-          Positioned(
-            top: 0, left: 0, right: 0,
-            child: Container(
-              height: safeTop + 80,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Colors.black54, Colors.transparent],
+            // ── Top gradient scrim ─────────────────────────────────────────
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: safeTop + 80,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.black54, Colors.transparent],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // ── Top bar: back + avatar/name + delete ───────────────────────
-          Positioned(
-            top: safeTop + 8,
-            left: 16,
-            right: 16,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // back button + avatar + name
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => Get.back(),
-                      child: const Icon(Icons.arrow_back_ios_new,
-                          color: Colors.white, size: 20),
-                    ),
-                    const SizedBox(width: 10),
-                    CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.grey.shade400,
-                      backgroundImage: (item.artist?.profileImage != null &&
-                              item.artist!.profileImage!.isNotEmpty)
-                          ? NetworkImage(
-                              '${APIConstants.image}${item.artist!.profileImage}')
-                          : null,
-                      child: (item.artist?.profileImage == null ||
-                              item.artist!.profileImage!.isEmpty)
-                          ? Icon(Icons.person,
-                              color: Colors.white, size: 20)
-                          : null,
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'By ${item.artist?.name ?? ""}',
-                      style: AppTextTheme.bold.copyWith(
-                          color: Colors.white, fontSize: 15),
-                    ),
-                  ],
-                ),
-                // delete button
-                GestureDetector(
-                  onTap: _confirmDelete,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(Icons.delete_outline,
-                        color: Colors.white, size: 22),
+            // ── Top bar: back + avatar/name + delete ───────────────────────
+            Positioned(
+              top: safeTop + 8,
+              left: 16,
+              right: 16,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: () => Get.back(),
+                        child: const Icon(Icons.arrow_back_ios_new,
+                            color: Colors.white, size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      CircleAvatar(
+                        radius: 20,
+                        backgroundColor: Colors.grey.shade400,
+                        backgroundImage: (item.artist?.profileImage != null &&
+                                item.artist!.profileImage!.isNotEmpty)
+                            ? NetworkImage(
+                                '${APIConstants.image}${item.artist!.profileImage}')
+                            : null,
+                        child: (item.artist?.profileImage == null ||
+                                item.artist!.profileImage!.isEmpty)
+                            ? const Icon(Icons.person,
+                                color: Colors.white, size: 20)
+                            : null,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'By ${item.artist?.name ?? ""}',
+                        style: AppTextTheme.bold
+                            .copyWith(color: Colors.white, fontSize: 15),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  GestureDetector(
+                    onTap: _confirmDelete,
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.delete_outline,
+                          color: Colors.white, size: 22),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // ── Bottom gradient scrim ──────────────────────────────────────
-          Positioned(
-            bottom: 0, left: 0, right: 0,
-            child: Container(
-              height: 200 + safeBottom,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black87, Colors.transparent],
+            // ── Bottom gradient scrim ──────────────────────────────────────
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                height: 200 + safeBottom,
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black87, Colors.transparent],
+                  ),
                 ),
               ),
             ),
-          ),
 
-          // ── Bottom-right: likes, views, edit ──────────────────────────
-          Positioned(
-            bottom: safeBottom + 60,
-            right: 16,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _statBadge(
-                  icon: Icons.favorite,
-                  bgColor: Colors.red,
-                  count: item.likeCount ?? 0,
-                ),
-                const SizedBox(height: 10),
-                _statBadge(
-                  icon: Icons.remove_red_eye_outlined,
-                  bgColor: Colors.grey.shade600,
-                  count: item.viewCount ?? 0,
-                ),
-                const SizedBox(height: 14),
-                GestureDetector(
-                  onTap: _showEditSheet,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 22, vertical: 9),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade700,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      'Edit',
-                      style: AppTextTheme.bold.copyWith(
-                          color: Colors.white, fontSize: 14),
+            // ── Bottom-right: likes, views, edit ──────────────────────────
+            Positioned(
+              bottom: safeBottom + 60,
+              right: 16,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _statBadge(
+                    icon: AssetsConstant.likeIcon,
+                    bgColor: ColorConstant.redColor2,
+                    count: item.likeCount ?? 0,
+                  ),
+                  const SizedBox(height: 10),
+                  _statBadge(
+                    icon: AssetsConstant.viewIcon,
+                    bgColor: const Color.fromARGB(0, 179, 89, 89),
+                    count: item.viewCount ?? 0,
+                  ),
+                  const SizedBox(height: 14),
+                  GestureDetector(
+                    onTap: _showEditSheet,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 22, vertical: 9),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade700,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        'Edit',
+                        style: AppTextTheme.bold
+                            .copyWith(color: Colors.white, fontSize: 14),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          // ── Bottom description ─────────────────────────────────────────
-          Positioned(
-            bottom: safeBottom + 12,
-            left: 16,
-            right: 80,
-            child: Text(
-              item.description ?? '',
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextTheme.regular
-                  .copyWith(color: Colors.white, fontSize: 13),
+            // ── Bottom description ─────────────────────────────────────────
+            Positioned(
+              bottom: safeBottom + 12,
+              left: 16,
+              right: 80,
+              child: Text(
+                item.description ?? '',
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextTheme.regular
+                    .copyWith(color: Colors.white, fontSize: 13),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        );
+      }),
     );
   }
 }
