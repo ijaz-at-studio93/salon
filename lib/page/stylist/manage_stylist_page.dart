@@ -102,7 +102,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Enter the Stylist ID (SID) to add an existing stylist to your salon.",
+                  "Enter the Stylist ID to add an existing stylist to your salon.",
                   style: AppTextTheme.regular.copyWith(
                     color: ColorConstant.grayTextColor,
                     fontSize: 13,
@@ -114,7 +114,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
                     labelText: "Stylist ID",
-                    hintText: "e.g. SID123456",
+                    hintText: "e.g. S699019DQBZ",
                     labelStyle: AppTextTheme.medium.copyWith(
                       color: ColorConstant.grayTextColor,
                       fontSize: 13,
@@ -152,8 +152,12 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                     if (v == null || v.trim().isEmpty) {
                       return "Please enter a Stylist ID";
                     }
-                    if (!v.trim().toUpperCase().startsWith('SID')) {
-                      return "ID must start with SID";
+                    final val = v.trim().toUpperCase();
+                    if (!val.startsWith('S') || val.startsWith('SI')) {
+                      return "ID must start with S only, e.g. S699019DQBZ";
+                    }
+                    if (val.length != 11) {
+                      return "Stylist ID must be exactly 11 characters";
                     }
                     return null;
                   },

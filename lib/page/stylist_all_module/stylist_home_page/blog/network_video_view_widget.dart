@@ -6,7 +6,7 @@ import '../../../../project_specific/progressbar_view.dart';
 class NetworkVideoViewWidget extends StatefulWidget {
   final String videoString;
 
-  const NetworkVideoViewWidget({super.key, required this.videoString, t});
+  const NetworkVideoViewWidget({super.key, required this.videoString});
 
   @override
   State<NetworkVideoViewWidget> createState() => _NetworkVideoViewWidgetState();
@@ -17,15 +17,20 @@ class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
 
   @override
   void initState() {
-    _controller = VideoPlayerController.networkUrl(Uri.parse(
-      widget.videoString,
-    ));
-    _controller.setLooping(true);
-    _controller.initialize().then((value) {
-      _controller.play();
-      setState(() {});
-    });
     super.initState();
+
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(
+        widget.videoString,
+      ),
+      videoPlayerOptions: VideoPlayerOptions(mixWithOthers: true),
+    )..initialize().then((_) {
+        setState(() {
+          _controller.setLooping(true);
+          _controller.play();
+          _controller.setVolume(1.0);
+        });
+      });
   }
 
   @override

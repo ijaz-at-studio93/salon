@@ -65,7 +65,9 @@ class BookingRejectionInfoDialog extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      reasonLabel,
+                      reasonLabel.toLowerCase() == 'other'
+                          ? note ?? ''
+                          : reasonLabel,
                       style: AppTextTheme.semibold.copyWith(
                         color: ColorConstant.primaryColor2,
                         fontSize: 18,
@@ -75,70 +77,7 @@ class BookingRejectionInfoDialog extends StatelessWidget {
                 ],
               ),
             ),
-
-            // ── Custom remarks row (matches CancellationReasonDialog layout) ──
-            if (note != null && note!.isNotEmpty)
-              Row(
-                children: [
-                  _buildFilledRadio(),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: ColorConstant.grayColor.withValues(alpha: 0.35),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Write Your Own Remarks',
-                            style: AppTextTheme.semibold.copyWith(
-                              color: ColorConstant.grayTextColor,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            note!,
-                            style: AppTextTheme.semibold.copyWith(
-                              color: ColorConstant.blackColor,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFilledRadio() {
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: ColorConstant.primaryColor2,
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Container(
-          width: 12,
-          height: 12,
-          decoration: const BoxDecoration(
-            color: ColorConstant.primaryColor2,
-            shape: BoxShape.circle,
-          ),
         ),
       ),
     );

@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/transaction_history_page.dart';
-import 'package:salon/page/home/widget/booking_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/custom_tab_bar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -544,7 +541,8 @@ class _HomepageState extends State<Homepage> {
             title: "Bookings",
             value: data?.distributedRevenue?.bookingCount ?? 0,
             color: ColorConstant.primaryColor,
-            onTap: () => Get.to(() => const BookingHistoryPage()),
+            onTap: () => Get.to(
+                () => const BookingHistoryPage(initialTab: "1")),
           ),
         ],
       ),

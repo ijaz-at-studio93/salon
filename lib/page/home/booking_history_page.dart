@@ -15,7 +15,10 @@ import '../../project_specific/project_appbar.dart';
 import 'booking_history_view_page.dart';
 
 class BookingHistoryPage extends StatefulWidget {
-  const BookingHistoryPage({super.key});
+  /// Tab values: "0" Upcoming, "1" Completed, "2" Cancelled.
+  const BookingHistoryPage({super.key, this.initialTab = "0"});
+
+  final String initialTab;
 
   @override
   State<BookingHistoryPage> createState() => _BookingHistoryPageState();
@@ -27,8 +30,15 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   @override
   void initState() {
     super.initState();
+    overall = widget.initialTab;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _homeController.doUpcomingData();
+      if (overall == "0") {
+        _homeController.doUpcomingData();
+      } else if (overall == "1") {
+        _homeController.doCompleteBookingData(distribution: "all_time");
+      } else if (overall == "2") {
+        _homeController.doCancelData(distribution: "all_time");
+      }
     });
   }
 
@@ -81,9 +91,11 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                             .getSalonUpcomingList
                                             .data?[index]
                                             .appointment;
-                                        final firstStylist = appt?.stylistDetails?.isNotEmpty == true
-                                            ? appt!.stylistDetails!.first
-                                            : null;
+                                        final firstStylist =
+                                            appt?.stylistDetails?.isNotEmpty ==
+                                                    true
+                                                ? appt!.stylistDetails!.first
+                                                : null;
                                         Get.to(() => BookingHistoryViewpage(
                                               appointmentId: appt?.id ?? "",
                                               status: _homeController
@@ -91,8 +103,11 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                       .data?[index]
                                                       .orderStatus ??
                                                   "",
-                                              listStylistName: firstStylist?.name ?? appt?.artist?.name,
-                                              listStylistId: firstStylist?.id ?? appt?.artist?.id,
+                                              listStylistName:
+                                                  firstStylist?.name ??
+                                                      appt?.artist?.name,
+                                              listStylistId: firstStylist?.id ??
+                                                  appt?.artist?.id,
                                             ));
                                       },
                                     ),
@@ -122,14 +137,21 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                 .getSalonServedList
                                                 .data?[index]
                                                 .appointment;
-                                            final firstStylist = appt?.stylistDetails?.isNotEmpty == true
+                                            final firstStylist = appt
+                                                        ?.stylistDetails
+                                                        ?.isNotEmpty ==
+                                                    true
                                                 ? appt!.stylistDetails!.first
                                                 : null;
                                             Get.to(() => BookingHistoryViewpage(
                                                   appointmentId: appt?.id ?? "",
                                                   status: "Complete",
-                                                  listStylistName: firstStylist?.name ?? appt?.artist?.name,
-                                                  listStylistId: firstStylist?.id ?? appt?.artist?.id,
+                                                  listStylistName:
+                                                      firstStylist?.name ??
+                                                          appt?.artist?.name,
+                                                  listStylistId:
+                                                      firstStylist?.id ??
+                                                          appt?.artist?.id,
                                                 ));
                                           },
                                         ),
@@ -161,14 +183,21 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                 .getSalonCancelServedList
                                                 .data?[index]
                                                 .appointment;
-                                            final firstStylist = appt?.stylistDetails?.isNotEmpty == true
+                                            final firstStylist = appt
+                                                        ?.stylistDetails
+                                                        ?.isNotEmpty ==
+                                                    true
                                                 ? appt!.stylistDetails!.first
                                                 : null;
                                             Get.to(() => BookingHistoryViewpage(
                                                   appointmentId: appt?.id ?? "",
                                                   status: "Cancel",
-                                                  listStylistName: firstStylist?.name ?? appt?.artist?.name,
-                                                  listStylistId: firstStylist?.id ?? appt?.artist?.id,
+                                                  listStylistName:
+                                                      firstStylist?.name ??
+                                                          appt?.artist?.name,
+                                                  listStylistId:
+                                                      firstStylist?.id ??
+                                                          appt?.artist?.id,
                                                 ));
                                           },
                                         ),
@@ -197,13 +226,12 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
 
   /*--------------------- No. Of Service You Offer ------------------*/
   _noOfServiceYouOffer() {
-    final filterList =
-        overall == "0" ? upcomingDataList : dataList;
+    final filterList = overall == "0" ? upcomingDataList : dataList;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         height: 50,
-        width: Get.width * 0.4,
+        width: Get.width * 0.34,
         child: DropdownButtonFormField2<String>(
           key: ValueKey<String?>(overall),
           isExpanded: true,
@@ -224,15 +252,19 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
           ),
           hint: Text(
             'Today',
-            style: AppTextTheme.medium
-                .copyWith(color: ColorConstant.grayColor, fontSize: 13),
+            style: AppTextTheme.extraBold
+                .copyWith(color: ColorConstant.blackColor, fontSize: 13),
           ),
           items: filterList
               .map((item) => DropdownMenuItem<String>(
                     value: item,
-                    child: Text(item,
-                        style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.blackColor, fontSize: 13)),
+                    child: Text(
+                      item,
+                      style: AppTextTheme.extraBold.copyWith(
+                        color: ColorConstant.blackColor,
+                        fontSize: 13,
+                      ),
+                    ),
                   ))
               .toList(),
           validator: (value) {
@@ -288,10 +320,10 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
           ),
           iconStyleData: const IconStyleData(
             icon: Icon(
-              Icons.keyboard_arrow_down,
+              Icons.keyboard_arrow_down_rounded,
               color: Colors.black,
+              fontWeight: FontWeight.w600,
             ),
-            iconSize: 24,
           ),
           dropdownStyleData: DropdownStyleData(
             decoration: BoxDecoration(
@@ -307,7 +339,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   }
 
   /*----------- Tab Bar variable  ----------- */
-  String? overall = "0";
+  String? overall;
 
   /*------------------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {

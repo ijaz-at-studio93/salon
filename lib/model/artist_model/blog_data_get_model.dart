@@ -58,13 +58,19 @@ class BlogData {
     id = json['id'];
     title = json['title'];
     description = json['description'];
-    image = json['image'];
-    video = json['video'];
+    image = _fixPath(json['image']);
+    video = _fixPath(json['video']);
     createdAt = json['createdAt'];
     body = json['body'];
     viewCount = json['viewCount'];
     likeCount = json['likeCount'];
     artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
+  }
+
+  static String? _fixPath(dynamic raw) {
+    if (raw == null) return null;
+    final s = raw as String;
+    return s.replaceAll('salon/artist/blog', 'salon/blog');
   }
 
   Map<String, dynamic> toJson() {

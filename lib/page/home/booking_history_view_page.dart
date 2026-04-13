@@ -53,6 +53,14 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   bool _reasonDialogShown = false;
   bool _paymentInstructionDialogShown = false;
 
+  /// Rejection / payment-info dialogs only after the initial open fetch, not after
+  /// accept/reject refreshes (`doGetAppointmentDetailsModel` on the same visit).
+  bool _allowOpenPageInfoDialogs = true;
+
+  /// Tracks [HomeController.showProgress] so we react once when a fetch finishes,
+  /// not on every [Obx] rebuild (see `doGetAppointmentDetailsModel` finally block).
+  bool? _previousShowProgress;
+
   @override
   void initState() {
     super.initState();
@@ -70,6 +78,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   void didUpdateWidget(BookingHistoryViewpage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.appointmentId != widget.appointmentId) {
+      _previousShowProgress = null;
+      _allowOpenPageInfoDialogs = true;
+      _reasonDialogShown = false;
       _paymentInstructionDialogShown = false;
       _selectionSyncKey = null;
       _salonArtistsMerged = false;
@@ -227,15 +238,22 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   Widget build(BuildContext context) {
     return Obx(
       () {
+        final loading = _homeController.showProgress;
         final data = _homeController.getAppointmentDetailsModel.data;
-        if (!_homeController.showProgress && data != null) {
+        if (_previousShowProgress == true && !loading && data != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
-            _syncSelectionsIfNeeded(data);
-            _maybeShowRejectionDialog(data);
-            _maybeShowPaymentInstructionDialog(data);
+            final d = _homeController.getAppointmentDetailsModel.data;
+            if (d == null) return;
+            _syncSelectionsIfNeeded(d);
+            if (_allowOpenPageInfoDialogs) {
+              _maybeShowRejectionDialog(d);
+              _maybeShowPaymentInstructionDialog(d);
+              _allowOpenPageInfoDialogs = false;
+            }
           });
         }
+        _previousShowProgress = loading;
         return Scaffold(
           backgroundColor: ColorConstant.whiteColor,
           appBar: AppBarWidget(
@@ -428,12 +446,24 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Stylist Name :',
-          style: AppTextTheme.bold.copyWith(
-            color: ColorConstant.blackColor,
-            fontSize: 14,
-          ),
+        Row(
+          children: [
+            Text(
+              'Stylist Name :',
+              style: AppTextTheme.bold.copyWith(
+                color: ColorConstant.blackColor,
+                fontSize: 14,
+              ),
+            ),
+            if (_pendingSelectable)
+              Text(
+                ' (You can change staff)',
+                style: AppTextTheme.semibold.copyWith(
+                  color: ColorConstant.grayTextColor,
+                  fontSize: 14,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         if (_maxStylistSelection == 0)
@@ -484,12 +514,24 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Time:',
-          style: AppTextTheme.bold.copyWith(
-            color: ColorConstant.blackColor,
-            fontSize: 14,
-          ),
+        Row(
+          children: [
+            Text(
+              'Time : ',
+              style: AppTextTheme.bold.copyWith(
+                color: ColorConstant.blackColor,
+                fontSize: 14,
+              ),
+            ),
+            if (_pendingSelectable)
+              Text(
+                ' (Select one slot)',
+                style: AppTextTheme.semibold.copyWith(
+                  color: ColorConstant.grayTextColor,
+                  fontSize: 14,
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 6),
         Wrap(
@@ -539,49 +581,44 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
         _homeController.getAppointmentDetailsModel.data?.user?.name ?? '';
     final phone =
         _homeController.getAppointmentDetailsModel.data?.user?.mobile ?? '';
-    return Row(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              style: AppTextTheme.semibold.copyWith(
-                color: ColorConstant.blackColor,
-                fontSize: 16,
-              ),
-              children: [
-                const TextSpan(text: 'Name : '),
-                TextSpan(
-                  text: name.isEmpty ? '—' : name,
-                  style: AppTextTheme.bold.copyWith(
-                    color: ColorConstant.bookingPriceMagenta2,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+        RichText(
+          text: TextSpan(
+            style: AppTextTheme.semibold.copyWith(
+              color: ColorConstant.blackColor,
+              fontSize: 16,
             ),
+            children: [
+              const TextSpan(text: 'Name : '),
+              TextSpan(
+                text: name.isEmpty ? '—' : name,
+                style: AppTextTheme.bold.copyWith(
+                  color: ColorConstant.bookingPriceMagenta2,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: RichText(
-            textAlign: TextAlign.right,
-            text: TextSpan(
-              style: AppTextTheme.semibold.copyWith(
-                color: ColorConstant.blackColor,
-                fontSize: 16,
-              ),
-              children: [
-                const TextSpan(text: 'Phone Number : '),
-                TextSpan(
-                  text: phone.isEmpty ? '—' : phone,
-                  style: AppTextTheme.bold.copyWith(
-                    color: ColorConstant.bookingPriceMagenta2,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+        const SizedBox(height: 8),
+        RichText(
+          text: TextSpan(
+            style: AppTextTheme.semibold.copyWith(
+              color: ColorConstant.blackColor,
+              fontSize: 16,
             ),
+            children: [
+              const TextSpan(text: 'Phone Number : '),
+              TextSpan(
+                text: phone.isEmpty ? '—' : phone,
+                style: AppTextTheme.bold.copyWith(
+                  color: ColorConstant.bookingPriceMagenta2,
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
         ),
       ],
@@ -781,7 +818,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
               TextSpan(
                 text:
                     'Rs. ${total.toStringAsFixed(total == total.roundToDouble() ? 0 : 2)}',
-                style: AppTextTheme.bold.copyWith(
+                style: AppTextTheme.extraBold.copyWith(
                   color: ColorConstant.lightGreenColor,
                   fontSize: 18,
                 ),
@@ -866,8 +903,8 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     showDialog(
       context: context,
       builder: (_) => BookingRejectionInfoDialog(
-        reasonLabel: label,
-        note: data.cancellationNote,
+        reasonLabel: "Other",
+        note: "data.cancellationNote",
         isSalonRejected: isSalonRejected,
       ),
     );
@@ -896,7 +933,11 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
     if (orderStatus == 'pending') {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.only(
+          left: 20,
+          right: 20,
+          bottom: 20,
+        ),
         child: Row(
           children: [
             Expanded(

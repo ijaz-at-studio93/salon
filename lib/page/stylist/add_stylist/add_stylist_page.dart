@@ -117,10 +117,12 @@ class _AddStylistPageState extends State<AddStylistPage> {
     final existingPhones = staffList.map((s) => s.phone ?? "").toSet();
     final rng = Random();
 
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     String sidCandidate;
     do {
-      final digits = 100000 + rng.nextInt(900000);
-      sidCandidate = "SID$digits";
+      final digits = (100000 + rng.nextInt(900000)).toString();
+      final suffix = List.generate(4, (_) => letters[rng.nextInt(26)]).join();
+      sidCandidate = "S$digits$suffix";
     } while (existingSIds.contains(sidCandidate));
 
     String phoneCandidate;

@@ -40,8 +40,9 @@ class BookingHistoryPendingWidget extends StatelessWidget {
         : (orderData.appointment?.artist?.name?.isNotEmpty == true
             ? orderData.appointment!.artist!.name!
             : 'No stylist preference');
-    final priceStr =
-        '₹${(orderData.items ?? []).fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0)).toStringAsFixed(0)}';
+    final priceStr = (orderData.items ?? [])
+        .fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0))
+        .toStringAsFixed(0);
     final statusText = orderData.orderStatus ?? '';
     final statusColor = _statusColor(statusText);
 
@@ -72,14 +73,10 @@ class BookingHistoryPendingWidget extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (idx.isNotEmpty) ...[
-                  ColorFiltered(
-                    colorFilter: const ColorFilter.mode(
-                        Colors.transparent, BlendMode.srcIn),
-                    child: _inlineLabelValue(
-                      label: 'ID :',
-                      value: idx,
-                      valueColor: ColorConstant.bookingValuePurple,
-                    ),
+                  _inlineLabelValue(
+                    label: 'ID :',
+                    value: idx,
+                    valueColor: ColorConstant.bookingValuePurple,
                   ),
                   const SizedBox(height: 8),
                 ],
@@ -103,8 +100,11 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Price : ',
-                        style: TextStyle(fontWeight: FontWeight.w700),
+                        text: 'ApproxPrice : ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: ColorConstant.blackColor,
+                        ),
                       ),
                       TextSpan(text: priceStr),
                     ],

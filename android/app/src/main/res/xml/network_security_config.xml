@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Cleartext HTTP for staging media/API (see APIConstants.image). Scoped to host only. -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">staging.scuts.in</domain>
+        <domain includeSubdomains="true">api.scuts.in</domain>
+    </domain-config>
+</network-security-config>
