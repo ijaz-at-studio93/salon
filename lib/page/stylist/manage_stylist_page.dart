@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -5,6 +7,7 @@ import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/model/stylist/all_salon_staff_model.dart';
 import 'package:salon/page/stylist/add_stylist/add_stylist_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -81,126 +84,19 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
   }
 
   void _showExistingStylistDialog(BuildContext context) {
-    final sidController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
     showDialog<void>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text(
-            "Add Existing Stylist",
-            style: AppTextTheme.bold
-                .copyWith(color: ColorConstant.blackColor, fontSize: 16),
-          ),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Enter the Stylist ID to add an existing stylist to your salon.",
-                  style: AppTextTheme.regular.copyWith(
-                    color: ColorConstant.grayTextColor,
-                    fontSize: 13,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: sidController,
-                  textCapitalization: TextCapitalization.characters,
-                  decoration: InputDecoration(
-                    labelText: "Stylist ID",
-                    hintText: "e.g. S699019DQBZ",
-                    labelStyle: AppTextTheme.medium.copyWith(
-                      color: ColorConstant.grayTextColor,
-                      fontSize: 13,
-                    ),
-                    hintStyle: AppTextTheme.regular.copyWith(
-                      color: ColorConstant.grayTextColor,
-                      fontSize: 13,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: ColorConstant.borderColor,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: ColorConstant.primaryColor,
-                        width: 1.5,
-                      ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide:
-                          const BorderSide(color: Colors.red, width: 1.5),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 12),
-                  ),
-                  validator: (v) {
-                    if (v == null || v.trim().isEmpty) {
-                      return "Please enter a Stylist ID";
-                    }
-                    final val = v.trim().toUpperCase();
-                    if (!val.startsWith('S') || val.startsWith('SI')) {
-                      return "ID must start with S only, e.g. S699019DQBZ";
-                    }
-                    if (val.length != 11) {
-                      return "Stylist ID must be exactly 11 characters";
-                    }
-                    return null;
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Get.back(),
-              child: Text(
-                "Cancel",
-                style: AppTextTheme.medium.copyWith(
-                  color: ColorConstant.grayTextColor,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                if (formKey.currentState?.validate() ?? false) {
-                  final sid = sidController.text.trim().toUpperCase();
-                  Get.back();
-                  _homeController.doAddExistingArtistBySId(
-                    sId: sid,
-                    callback: () {
-                      showMessage("Stylist added successfully");
-                      _homeController.doSalonArtistList();
-                    },
-                  );
-                }
-              },
-              child: Text(
-                "Add",
-                style: AppTextTheme.medium.copyWith(
-                  color: ColorConstant.primaryColor,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+      builder: (_) => _AddExistingStylistDialog(
+        onAdd: (sId) {
+          _homeController.doAddExistingArtistBySId(
+            sId: sId,
+            callback: () {
+              showMessage("Stylist added successfully");
+              _homeController.doSalonArtistList();
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -369,6 +265,229 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
     );
   }
 }
+
+/*──────────────── Add Existing Stylist Dialog ─────────────────*/
+
+class _AddExistingStylistDialog extends StatefulWidget {
+  final void Function(String sId) onAdd;
+
+  const _AddExistingStylistDialog({required this.onAdd});
+
+  @override
+  State<_AddExistingStylistDialog> createState() =>
+      _AddExistingStylistDialogState();
+}
+
+class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
+  final _homeController = Get.find<HomeController>();
+  final _sidController = TextEditingController();
+
+  StaffData? _preview;
+  bool _isFetching = false;
+  String? _errorMsg;
+  Timer? _debounce;
+
+  @override
+  void dispose() {
+    _sidController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
+  void _onChanged(String value) {
+    _debounce?.cancel();
+    final val = value.trim().toUpperCase();
+    if (val.length != 11 || !val.startsWith('S') || val.startsWith('SI')) {
+      setState(() {
+        _preview = null;
+        _errorMsg = null;
+      });
+      return;
+    }
+    _debounce = Timer(const Duration(milliseconds: 600), () => _lookup(val));
+  }
+
+  Future<void> _lookup(String sId) async {
+    setState(() {
+      _isFetching = true;
+      _preview = null;
+      _errorMsg = null;
+    });
+    try {
+      final result = await _homeController.doLookupArtistBySId(sId: sId);
+      if (!mounted) return;
+      if (result != null) {
+        setState(() => _preview = result);
+      } else {
+        setState(() => _errorMsg = "No stylist found with this ID");
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _errorMsg = "No stylist found with this ID");
+      }
+    } finally {
+      if (mounted) setState(() => _isFetching = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      insetPadding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 28, 20, 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Title
+            Text(
+              "Enter SId",
+              style: AppTextTheme.bold.copyWith(
+                fontSize: 20,
+                color: ColorConstant.blackColor,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Pill input
+            SizedBox(
+              width: context.width * 0.5,
+              child: TextField(
+                controller: _sidController,
+                textCapitalization: TextCapitalization.characters,
+                onChanged: _onChanged,
+                decoration: InputDecoration(
+                  hintText: "e.g. S699019DQBZ",
+                  hintStyle: AppTextTheme.regular.copyWith(
+                    color: ColorConstant.grayTextColor,
+                    fontSize: 14,
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                        color: ColorConstant.primaryColor2, width: 1.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(15),
+                    borderSide: const BorderSide(
+                        color: ColorConstant.primaryColor2, width: 1.5),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 22),
+
+            // Preview / status row
+            if (_isFetching)
+              const Padding(
+                padding: EdgeInsets.only(bottom: 22),
+                child: SizedBox(
+                  height: 28,
+                  width: 28,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              )
+            else if (_errorMsg != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 22),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      color: Colors.red,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _errorMsg!,
+                      style: AppTextTheme.semibold.copyWith(
+                        color: ColorConstant.redColor2,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ] else if (_preview != null) ...[
+              Row(
+                children: [
+                  ClipOval(
+                    child: _preview!.image != null &&
+                            _preview!.image!.isNotEmpty
+                        ? CachedNetworkImage(
+                            imageUrl: "${APIConstants.image}${_preview!.image}",
+                            width: 54,
+                            height: 54,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) => _placeholder(),
+                            errorWidget: (_, __, ___) => _placeholder(),
+                          )
+                        : _placeholder(),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Text(
+                      _preview!.name ?? "",
+                      style: AppTextTheme.semibold.copyWith(
+                        fontSize: 16,
+                        color: ColorConstant.blackColor,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
+            ],
+
+            // Add Stylist button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _preview == null
+                    ? null
+                    : () {
+                        Get.back();
+                        widget.onAdd(_sidController.text.trim().toUpperCase());
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorConstant.primaryColor2,
+                  disabledBackgroundColor:
+                      ColorConstant.primaryColor2.withValues(alpha: 0.4),
+                  foregroundColor: Colors.white,
+                  disabledForegroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  "Add Stylist",
+                  style: AppTextTheme.bold
+                      .copyWith(fontSize: 16, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _placeholder() => Container(
+        width: 54,
+        height: 54,
+        color: ColorConstant.stylistAvailabilityAvatarPlaceholder,
+      );
+}
+
+/*──────────────────────────────────────────────────────────────*/
 
 class _ManageStylistCard extends StatelessWidget {
   final String name;

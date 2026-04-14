@@ -108,11 +108,9 @@ class Data {
       });
     }
     final reasonJson = json['cancellationReason'] ?? json['rejectionReason'];
-    cancellationReason = reasonJson != null
-        ? CancellationReason.fromJson(reasonJson)
-        : null;
-    cancellationNote =
-        json['cancellationNote'] ?? json['rejectionNote'];
+    cancellationReason =
+        reasonJson != null ? CancellationReason.fromJson(reasonJson) : null;
+    cancellationNote = json['cancellationNote'] ?? json['rejectionNote'];
   }
 
   Map<String, dynamic> toJson() {
@@ -419,10 +417,13 @@ class Appointment {
   String? startsAt;
   String? endsAt;
   User? artist;
+
   /// When the API returns multiple assignable stylists.
   List<User>? artists;
+
   /// When the API returns multiple time options for this booking.
   List<AppointmentTimeSlot>? timeSlots;
+
   /// Customer's pre-selected stylist IDs (0, 1, or 2 entries).
   List<String>? stylistIds;
 
@@ -451,14 +452,12 @@ class Appointment {
     if (json['timeSlots'] != null) {
       timeSlots = <AppointmentTimeSlot>[];
       for (final v in json['timeSlots'] as List<dynamic>) {
-        timeSlots!.add(
-            AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
+        timeSlots!.add(AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
       }
     } else if (json['slots'] != null) {
       timeSlots = <AppointmentTimeSlot>[];
       for (final v in json['slots'] as List<dynamic>) {
-        timeSlots!.add(
-            AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
+        timeSlots!.add(AppointmentTimeSlot.fromJson(v as Map<String, dynamic>));
       }
     } else if (json['selectedSlots'] != null) {
       timeSlots = (json['selectedSlots'] as List<dynamic>)
@@ -525,14 +524,15 @@ class Service {
   int? duration;
   String? image;
   List<Categories>? categories;
-
+  String? gender;
   Service(
       {this.price,
       this.id,
       this.name,
       this.duration,
       this.image,
-      this.categories});
+      this.categories,
+      this.gender});
 
   Service.fromJson(Map<String, dynamic> json) {
     price = json['price'];
@@ -546,6 +546,7 @@ class Service {
         categories!.add(Categories.fromJson(v));
       });
     }
+    gender = json['gender'];
   }
 
   Map<String, dynamic> toJson() {
@@ -558,7 +559,18 @@ class Service {
     if (categories != null) {
       data['categories'] = categories!.map((v) => v.toJson()).toList();
     }
+    data['gender'] = gender;
     return data;
+  }
+
+  String getGender() {
+    if (gender == 'male') {
+      return 'Men';
+    } else if (gender == 'female') {
+      return 'Women';
+    } else {
+      return 'Unisex';
+    }
   }
 }
 

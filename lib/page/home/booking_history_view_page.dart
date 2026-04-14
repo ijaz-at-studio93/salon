@@ -647,7 +647,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
         boxShadow: ColorConstant.appointmentCardElevation,
       ),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(100),
@@ -677,25 +677,38 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    Column(
-                      children: [
-                        Text(
-                          'Service Name : ',
-                          style: AppTextTheme.medium.copyWith(
-                            color:
-                                ColorConstant.blackColor.withValues(alpha: 0.6),
-                            fontSize: 14,
-                          ),
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: SizedBox(
+                        width: context.width * .3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Service Name : ',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.blackColor
+                                    .withValues(alpha: 0.6),
+                                fontSize: 14,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "(${service?.getGender() ?? ''})",
+                                  style: AppTextTheme.medium.copyWith(
+                                    color: ColorConstant.primaryColor2,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        Text(
-                          '(Mens)',
-                          style: AppTextTheme.medium.copyWith(
-                            color: ColorConstant.primaryColor2,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                     Expanded(
                       child: Text(
@@ -708,26 +721,72 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     ),
                   ],
                 ),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Service Price : ',
-                        style: AppTextTheme.medium.copyWith(
-                          color:
-                              ColorConstant.blackColor.withValues(alpha: 0.6),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: SizedBox(
+                        width: context.width * .3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Service Category : ',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.blackColor
+                                    .withValues(alpha: 0.6),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        service?.categories?.map((e) => e.name).join(', ') ??
+                            '',
+                        style: AppTextTheme.semibold.copyWith(
+                          color: ColorConstant.blackColor,
                           fontSize: 14,
                         ),
                       ),
-                      TextSpan(
-                        text: '${service?.price ?? 0}',
-                        style: AppTextTheme.semibold.copyWith(
-                          color: ColorConstant.lightGreenColor,
-                          fontSize: 15,
+                    ),
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: SizedBox(
+                        width: context.width * .3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              'Service Price : ',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.blackColor
+                                    .withValues(alpha: 0.6),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        '${service?.price ?? 0}',
+                        style: AppTextTheme.semibold.copyWith(
+                          color: ColorConstant.lightGreenColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -851,9 +910,9 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   }
 
   double _computeTotal(Data? data) {
-    if (data?.orderAmount != null) {
-      return data!.orderAmount!;
-    }
+    // if (data?.orderAmount != null) {
+    //   return data!.orderAmount!;
+    // }
     return data?.items?.fold<double>(0.0, (sum, item) {
           final p = item.isService == true
               ? (item.service?.price ?? 0).toDouble()

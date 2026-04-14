@@ -195,7 +195,7 @@ Future<void> showError(error) async {
       if (error.type == DioExceptionType.cancel) {
         return;
       } else {
-        message = "API Error";
+        message = error.response?.data['message'] ?? "API Error";
       }
     } else if (error is PlatformException) {
       message = "Platform Error";

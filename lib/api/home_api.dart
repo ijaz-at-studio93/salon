@@ -741,10 +741,26 @@ class HomeAPI {
     }
   }
 
+  /*------------------- Lookup Artist by SId ----------------------*/
+  static Future<StaffData?> lookupArtistBySId({required String sId}) async {
+    final response = await DioClient.client.get(
+      "salon/artist/details-by-sid/$sId",
+    );
+    if (response.isSuccess) {
+      if (response.data['data'] != null) {
+        return StaffData.fromJson(
+            response.data['data'] as Map<String, dynamic>);
+      }
+      return null;
+    } else {
+      throw response.data;
+    }
+  }
+
   /*------------------- Add Existing Artist by SId ----------------------*/
   static Future<bool> addExistingArtistBySId({required String sId}) async {
-    final response = await DioClient.client.post(
-      "salon/artist/import",
+    final response = await DioClient.client.put(
+      "salon/artist/add-with-sid",
       data: {"sId": sId},
     );
     if (response.isSuccess) {

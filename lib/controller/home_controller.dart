@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -758,6 +757,11 @@ class HomeController extends GetxController {
       _allSalonStaffModel.value = await HomeAPI.getAllSalonStaffList();
     } catch (_) {}
     return _allSalonStaffModel.value;
+  }
+
+  /*-----------------  Lookup Artist by SId ----------------*/
+  Future<StaffData?> doLookupArtistBySId({required String sId}) async {
+    return await HomeAPI.lookupArtistBySId(sId: sId);
   }
 
   /*-----------------  Add Existing Artist by SId ----------------*/
