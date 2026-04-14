@@ -26,7 +26,15 @@ class CompleteHistoryWidget extends StatelessWidget {
             : (orderData.appointment?.startsAt ?? '');
     final dateStr = _convertBookingDate(dateSource);
     final timeStr = _formatTimeLabel(orderData.appointment?.startsAt ?? '');
-    final stylistName = orderData.appointment?.artist?.name ?? '';
+    final stylistDetails = orderData.appointment?.stylistDetails;
+    final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
+        ? stylistDetails
+            .map((s) => s.name ?? '')
+            .where((n) => n.isNotEmpty)
+            .join(', ')
+        : (orderData.appointment?.artist?.name?.isNotEmpty == true
+            ? orderData.appointment!.artist!.name!
+            : 'No stylist preference');
     final priceStr = orderData.items!
         .fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0))
         .toStringAsFixed(0);

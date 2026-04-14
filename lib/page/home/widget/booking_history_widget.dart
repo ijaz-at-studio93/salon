@@ -20,11 +20,12 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final idx = orderData.idx?.trim() ?? '';
 
-    final timeSource = (orderData.appointment?.startsAt?.isNotEmpty == true)
-        ? orderData.appointment!.startsAt!
-        : (orderData.appointment?.selectedSlots?.isNotEmpty == true
+    final status = (orderData.orderStatus ?? '').toLowerCase().trim();
+    final timeSource = (status == 'pending')
+        ? (orderData.appointment?.selectedSlots?.isNotEmpty == true
             ? orderData.appointment!.selectedSlots!.first
-            : '');
+            : '')
+        : (orderData.appointment?.startsAt ?? '');
     final dateSource =
         (orderData.finalizedAt != null && orderData.finalizedAt!.isNotEmpty)
             ? orderData.finalizedAt!

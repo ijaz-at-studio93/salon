@@ -107,7 +107,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                   firstStylist?.name ??
                                                       appt?.artist?.name,
                                               listStylistId: firstStylist?.id ??
-                                                  appt?.artist?.id,
+                                                  appt?.stylistIds?.firstOrNull,
                                             ));
                                       },
                                     ),
@@ -151,7 +151,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           appt?.artist?.name,
                                                   listStylistId:
                                                       firstStylist?.id ??
-                                                          appt?.artist?.id,
+                                                          appt?.stylistIds?.firstOrNull,
                                                 ));
                                           },
                                         ),
@@ -197,7 +197,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           appt?.artist?.name,
                                                   listStylistId:
                                                       firstStylist?.id ??
-                                                          appt?.artist?.id,
+                                                          appt?.stylistIds?.firstOrNull,
                                                 ));
                                           },
                                         ),
@@ -231,7 +231,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         height: 50,
-        width: Get.width * 0.34,
+        width: Get.width * 0.38,
         child: DropdownButtonFormField2<String>(
           key: ValueKey<String?>(overall),
           isExpanded: true,

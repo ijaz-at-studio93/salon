@@ -594,7 +594,7 @@ class HomeAPI {
     String? startsAt,
     String? endsAt,
     String? rejectionReasonId,
-    String? rejectionNote,
+    String? rejectionRemark,
   }) async {
     final body = <String, dynamic>{'status': status};
     if (stylistIds != null && stylistIds.isNotEmpty) {
@@ -609,8 +609,8 @@ class HomeAPI {
     if (rejectionReasonId != null && rejectionReasonId.isNotEmpty) {
       body['rejectionReasonId'] = rejectionReasonId;
     }
-    if (rejectionNote != null && rejectionNote.isNotEmpty) {
-      body['rejectionNote'] = rejectionNote;
+    if (rejectionRemark != null && rejectionRemark.isNotEmpty) {
+      body['rejectionRemark'] = rejectionRemark;
     }
     final response = await DioClient.client
         .put("salon/appointments/$appointmentId/status", data: body);
@@ -945,6 +945,23 @@ class HomeAPI {
 
     if (response.isSuccess) {
       return SalonDashboardModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /// POST `salon/dashboard/request-recharge` — salon wallet recharge request.
+  static Future<String?> requestSalonRecharge() async {
+    final response = await DioClient.client.post(
+      "salon/dashboard/request-recharge",
+      data: <String, dynamic>{},
+    );
+    if (response.isSuccess) {
+      final data = response.data;
+      if (data is Map && data['message'] != null) {
+        return data['message'].toString();
+      }
+      return null;
     } else {
       throw response.data;
     }

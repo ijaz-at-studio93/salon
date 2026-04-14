@@ -541,8 +541,8 @@ class _HomepageState extends State<Homepage> {
             title: "Bookings",
             value: data?.distributedRevenue?.bookingCount ?? 0,
             color: ColorConstant.primaryColor,
-            onTap: () => Get.to(
-                () => const BookingHistoryPage(initialTab: "1")),
+            onTap: () =>
+                Get.to(() => const BookingHistoryPage(initialTab: "1")),
           ),
         ],
       ),
@@ -573,7 +573,15 @@ class _HomepageState extends State<Homepage> {
           // 🔵 Recharge Button
           GestureDetector(
             onTap: () {
-              // TODO: Recharge flow later
+              // const dist = {
+              //   "0": "all_time",
+              //   "1": "monthly",
+              //   "2": "weekly",
+              //   "3": "daily",
+              // };
+              _homeController.doRequestSalonRecharge(
+                  // distribution: dist[dashboard ?? "0"] ?? "all_time",
+                  );
             },
             child: Container(
               width: 56,

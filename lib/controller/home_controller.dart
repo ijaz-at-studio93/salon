@@ -654,7 +654,7 @@ class HomeController extends GetxController {
     String? startsAt,
     String? endsAt,
     String? rejectionReasonId,
-    String? rejectionNote,
+    String? rejectionRemark,
   }) async {
     try {
       _showProgress.value = true;
@@ -665,7 +665,7 @@ class HomeController extends GetxController {
         startsAt: startsAt,
         endsAt: endsAt,
         rejectionReasonId: rejectionReasonId,
-        rejectionNote: rejectionNote,
+        rejectionRemark: rejectionRemark,
       );
       if (result) {
         callback.call();
@@ -1023,6 +1023,23 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       _salonDashboardModel.value =
           await HomeAPI.getSalonDashBoard(distribution: distribution);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /*-----------------  Salon wallet recharge request -----------------*/
+  doRequestSalonRecharge() async {
+    try {
+      _showProgress.value = true;
+      final msg = await HomeAPI.requestSalonRecharge();
+      if (msg != null && msg.isNotEmpty) {
+        await showMessage(msg);
+      }
+      // _salonDashboardModel.value =
+      //     await HomeAPI.getSalonDashBoard(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {

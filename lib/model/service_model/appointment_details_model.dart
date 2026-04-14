@@ -61,6 +61,7 @@ class Data {
   List<Items>? items;
   CancellationReason? cancellationReason;
   String? cancellationNote;
+  String? rejectionRemark;
 
   Data(
       {this.orderAmount,
@@ -78,7 +79,8 @@ class Data {
       this.appointment,
       this.items,
       this.cancellationReason,
-      this.cancellationNote});
+      this.cancellationNote,
+      this.rejectionRemark});
 
   Data.fromJson(Map<String, dynamic> json) {
     orderAmount = double.parse(json['orderAmount'].toString());
@@ -110,7 +112,8 @@ class Data {
     final reasonJson = json['cancellationReason'] ?? json['rejectionReason'];
     cancellationReason =
         reasonJson != null ? CancellationReason.fromJson(reasonJson) : null;
-    cancellationNote = json['cancellationNote'] ?? json['rejectionNote'];
+    cancellationNote = json['cancellationNote'] ?? json['rejectionRemark'];
+    rejectionRemark = json['rejectionRemark'];
   }
 
   Map<String, dynamic> toJson() {
@@ -148,6 +151,9 @@ class Data {
     }
     if (cancellationNote != null) {
       data['cancellationNote'] = cancellationNote;
+    }
+    if (rejectionRemark != null) {
+      data['rejectionRemark'] = rejectionRemark;
     }
     return data;
   }

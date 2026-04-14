@@ -1044,7 +1044,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                             status: 'salon_rejected',
                             rejectionReasonId:
                                 reasonId.isNotEmpty ? reasonId : null,
-                            rejectionNote: note,
+                            rejectionRemark: note,
                             callback: () {
                               _homeController.doGetAppointmentDetailsModel(
                                 appointmentId: widget.appointmentId,

@@ -32,8 +32,19 @@ class _CancelledBookingHistoryWidgetState
         ? o.finalizedAt!
         : (o.appointment?.startsAt ?? '');
     final dateStr = _convertBookingDate(dateSource);
-    final timeStr = _formatTimeLabel(o.appointment?.startsAt ?? '');
-    final stylistName = o.appointment?.artist?.name ?? '';
+    final timeStr = _formatTimeLabel(
+        o.appointment?.selectedSlots?.isNotEmpty == true
+            ? o.appointment!.selectedSlots!.first
+            : o.appointment?.startsAt ?? '');
+    final stylistDetails = o.appointment?.stylistDetails;
+    final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
+        ? stylistDetails
+            .map((s) => s.name ?? '')
+            .where((n) => n.isNotEmpty)
+            .join(', ')
+        : (o.appointment?.artist?.name?.isNotEmpty == true
+            ? o.appointment!.artist!.name!
+            : 'No stylist preference');
     final priceStr = o.orderAmount?.toStringAsFixed(0) ?? '0';
 
     return Container(
