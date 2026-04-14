@@ -917,8 +917,8 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     showDialog(
       context: context,
       builder: (_) => BookingRejectionInfoDialog(
-        reasonLabel: "Other",
-        note: "data.cancellationNote",
+        reasonLabel: label,
+        note: data.cancellationNote ?? '',
         isSalonRejected: isSalonRejected,
       ),
     );
