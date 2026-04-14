@@ -342,20 +342,26 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                       ),
                       if (data?.cancellationReason != null &&
                           isCustomerCancelled)
-                        Text(
-                          'Cancelled!',
-                          style: AppTextTheme.extraBold.copyWith(
-                            color: ColorConstant.redColor2,
-                            fontSize: 30,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            'Cancelled!',
+                            style: AppTextTheme.extraBold.copyWith(
+                              color: ColorConstant.redColor2,
+                              fontSize: 30,
+                            ),
                           ),
                         )
                       else if (data?.cancellationReason != null &&
                           isSalonRejected)
-                        Text(
-                          'Rejected!',
-                          style: AppTextTheme.extraBold.copyWith(
-                            color: ColorConstant.redColor2,
-                            fontSize: 30,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            'Rejected!',
+                            style: AppTextTheme.extraBold.copyWith(
+                              color: ColorConstant.redColor2,
+                              fontSize: 30,
+                            ),
                           ),
                         )
                       else ...[
