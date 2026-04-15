@@ -418,10 +418,11 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
               Row(
                 children: [
                   ClipOval(
-                    child: _preview!.image != null &&
-                            _preview!.image!.isNotEmpty
+                    child: _preview!.profileImage != null &&
+                            _preview!.profileImage!.isNotEmpty
                         ? CachedNetworkImage(
-                            imageUrl: "${APIConstants.image}${_preview!.image}",
+                            imageUrl:
+                                "${APIConstants.image}${_preview!.profileImage}",
                             width: 54,
                             height: 54,
                             fit: BoxFit.cover,

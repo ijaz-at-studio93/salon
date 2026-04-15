@@ -24,17 +24,23 @@ class StaffData {
   String? name;
   String? sId;
   String? phone;
-  String? image;
+  String? profileImage;
   String? salonId;
 
-  StaffData({this.id, this.name, this.sId, this.phone, this.image, this.salonId});
+  StaffData(
+      {this.id,
+      this.name,
+      this.sId,
+      this.phone,
+      this.profileImage,
+      this.salonId});
 
   StaffData.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     name = json['name'];
     sId = json['sId'];
     phone = json['phone'];
-    image = json['image'];
+    profileImage = json['profileImage'];
     salonId = json['salonId'];
   }
 }
