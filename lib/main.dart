@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -97,11 +98,12 @@ void main() async {
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await PushNotificationService().setupInteractedMessage();
-  await Permission.notification.isDenied.then((value) {
-    if (value) {
-      Permission.notification.request();
+  if (Platform.isAndroid) {
+    final status = await Permission.notification.status;
+    if (!status.isGranted) {
+      await Permission.notification.request();
     }
-  });
+  }
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -124,92 +126,89 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _bootstrap() async {
-    debugPrint('BOOTSTRAP: start');
-
-    // Ensure Firebase/FCM is ready first
-    // await initFCM();
-
-    // Initialize local notifications & channels (already done in main() but safe to call again)
-    // await flutterLocalNotificationsPlugin.initialize(...); // already initialized in main
-    await _setupAndroidChannels(); // ensure channels exist now
-
-    // Now register listeners & other notification setup
+    await initFCM();
     await initNotification();
-
-    debugPrint('BOOTSTRAP: done');
   }
 
   Future<void> initFCM() async {
-    debugPrint('initFCM: start');
-    try {
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      String? deviceId;
+    // Single listener for token rotation.
+    FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
+      await SharedPrefs.writeValue(PrefConstants.fcmToken, newToken);
+      debugPrint('FCM Token (refresh): $newToken');
+    });
 
+    try {
+      final DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      String? deviceId;
       if (Platform.isAndroid) {
-        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        final androidInfo = await deviceInfo.androidInfo;
         deviceId = androidInfo.id;
       } else if (Platform.isIOS) {
-        IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
+        final iosInfo = await deviceInfo.iosInfo;
         deviceId = iosInfo.identifierForVendor;
       }
-      SharedPrefs.writeValue(PrefConstants.deviceId, deviceId);
+      await SharedPrefs.writeValue(PrefConstants.deviceId, deviceId);
 
-      // get token and print it so you can copy/paste for testing
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-      debugPrint('initFCM: FCM token -> $fcmToken');
-      await SharedPrefs.writeValue(PrefConstants.fcmToken, fcmToken);
+      if (Platform.isIOS) {
+        final settings =
+            await FirebaseMessaging.instance.getNotificationSettings();
+        if (settings.authorizationStatus == AuthorizationStatus.notDetermined) {
+          await FirebaseMessaging.instance.requestPermission(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+        }
+        // Without Push capability + aps-environment, APNS stays null and FCM token never resolves.
+        String? apns = await FirebaseMessaging.instance.getAPNSToken();
+        if (apns == null) {
+          for (var i = 0; i < 15; i++) {
+            await Future<void>.delayed(const Duration(milliseconds: 400));
+            apns = await FirebaseMessaging.instance.getAPNSToken();
+            if (apns != null) break;
+          }
+        }
+        if (kDebugMode) {
+          debugPrint('APNS TOKEN => $apns');
+        }
+      }
 
-      FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
-        debugPrint('initFCM: onTokenRefresh -> $newToken');
-        SharedPrefs.writeValue(PrefConstants.fcmToken, newToken);
-      });
+      try {
+        final token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await SharedPrefs.writeValue(PrefConstants.fcmToken, token);
+          debugPrint('FCM Token: $token');
+        } else {
+          debugPrint(
+            'FCM Token: null — iOS: enable Push Notifications + upload APNs key in '
+            'Firebase Console; use a real device. '
+            'Android: use an emulator image with Google Play.',
+          );
+        }
+      } catch (e) {
+        debugPrint('FCM getToken inner error: $e');
+      }
     } catch (e, st) {
-      debugPrint('initFCM: error $e');
-      debugPrint(st.toString());
+      debugPrint('FCM getToken failed: $e');
+      debugPrint('$st');
     }
-    debugPrint('initFCM: end');
+
+    if (kDebugMode) {
+      final s = await FirebaseMessaging.instance.getNotificationSettings();
+      debugPrint('AUTH STATUS => ${s.authorizationStatus}');
+      debugPrint('PROJECT => ${Firebase.app().options.projectId}');
+    }
   }
 
   Future<void> initNotification() async {
-    debugPrint('initNotification: start');
-
-    // Ensure background handler is registered (idempotent)
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    debugPrint('initNotification: background handler registered');
-
-    // register onMessage listener and debug everything we get
+    // Foreground: show local notification + snackbar via NotificationUtils.
+    // Background tap + terminated tap are handled by PushNotificationService
+    // (setupInteractedMessage) which is called in main() before runApp.
     FirebaseMessaging.onMessage.listen((RemoteMessage msg) {
-      debugPrint('=== FCM onMessage RAW ===');
-      debugPrint('data: ${msg.data}');
-      debugPrint('notification: ${msg.notification}');
-      debugPrint('android channelId: ${msg.notification?.android?.channelId}');
-      debugPrint('android sound: ${msg.notification?.android?.sound}');
-      debugPrint(
-          'apns sound (data): ${msg.data['aps'] ?? msg.data['sound'] ?? msg.data['apns']}');
-
-      // forward to your handler
       NotificationUtils.handleNotificationOnForeground(msg);
     });
-
-    debugPrint('initNotification: onMessage listener registered');
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage event) {
-      debugPrint('onMessageOpenedApp -> ${event.data}');
-      NotificationUtils.handleNotificationOnAppOpened(remoteMessage: event);
-    });
-
-    // initial message (app opened from killed)
-    final initialMsg = await FirebaseMessaging.instance.getInitialMessage();
-    debugPrint('initNotification: initialMessage -> ${initialMsg?.data}');
-    if (initialMsg != null) {
-      NotificationUtils.handleNotificationOnAppOpened(
-          remoteMessage: initialMsg, isAppKilled: true);
-    }
-
-    debugPrint('initNotification: end');
   }
 
-  // 🔥🔥🔥 YOU DELETED THIS PART — THIS WAS THE ERROR
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
