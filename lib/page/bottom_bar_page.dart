@@ -10,6 +10,7 @@ import '../constant/assetsconstant.dart';
 import '../constant/color_constant.dart';
 import '../project_specific/status_bar_color_appbar.dart';
 import '../project_specific/text_theme.dart';
+import 'home/old_transaction_history_page.dart';
 import 'home/transaction_history_page.dart';
 
 class BottomBarPage extends StatefulWidget {

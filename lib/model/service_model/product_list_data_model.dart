@@ -40,6 +40,7 @@ class Product {
   String? deletedAt;
   String? salonId;
   String? serviceCategoryId;
+  String? salonCategory;
   String? name;
   String? description;
   String? image;
@@ -55,6 +56,7 @@ class Product {
       this.deletedAt,
       this.salonId,
       this.serviceCategoryId,
+        this.salonCategory,
       this.name,
       this.description,
       this.image,
@@ -70,6 +72,7 @@ class Product {
     deletedAt = json['deletedAt'];
     salonId = json['salonId'];
     serviceCategoryId = json['serviceCategoryId'];
+    salonCategory = json['salonCategory'];
     name = json['name'];
     description = json['description'];
     image = json['image'];
@@ -86,6 +89,7 @@ class Product {
     data['deletedAt'] = deletedAt;
     data['salonId'] = salonId;
     data['serviceCategoryId'] = serviceCategoryId;
+    data['salonCategory'] = salonCategory;
     data['name'] = name;
     data['description'] = description;
     data['image'] = image;

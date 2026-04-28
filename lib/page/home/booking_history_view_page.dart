@@ -111,6 +111,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
     _slotOptions = _slotsFromAppointment(appt);
     _stylistOptions = _stylistsFromAppointmentWithListFallback(appt);
+    final categorized = appt.artists ?? {};
 
     final preferredIds = appt.stylistIds ?? [];
     _maxStylistSelection = preferredIds.length;
@@ -128,9 +129,18 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     }
   }
 
+  // List<User> _stylistsFromAppointment(Appointment appt) {
+  //   if (appt.artists != null && appt.artists!.isNotEmpty) {
+  //     return List<User>.from(appt.artists!);
+  //   }
+  //   if (appt.artist != null) {
+  //     return [appt.artist!];
+  //   }
+  //   return [];
+  // }
   List<User> _stylistsFromAppointment(Appointment appt) {
     if (appt.artists != null && appt.artists!.isNotEmpty) {
-      return List<User>.from(appt.artists!);
+      return appt.artists!.values.expand((e) => e).toList();
     }
     if (appt.artist != null) {
       return [appt.artist!];
@@ -449,6 +459,124 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   }
 
   Widget _buildStylistSection() {
+
+    final appt =
+        _homeController.getAppointmentDetailsModel.data?.appointment;
+
+    final categorized = appt?.artists ?? {};
+    List<User> hairList = [];
+    List<User> beautyList = [];
+
+    /// Fallback (important — do not break existing)
+    if (categorized.isEmpty) {
+      //return _buildFlatStylistSection(); // 👈 your existing UI
+      hairList = _stylistOptions;
+    }
+
+    categorized.forEach((key, value) {
+      final k = key.toUpperCase();
+      if (k == 'HAIR') {
+        hairList = value;
+      } else if (k == 'BEAUTY') {
+        beautyList = value;
+      }
+    });
+    final hasHair = hairList.isNotEmpty;
+    final hasBeauty = beautyList.isNotEmpty;
+    final showHeadings = hasHair && hasBeauty;
+    print('categorized keys: ${categorized.keys}');
+    print('hairList length: ${hairList.length}');
+    print('beautyList length: ${beautyList.length}');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              'Staff Name :',
+              style: AppTextTheme.bold.copyWith(
+                color: ColorConstant.blackColor,
+                fontSize: 14,
+              ),
+            ),
+            if (_pendingSelectable)
+              Text(
+                ' (You can change staff)',
+                style: AppTextTheme.semibold.copyWith(
+                  color: ColorConstant.grayTextColor,
+                  fontSize: 14,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 6),
+
+        /// 🔥 HAIR
+        if (hairList.isNotEmpty) ...[
+          if (showHeadings) ...[
+            Text('Stylist :', style: AppTextTheme.medium.copyWith(fontSize: 14, color: ColorConstant.bookingPriceMagenta2)),
+            const SizedBox(height: 6),
+          ],
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: hairList.map((u) {
+              final id = u.id ?? '';
+              final isSelected = _selectedStylistIds.contains(id);
+              return _selectionChip(
+                u.name ?? '—',
+                selected: isSelected,
+                onTap: _pendingSelectable
+                    ? () {
+                  setState(() {
+                    for (final h in hairList) {
+                      _selectedStylistIds.remove(h.id ?? ''); // 👈 remove all hair
+                    }
+                    _selectedStylistIds.add(id); // 👈 add only tapped one
+                  });
+                }
+                    : null,
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 5),
+        ],
+
+        /// 🔥 BEAUTY
+        if (beautyList.isNotEmpty) ...[
+          if (showHeadings) ...[
+            Text('Beautician :', style: AppTextTheme.medium.copyWith(fontSize: 14, color: ColorConstant.bookingPriceMagenta2)),
+            const SizedBox(height: 6),
+          ],
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: beautyList.map((u) {
+              final id = u.id ?? '';
+              final isSelected = _selectedStylistIds.contains(id);
+              return _selectionChip(
+                u.name ?? '—',
+                selected: isSelected,
+                onTap: _pendingSelectable
+                    ? () {
+                  setState(() {
+                    for (final b in beautyList) {
+                      _selectedStylistIds.remove(b.id ?? ''); // 👈 remove all beauty
+                    }
+                    _selectedStylistIds.add(id); // 👈 add only tapped one
+                  });
+                }
+                    : null,
+              );
+            }).toList(),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildFlatStylistSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -587,8 +715,8 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
         _homeController.getAppointmentDetailsModel.data?.user?.name ?? '';
     final phone =
         _homeController.getAppointmentDetailsModel.data?.user?.mobile ?? '';
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         RichText(
           text: TextSpan(
@@ -608,7 +736,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(width: 20),
         RichText(
           text: TextSpan(
             style: AppTextTheme.semibold.copyWith(
@@ -616,7 +744,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
               fontSize: 16,
             ),
             children: [
-              const TextSpan(text: 'Phone Number : '),
+              const TextSpan(text: 'Phone : '),
               TextSpan(
                 text: phone.isEmpty ? '—' : phone,
                 style: AppTextTheme.bold.copyWith(
@@ -670,7 +798,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 15),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -727,7 +855,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: SizedBox(
-                        width: context.width * .3,
+                        width: context.width * .31,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [

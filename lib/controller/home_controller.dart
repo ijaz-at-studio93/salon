@@ -29,6 +29,7 @@ import 'package:salon/model/stylist/artiest_list_model.dart';
 import 'package:salon/model/stylist/all_salon_staff_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
+import '../model/translation/salon_transaction_history_model.dart';
 import '../model/translation/translation_history_model.dart';
 import '../model/service_model/rejection_reason_model.dart';
 
@@ -226,6 +227,13 @@ class HomeController extends GetxController {
       _transactionsHistoryModel.value;
   set setTransactionsHistoryModel(val) => _transactionsHistoryModel.value = val;
 
+  /*----------------------  SalonTransactionsHistoryModel --------------*/
+  final Rx<SalonTransactionsHistoryModel> _salonTransactionsHistoryModel =
+      SalonTransactionsHistoryModel().obs;
+  SalonTransactionsHistoryModel get getSalonTransactionsHistoryModel =>
+      _salonTransactionsHistoryModel.value;
+  set setSalonTransactionsHistoryModel(val) => _salonTransactionsHistoryModel.value = val;
+
   /*------------------- TransactionsHistoryUnsettledModel  ---------------------*/
   final Rx<TransactionsHistoryModel> _transactionsHistoryUnsettledModel =
       TransactionsHistoryModel().obs;
@@ -341,7 +349,8 @@ class HomeController extends GetxController {
 
   /*--------------------  Add  Product -----------------------*/
   doAddProduct({
-    required String categoryId,
+    String? categoryId,
+    String? salonCategory,
     required String name,
     required String description,
     required String price,
@@ -352,6 +361,7 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       bool result = await HomeAPI.productAdd(
           categoryId: categoryId,
+          salonCategory: salonCategory,
           name: name,
           description: description,
           price: price,
@@ -372,7 +382,8 @@ class HomeController extends GetxController {
     required String name,
     required String description,
     required File? image,
-    String? serviceCategoryId,
+    //String? serviceCategoryId,
+    String? salonCategory,
     required VoidCallback callback,
   }) async {
     try {
@@ -382,7 +393,8 @@ class HomeController extends GetxController {
           name: name,
           description: description,
           image: image,
-          serviceCategoryId: serviceCategoryId);
+          //serviceCategoryId: serviceCategoryId
+          salonCategory: salonCategory);
 
       if (result) {
         callback.call();
@@ -1031,20 +1043,34 @@ class HomeController extends GetxController {
   }
 
   /*-----------------  Salon wallet recharge request -----------------*/
+  // doRequestSalonRecharge() async {
+  //   try {
+  //     _showProgress.value = true;
+  //     final msg = await HomeAPI.requestSalonRecharge();
+  //     if (msg != null && msg.isNotEmpty) {
+  //       await showMessage(msg);
+  //     }
+  //     // _salonDashboardModel.value =
+  //     //     await HomeAPI.getSalonDashBoard(distribution: distribution);
+  //   } catch (e) {
+  //     showError(e);
+  //   } finally {
+  //     _showProgress.value = false;
+  //   }
+  // }
+
   doRequestSalonRecharge() async {
     try {
-      _showProgress.value = true;
+      //_showProgress.value = true;
       final msg = await HomeAPI.requestSalonRecharge();
-      if (msg != null && msg.isNotEmpty) {
-        await showMessage(msg);
-      }
-      // _salonDashboardModel.value =
-      //     await HomeAPI.getSalonDashBoard(distribution: distribution);
+      return msg;
     } catch (e) {
       showError(e);
-    } finally {
-      _showProgress.value = false;
+      return null;
     }
+    // } finally {
+    //   _showProgress.value = false;
+    // }
   }
 
   /* -------------------- Transaction History -------------------- */
@@ -1053,6 +1079,19 @@ class HomeController extends GetxController {
       _showProgress.value = true;
       _transactionsHistoryModel.value =
           await HomeAPI.getTransactionHistory(distribution: distribution);
+    } catch (e) {
+      showError(e);
+    } finally {
+      _showProgress.value = false;
+    }
+  }
+
+  /* -------------------- Salon Transaction History -------------------- */
+  doGetSalonWalletTransactions({required String distribution}) async {
+    try {
+      _showProgress.value = true;
+      _salonTransactionsHistoryModel.value =
+      await HomeAPI.getSalonWalletTransactionHistory(distribution: distribution);
     } catch (e) {
       showError(e);
     } finally {

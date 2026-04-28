@@ -30,6 +30,7 @@ import 'package:salon/model/translation/translation_history_model.dart';
 
 import '../model/stylist/allow_portfolio_upload_model.dart';
 import '../model/service_model/rejection_reason_model.dart';
+import '../model/translation/salon_transaction_history_model.dart';
 
 class HomeAPI {
   /*=================== eligibility =====================*/ static Future<
@@ -88,14 +89,15 @@ class HomeAPI {
 
   /*===================== Salon Product Add ===============*/
   static Future<bool> productAdd({
-    required String categoryId,
+    String? categoryId,
+    String? salonCategory,
     required String name,
     required String description,
     required String price,
     required File? image,
   }) async {
     final formData = FormData.fromMap({
-      "serviceCategoryId": categoryId,
+      "salonCategory": salonCategory,
       "name": name,
       "description": description,
     });
@@ -123,13 +125,14 @@ class HomeAPI {
     required String name,
     required String description,
     required File? image,
-    String? serviceCategoryId,
+    //String? serviceCategoryId,
+    String? salonCategory,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
       "description": description,
-      if (serviceCategoryId != null && serviceCategoryId.isNotEmpty)
-        "serviceCategoryId": serviceCategoryId,
+      if (salonCategory != null && salonCategory.isNotEmpty)
+        "salonCategory": salonCategory,
     });
 
     if (image != null) {
@@ -974,6 +977,18 @@ class HomeAPI {
         queryParameters: {"distribution": distribution});
     if (response.isSuccess) {
       return TransactionsHistoryModel.fromJson(response.data);
+    } else {
+      throw response.data;
+    }
+  }
+
+  /*----------------  Transaction  history API --------------*/
+  static Future<SalonTransactionsHistoryModel> getSalonWalletTransactionHistory(
+      {required String distribution}) async {
+    final response = await DioClient.client.get("salon/transactions/wallet-transactions",
+        queryParameters: {"distribution": distribution});
+    if (response.isSuccess) {
+      return SalonTransactionsHistoryModel.fromJson(response.data);
     } else {
       throw response.data;
     }

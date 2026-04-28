@@ -425,7 +425,8 @@ class Appointment {
   User? artist;
 
   /// When the API returns multiple assignable stylists.
-  List<User>? artists;
+  //List<User>? artists;
+  Map<String, List<User>>? artists;
 
   /// When the API returns multiple time options for this booking.
   List<AppointmentTimeSlot>? timeSlots;
@@ -446,14 +447,29 @@ class Appointment {
     startsAt = json['startsAt'];
     endsAt = json['endsAt'];
     artist = json['artist'] != null ? User.fromJson(json['artist']) : null;
-    if (json['artists'] != null) {
-      artists = <User>[];
-      for (final v in json['artists'] as List<dynamic>) {
-        artists!.add(User.fromJson(v as Map<String, dynamic>));
-      }
+    // if (json['artists'] != null) {
+    //   artists = <User>[];
+    //   for (final v in json['artists'] as List<dynamic>) {
+    //     artists!.add(User.fromJson(v as Map<String, dynamic>));
+    //   }
+    // }
+    if (json['artists'] != null && json['artists'] is Map) {
+      artists = {};
+
+      final artistsJson = json['artists'] as Map<String, dynamic>;
+
+      artistsJson.forEach((key, value) {
+        if (value is List) {
+          artists![key] =
+              value.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
+        }
+      });
     }
     if (json['stylistIds'] != null) {
-      stylistIds = List<String>.from(json['stylistIds'] as List<dynamic>);
+      // stylistIds = List<String>.from(json['stylistIds'] as List<dynamic>);
+      stylistIds = (json['stylistIds'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList();
     }
     if (json['timeSlots'] != null) {
       timeSlots = <AppointmentTimeSlot>[];
@@ -467,7 +483,7 @@ class Appointment {
       }
     } else if (json['selectedSlots'] != null) {
       timeSlots = (json['selectedSlots'] as List<dynamic>)
-          .map((s) => AppointmentTimeSlot(startsAt: s as String))
+          .map((s) => AppointmentTimeSlot(startsAt: s.toString()))
           .toList();
     }
   }
@@ -479,8 +495,16 @@ class Appointment {
     if (artist != null) {
       data['artist'] = artist!.toJson();
     }
+    // if (artists != null) {
+    //   data['artists'] = artists!.map((e) => e.toJson()).toList();
+    // }
     if (artists != null) {
-      data['artists'] = artists!.map((e) => e.toJson()).toList();
+      data['artists'] = artists!.map(
+            (key, value) => MapEntry(
+          key,
+          value.map((e) => e.toJson()).toList(),
+        ),
+      );
     }
     if (timeSlots != null) {
       data['timeSlots'] = timeSlots!.map((e) => e.toJson()).toList();

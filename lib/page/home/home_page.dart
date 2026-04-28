@@ -551,6 +551,11 @@ class _HomepageState extends State<Homepage> {
 
   Widget _walletBalanceWidget() {
     final data = _homeController.getSalonDashboardModel.data;
+    final bool canRecharge = (data?.walletBalance ?? 0) < 1000 &&
+        (data?.isRequestRecharge == false);
+    print(data?.isRequestRecharge);
+    print('can rechatrge');
+    print(canRecharge);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -571,39 +576,125 @@ class _HomepageState extends State<Homepage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           // 🔵 Recharge Button
+          // GestureDetector(
+          //   onTap: () {
+          //     // const dist = {
+          //     //   "0": "all_time",
+          //     //   "1": "monthly",
+          //     //   "2": "weekly",
+          //     //   "3": "daily",
+          //     // };
+          //     _homeController.doRequestSalonRecharge(
+          //         // distribution: dist[dashboard ?? "0"] ?? "all_time",
+          //         );
+          //   },
+          //   child: Container(
+          //     width: 56,
+          //     height: 56,
+          //     decoration: BoxDecoration(
+          //       color: const Color(0xff01AB4D)
+          //           .withOpacity(0.2), // ✅ light green bg
+          //       shape: BoxShape.circle,
+          //       border: Border.all(
+          //         color: const Color(0xff039544)
+          //             .withOpacity(0.7), // ✅ subtle border
+          //         width: 1,
+          //       ),
+          //     ),
+          //     child: const Center(
+          //       child: Text(
+          //         "Recharge",
+          //         textAlign: TextAlign.center,
+          //         style: TextStyle(
+          //           fontSize: 10,
+          //           fontWeight: FontWeight.w600,
+          //           color: Color(0xff039544), // ✅ dark green text
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
           GestureDetector(
-            onTap: () {
-              // const dist = {
-              //   "0": "all_time",
-              //   "1": "monthly",
-              //   "2": "weekly",
-              //   "3": "daily",
-              // };
-              _homeController.doRequestSalonRecharge(
-                  // distribution: dist[dashboard ?? "0"] ?? "all_time",
-                  );
-            },
+            onTap: canRecharge
+                ? () {
+              final msg = _homeController.doRequestSalonRecharge();
+              if (msg!=null) {
+                Get.dialog(
+                  Dialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.check_circle, color: Colors.green,
+                              size: 52),
+                          const SizedBox(height: 16),
+                          const Text(
+                            "Request Received!",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            "We received your recharge request. Your wallet will be recharged within 3 hours.",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 14, color: Colors.black54),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xff8565D0),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            onPressed: () {
+                              Get.back();
+                              _homeController.doGetSalonDashBoard(distribution: "all_time");
+                            },
+                            child: const Text(
+                              "OK",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  barrierDismissible: false,
+                );
+              }
+            }
+                : null, // 👈 disabled when not eligible
             child: Container(
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: const Color(0xff01AB4D)
-                    .withOpacity(0.2), // ✅ light green bg
+                color: canRecharge
+                    ? const Color(0xff01AB4D).withOpacity(0.2)
+                    : Colors.grey.withOpacity(0.2), // 👈 grey when disabled
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: const Color(0xff039544)
-                      .withOpacity(0.7), // ✅ subtle border
+                  color: canRecharge
+                      ? const Color(0xff039544).withOpacity(0.7)
+                      : Colors.grey.withOpacity(0.5), // 👈 grey border when disabled
                   width: 1,
                 ),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
                   "Recharge",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xff039544), // ✅ dark green text
+                    color: canRecharge
+                        ? const Color(0xff039544)
+                        : Colors.grey, // 👈 grey text when disabled
                   ),
                 ),
               ),

@@ -29,8 +29,22 @@ class _AddProductPageState extends State<AddProductPage> {
   final _description = TextEditingController();
   final _homeController = Get.find<HomeController>();
 
-  List<GetCategoryData> _categories = [];
-  String _selectedCategoryId = "";
+  // List<GetCategoryData> _categories = [];
+  // String _selectedCategoryId = "";
+  final List<String> staticCategories = [
+    "Colouring",
+    "Hair Spa",
+    "Hair Treatments",
+    "De-tan",
+    "Facial",
+    "Clean Up",
+    "Mani",
+    "Pedi",
+    "Waxing",
+  ];
+
+  String _selectedCategory = "";
+  final TextEditingController _customCategory = TextEditingController();
   File _imagePath = File("");
 
   bool get _isEdit => widget.product != null;
@@ -44,9 +58,15 @@ class _AddProductPageState extends State<AddProductPage> {
     if (p != null) {
       _productName.text = p.name ?? "";
       _description.text = p.description ?? "";
-      _selectedCategoryId = p.serviceCategoryId ?? "";
+      //_selectedCategoryId = p.serviceCategoryId ?? "";
+      _selectedCategory = p.salonCategory ?? "";
+
+      if (!staticCategories.contains(_selectedCategory) &&
+          _selectedCategory.isNotEmpty) {
+        _customCategory.text = _selectedCategory;
+      }
     }
-    _loadCategories();
+    //_loadCategories();
   }
 
   @override
@@ -56,17 +76,17 @@ class _AddProductPageState extends State<AddProductPage> {
     super.dispose();
   }
 
-  Future<void> _loadCategories() async {
-    try {
-      final list = await MasterApi.getCategory();
-      if (mounted) setState(() => _categories = list);
-    } catch (_) {}
-  }
+  // Future<void> _loadCategories() async {
+  //   try {
+  //     final list = await MasterApi.getCategory();
+  //     if (mounted) setState(() => _categories = list);
+  //   } catch (_) {}
+  // }
 
   void _submit() {
     if (_productName.text.isEmpty) {
       showMessage("Please enter product name.");
-    } else if (_selectedCategoryId.isEmpty) {
+    } else if (_selectedCategory.isEmpty) {
       showMessage("Please select a category.");
     } else {
       if (_isEdit) {
@@ -74,7 +94,8 @@ class _AddProductPageState extends State<AddProductPage> {
           productId: widget.product!.id ?? "",
           name: _productName.text,
           description: _description.text,
-          serviceCategoryId: _selectedCategoryId,
+          //serviceCategoryId: _selectedCategoryId,
+          salonCategory: _selectedCategory,
           image: _imagePath.path.isEmpty ? null : File(_imagePath.path),
           callback: () {
             Get.back();
@@ -83,7 +104,8 @@ class _AddProductPageState extends State<AddProductPage> {
         );
       } else {
         _homeController.doAddProduct(
-          categoryId: _selectedCategoryId,
+          //categoryId: _selectedCategoryId,
+          salonCategory: _selectedCategory,
           name: _productName.text,
           description: _description.text,
           price: "",
@@ -265,57 +287,124 @@ class _AddProductPageState extends State<AddProductPage> {
                           const SizedBox(height: 24),
 
                           // ── Category Radio Buttons (Wrap) ────
-                          if (_categories.isEmpty)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 8),
-                                child: CircularProgressIndicator(
-                                  color: ColorConstant.primaryColor,
-                                  strokeWidth: 2,
+                          // if (_categories.isEmpty)
+                          //   const Center(
+                          //     child: Padding(
+                          //       padding: EdgeInsets.symmetric(vertical: 8),
+                          //       child: CircularProgressIndicator(
+                          //         color: ColorConstant.primaryColor,
+                          //         strokeWidth: 2,
+                          //       ),
+                          //     ),
+                          //   )
+                          // else
+                          //   Wrap(
+                          //     spacing: 0,
+                          //     runSpacing: 4,
+                          //     children: staticCategories.map((cat) {
+                          //       return GestureDetector(
+                          //         onTap: () {
+                          //           setState(() {
+                          //             _selectedCategory = cat;
+                          //             _customCategory.clear();
+                          //           });
+                          //         },
+                          //         child: SizedBox(
+                          //           width: (MediaQuery.of(context).size.width - 40) / 3,
+                          //           child: Row(
+                          //             children: [
+                          //               Radio<String>(
+                          //                 value: cat,
+                          //                 groupValue: _selectedCategory,
+                          //                 activeColor: ColorConstant.primaryColor,
+                          //                 onChanged: (val) {
+                          //                   setState(() {
+                          //                     _selectedCategory = val ?? "";
+                          //                     _customCategory.clear();
+                          //                   });
+                          //                 },
+                          //               ),
+                          //               Flexible(
+                          //                 child: Text(
+                          //                   cat,
+                          //                   overflow: TextOverflow.ellipsis,
+                          //                   style: AppTextTheme.bold.copyWith(fontSize: 13, color: Colors.black),
+                          //                 ),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       );
+                          //     }).toList(),
+                          //   ),
+                          Wrap(
+                            spacing: 0,
+                            runSpacing: 4,
+                            children: staticCategories.map((cat) {
+                              return GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedCategory = cat;
+                                    _customCategory.clear();
+                                  });
+                                },
+                                child: SizedBox(
+                                  width: (MediaQuery.of(context).size.width - 40) / 3,
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: cat,
+                                        groupValue: _selectedCategory,
+                                        activeColor: ColorConstant.primaryColor,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            _selectedCategory = val ?? "";
+                                            _customCategory.clear();
+                                          });
+                                        },
+                                      ),
+                                      Flexible(
+                                        child: Text(
+                                          cat,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: AppTextTheme.bold.copyWith(fontSize: 13, color: Colors.black),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            )
-                          else
-                            Wrap(
-                              spacing: 0,
-                              runSpacing: 4,
-                              children: _categories.map((cat) {
-                                return GestureDetector(
-                                  onTap: () => setState(
-                                      () => _selectedCategoryId = cat.id ?? ""),
-                                  child: SizedBox(
-                                    width: (MediaQuery.of(context).size.width -
-                                            40) /
-                                        3,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Radio<String>(
-                                          value: cat.id ?? "",
-                                          groupValue: _selectedCategoryId,
-                                          activeColor:
-                                              ColorConstant.primaryColor,
-                                          materialTapTargetSize:
-                                              MaterialTapTargetSize.shrinkWrap,
-                                          visualDensity: VisualDensity.compact,
-                                          onChanged: (val) => setState(() =>
-                                              _selectedCategoryId = val ?? ""),
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            cat.name ?? "",
-                                            style: AppTextTheme.bold.copyWith(
-                                                fontSize: 13,
-                                                color:
-                                                    ColorConstant.blackColor),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ),
-                                      ],
+                              );
+                            }).toList(),
+                          ),
+
+                          /// 👇 ADD THIS BLOCK HERE
+                          if (_customCategory.text.isNotEmpty)
+                            SizedBox(
+                              width: (MediaQuery.of(context).size.width - 40) / 3,
+                              child: Row(
+                                children: [
+                                  Radio<String>(
+                                    value: _customCategory.text,
+                                    groupValue: _selectedCategory,
+                                    activeColor: ColorConstant.primaryColor,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _selectedCategory = val ?? "";
+                                      });
+                                    },
+                                  ),
+                                  Flexible(
+                                    child: Text(
+                                      _customCategory.text,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextTheme.bold.copyWith(
+                                        fontSize: 13,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ),
-                                );
-                              }).toList(),
+                                ],
+                              ),
                             ),
                           const SizedBox(height: 24),
 
@@ -323,7 +412,44 @@ class _AddProductPageState extends State<AddProductPage> {
                           Center(
                             child: ElevatedButton(
                               onPressed: () {
-                                // TODO: open create custom category flow
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title: const Text("Enter Category"),
+                                      content: TextField(
+                                        controller: _customCategory,
+                                        decoration: const InputDecoration(
+                                          hintText: "Enter custom category",
+                                        ),
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          // onPressed: () {
+                                          //   if (_customCategory.text.isNotEmpty) {
+                                          //     setState(() {
+                                          //       _selectedCategory = _customCategory.text;
+                                          //     });
+                                          //     Navigator.pop(context);
+                                          //   }
+                                          // },
+                                          onPressed: () {
+                                            final text = _customCategory.text.trim();
+
+                                            if (text.isNotEmpty) {
+                                              setState(() {
+                                                _selectedCategory = text;
+                                                _customCategory.text = text;
+                                              });
+                                              Navigator.pop(context);
+                                            }
+                                          },
+                                          child: const Text("Save"),
+                                        )
+                                      ],
+                                    );
+                                  },
+                                );
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: ColorConstant.primaryColor

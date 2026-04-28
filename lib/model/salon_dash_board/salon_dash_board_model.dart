@@ -74,6 +74,10 @@ class Data {
   int? totalEarnings;
   double? walletBalance; // ✅ NEW
   bool? isUpfront; // ✅ NEW
+  bool? isRequestRecharge; // ✅ NEW
+  bool? isGSTRegistered;
+  int? rechargeCount;
+  double? defaultRechange;
   RatingReview? ratingReview;
   DistributedRevenue? distributedRevenue;
   List<DistributedArtistAnalytics>? distributedArtistAnalytics;
@@ -82,6 +86,7 @@ class Data {
     this.totalEarnings,
     this.walletBalance,
     this.isUpfront,
+    this.isRequestRecharge,
     this.ratingReview,
     this.distributedRevenue,
     this.distributedArtistAnalytics,
@@ -94,6 +99,12 @@ class Data {
         ? double.parse(json['walletBalance'].toString())
         : 0;
     isUpfront = json['isUpfront'] ?? false;
+    isRequestRecharge = json['isRequestRecharge'] ?? false;
+    isGSTRegistered = json['isGSTRegistered'] ?? false;
+    rechargeCount = json['rechargeCount'] ?? 0;
+    defaultRechange = json['defaultRechange'] != null
+        ? double.parse(json['defaultRechange'].toString())
+        : 0;
     ratingReview = json['ratingReview'] != null
         ? RatingReview.fromJson(json['ratingReview'])
         : null;
@@ -115,6 +126,10 @@ class Data {
     // ✅ NEW
     data['walletBalance'] = walletBalance;
     data['isUpfront'] = isUpfront;
+    data['isRequestRecharge'] = isRequestRecharge;
+    data['isGSTRegistered'] = isGSTRegistered;
+    data['rechargeCount'] = rechargeCount;
+    data['defaultRechange'] = defaultRechange;
     if (ratingReview != null) {
       data['ratingReview'] = ratingReview!.toJson();
     }

@@ -120,10 +120,10 @@ class _CancelledBookingHistoryWidgetState
                 children: [
                   Text('Status : ', style: _labelStyle.copyWith(fontSize: 13)),
                   Text(
-                    'Cancelled',
+                    o.orderStatus == 'salon_rejected' ? 'Rejected' : 'Cancelled',
                     style: AppTextTheme.bold.copyWith(
                       fontSize: 13,
-                      color: ColorConstant.bookingStatusCancelled,
+                      color: ColorConstant.redColor,
                     ),
                   ),
                 ],
