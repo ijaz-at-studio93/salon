@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/util/app_snackbar.dart';
+import 'package:salon/util/notification_service.dart';
 // 👇 NEW
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart'; // to access flutterLocalNotificationsPlugin
@@ -15,8 +18,8 @@ class NotificationUtils {
     final payloadChannelId = msg.notification?.android?.channelId ??
         msg.data['android_channel_id']?.toString() ??
         msg.data['channel_id']?.toString();
-    final payloadSound = msg.notification?.android?.sound ??
-        msg.data['sound']?.toString();
+    final payloadSound =
+        msg.notification?.android?.sound ?? msg.data['sound']?.toString();
 
     final isBookingReceived = pushType == 'booking_received' ||
         pushType == 'appointment_received' ||
@@ -69,7 +72,7 @@ class NotificationUtils {
       title,
       msg.notification?.body ?? msg.data['message'] ?? '',
       notifDetails,
-      payload: msg.data['appointmentId'],
+      payload: jsonEncode(msg.data),
     );
   }
 
@@ -93,7 +96,7 @@ class NotificationUtils {
         leading: const Icon(Icons.notifications, color: Colors.white),
         onTap: () {
           Get.back();
-          handleNotificationNavigation(remoteMessage, false);
+          handleNotification(remoteMessage.data);
         },
       );
     }
@@ -104,7 +107,7 @@ class NotificationUtils {
     try {
       remoteMessage ??= await FirebaseMessaging.instance.getInitialMessage();
       if (remoteMessage != null && remoteMessage.notification != null) {
-        handleNotificationNavigation(remoteMessage, isAppKilled);
+        handleNotification(remoteMessage.data, delay: isAppKilled);
         return true;
       }
       return false;
@@ -116,29 +119,25 @@ class NotificationUtils {
   static bool handleNotificationNavigation(
       RemoteMessage remoteMessage, bool isAppKilled) {
     if (remoteMessage.data.isNotEmpty) {
-      var data = remoteMessage.data;
-      var type = data['push_type'];
-
-      /*if (isAppKilled) {
-        Get.to(() => SplashPage(remoteMessage: remoteMessage));
-      } else {*/
-      navigateNotification(type, data);
-      // }
+      handleNotification(remoteMessage.data, delay: isAppKilled);
     }
     return false;
   }
 
-  static void navigateNotification(String type, Map<String, dynamic> data) {
-    switch (type) {
-      /* case '5':
-        Get.to(() => const ReferAndEarnPage(isNotificationClick: true));
-        break;
-      case '6':
-        Get.to(() => const ReferAndEarnPage(isNotificationClick: true));
-        break;*/
-      default:
-        // Get.offAll(() => const SplashPage());
-        break;
+  static Future<void> handleLocalNotificationPayload(String? payload) async {
+    if (payload == null || payload.isEmpty) return;
+
+    try {
+      final decoded = jsonDecode(payload);
+      if (decoded is Map) {
+        await handleNotification(Map<String, dynamic>.from(decoded));
+        return;
+      }
+    } catch (_) {
+      await handleNotification({
+        'appointmentId': payload,
+        'push_type': 'appointment_received',
+      });
     }
   }
 }

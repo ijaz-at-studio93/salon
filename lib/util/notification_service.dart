@@ -2,6 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/scheduler.dart';
+import 'package:get/get.dart';
+import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/home/booking_history_view_page.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
+import 'package:salon/util/shared_prefs.dart';
 
 /* ======================== Background handler ======================== */
 @pragma('vm:entry-point')
@@ -17,10 +22,61 @@ Future<dynamic> firebaseMessagingBackgroundHandler(
 /* ===================== Click handling (navigate) ==================== */
 Future<void> handleNotification(Map<String, dynamic> data,
     {bool delay = false}) async {
-  switch (data['push_type']) {
-    default:
-      break;
+  if (delay) {
+    await Future.delayed(const Duration(milliseconds: 1200));
   }
+
+  final appointmentId = _readAppointmentId(data);
+  if (appointmentId.isEmpty || !_isAppointmentNotification(data)) return;
+
+  _openAppointmentDetails(appointmentId);
+}
+
+String _readAppointmentId(Map<String, dynamic> data) {
+  final value = data['appointmentId'] ??
+      data['appointment_id'] ??
+      data['appointmentID'] ??
+      data['appointment'];
+
+  return value?.toString() ?? '';
+}
+
+bool _isAppointmentNotification(Map<String, dynamic> data) {
+  final type =
+      (data['push_type'] ?? data['type'] ?? '').toString().toLowerCase();
+  final title = (data['title'] ?? '').toString().toLowerCase();
+  final channelId =
+      (data['android_channel_id'] ?? data['channel_id'] ?? '').toString();
+
+  return type == 'booking_received' ||
+      type == 'appointment_received' ||
+      type == 'new_booking' ||
+      type.contains('appointment') ||
+      type.contains('booking') ||
+      title.contains('appointment') ||
+      title.contains('booking') ||
+      channelId == 'booking';
+}
+
+void _openAppointmentDetails(String appointmentId) {
+  if (!SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) return;
+
+  if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
+    Get.to(
+      () => BookingHistoryViewpage(
+        appointmentId: appointmentId,
+        status: 'pending',
+      ),
+    );
+    return;
+  }
+
+  if (Get.isRegistered<StylistController>()) {
+    Get.find<StylistController>().doAppointmentsDetailsModel(
+      appointmentId: appointmentId,
+    );
+  }
+  Get.to(() => ViewAcceptPage(appointmentId: appointmentId));
 }
 
 /* =========================== Service ================================ */
@@ -38,7 +94,7 @@ class PushNotificationService {
           await FirebaseMessaging.instance.getInitialMessage();
       if (initial?.data.isNotEmpty ?? false) {
         await Future.delayed(const Duration(milliseconds: 900));
-        handleNotification(initial!.data);
+        handleNotification(initial!.data, delay: true);
       }
     });
 

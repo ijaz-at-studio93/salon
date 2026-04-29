@@ -83,7 +83,12 @@ void main() async {
   const InitializationSettings initSettings =
       InitializationSettings(android: androidInit, iOS: iosInit);
 
-  await flutterLocalNotificationsPlugin.initialize(initSettings);
+  await flutterLocalNotificationsPlugin.initialize(
+    initSettings,
+    onDidReceiveNotificationResponse: (response) {
+      NotificationUtils.handleLocalNotificationPayload(response.payload);
+    },
+  );
 
   // 🔥 STEP 2 — CREATE AND REGISTER CHANNELS (VERY IMPORTANT)
   await _setupAndroidChannels();
