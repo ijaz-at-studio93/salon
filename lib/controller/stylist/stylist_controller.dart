@@ -269,14 +269,14 @@ class StylistController extends GetxController {
   }
 
   /*---------------------  Do get ArtistPortfolio -------------------*/
-  doGetArtistPortfolio() async {
+  doGetArtistPortfolio({bool showProgress = true}) async {
     try {
-      _showProgress.value = true;
+      if (showProgress) _showProgress.value = true;
       _artistPortfolioModel.value = await StylistAPI.getArtiestPortfolio();
     } catch (e) {
       showError(e);
     } finally {
-      _showProgress.value = false;
+      if (showProgress) _showProgress.value = false;
     }
   }
 

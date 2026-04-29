@@ -2,19 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist_all_module/profile/widget/served_booking_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/accepted_booking_overview_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/view_accept_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/status_bar_color_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
-import 'package:salon/util/reject_service_dialog.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'booking_overview_widget.dart';
 
 class StylistBookingOverViewPage extends StatefulWidget {
   const StylistBookingOverViewPage({super.key});
@@ -32,7 +31,7 @@ class _StylistBookingOverViewPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _stylistController.doPendingAppointmentsListModel();
+      _stylistController.doAcceptAppointment();
     });
   }
 
@@ -69,118 +68,12 @@ class _StylistBookingOverViewPageState
                           _bookingOverView(),
                           bookingOverView == "0"
                               ? _stylistController
-                                          .getPendingAppointmentsListModel
-                                          .data
-                                          ?.isEmpty ??
-                                      false
-                                  ? const NoItemsWidget(
-                                      text: "No upcoming bookings found.",
-                                    )
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      itemCount: _stylistController
-                                              .getPendingAppointmentsListModel
-                                              .data
-                                              ?.length ??
-                                          0,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemBuilder: (context, index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20, vertical: 5),
-                                          child: BookingOverviewWidget(
-                                            serviceCount: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .serviceCount ??
-                                                0,
-                                            tapAccept: () {
-                                              _stylistController
-                                                  .doAppointmentsDetailsModel(
-                                                      appointmentId:
-                                                          _stylistController
-                                                                  .getPendingAppointmentsListModel
-                                                                  .data?[index]
-                                                                  .appointment
-                                                                  ?.id ??
-                                                              "");
-                                              Get.to(() => ViewAcceptPage(
-                                                    appointmentId:
-                                                        _stylistController
-                                                                .getPendingAppointmentsListModel
-                                                                .data?[index]
-                                                                .appointment
-                                                                ?.id ??
-                                                            "",
-                                                  ));
-                                            },
-                                            isHomeService: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .isHomeService ??
-                                                false,
-                                            id: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .idx ??
-                                                "",
-                                            price: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .orderAmount ??
-                                                0,
-                                            startTime: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .appointment
-                                                    ?.startsAt ??
-                                                "",
-                                            endTime: _stylistController
-                                                    .getPendingAppointmentsListModel
-                                                    .data?[index]
-                                                    .appointment
-                                                    ?.endsAt ??
-                                                "",
-                                            tapReject: () {
-                                              showDialog(
-                                                  context: context,
-                                                  builder: (context) {
-                                                    return RejectServiceDiaLog(
-                                                        reasons: const [],
-                                                        tapNo: () {
-                                                      Get.back();
-                                                    }, tapYes: (_, __) {
-                                                      _stylistController
-                                                          .doBookingApprove(
-                                                              appointmentId: _stylistController
-                                                                      .getPendingAppointmentsListModel
-                                                                      .data?[
-                                                                          index]
-                                                                      .appointment
-                                                                      ?.id ??
-                                                                  "",
-                                                              status:
-                                                                  "salon_artist_rejected",
-                                                              callback: () {
-                                                                Navigator.pop(
-                                                                    context);
-                                                                _stylistController
-                                                                    .doPendingAppointmentsListModel();
-                                                              });
-                                                    });
-                                                  });
-                                            },
-                                          ),
-                                        );
-                                      })
-                              : _stylistController
                                           .getAcceptAppointmentsListModel
                                           .data
                                           ?.isEmpty ??
                                       false
                                   ? const NoItemsWidget(
-                                      text: "No accepted bookings available.",
+                                      text: "No upcoming bookings found.",
                                     )
                                   : ListView.builder(
                                       shrinkWrap: true,
@@ -196,16 +89,17 @@ class _StylistBookingOverViewPageState
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 20, vertical: 5),
                                           child: AcceptBookingOverViewWidget(
+                                            customerName: _stylistController
+                                                    .getAcceptAppointmentsListModel
+                                                    .data?[index]
+                                                    .user
+                                                    ?.name ??
+                                                '',
                                             serviceCount: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]
                                                     .serviceCount ??
                                                 0,
-                                            isHomeService: _stylistController
-                                                    .getAcceptAppointmentsListModel
-                                                    .data?[index]
-                                                    .isHomeService ??
-                                                false,
                                             onPress: () {
                                               Get.to(() => BookingOverviewPage(
                                                     appointmentId:
@@ -221,28 +115,91 @@ class _StylistBookingOverViewPageState
                                                     },
                                                   ));
                                             },
-                                            id: _stylistController
-                                                    .getAcceptAppointmentsListModel
-                                                    .data?[index]
-                                                    .idx ??
-                                                "",
-                                            endTime: _stylistController
-                                                    .getAcceptAppointmentsListModel
-                                                    .data?[index]
-                                                    .appointment
-                                                    ?.endsAt ??
-                                                "",
-                                            price: _stylistController
-                                                    .getAcceptAppointmentsListModel
-                                                    .data?[index]
-                                                    .orderAmount ??
-                                                0,
                                             startTime: _stylistController
                                                     .getAcceptAppointmentsListModel
                                                     .data?[index]
                                                     .appointment
                                                     ?.startsAt ??
                                                 "",
+                                          ),
+                                        );
+                                      })
+                              : _stylistController
+                                          .getCompleteAppointmentsListModel
+                                          .data
+                                          ?.isEmpty ??
+                                      false
+                                  ? const NoItemsWidget(
+                                      text: "No completed appointments found.",
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: _stylistController
+                                              .getCompleteAppointmentsListModel
+                                              .data
+                                              ?.length ??
+                                          0,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      itemBuilder: (context, index) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 5),
+                                          child: ServedBookingWidget(
+                                            serviceComplete: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .serviceCount ??
+                                                0,
+                                            id: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .idx ??
+                                                "",
+                                            price: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .orderAmount ??
+                                                0,
+                                            startTime: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .appointment
+                                                    ?.startsAt ??
+                                                "",
+                                            endTime: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .appointment
+                                                    ?.endsAt ??
+                                                "",
+                                            name: _stylistController
+                                                    .getCompleteAppointmentsListModel
+                                                    .data?[index]
+                                                    .user
+                                                    ?.name ??
+                                                "",
+                                            image:
+                                                "${APIConstants.image}${_stylistController.getCompleteAppointmentsListModel.data?[index].user?.profileImage ?? ""}",
+                                            onView: () {
+                                              final aid = _stylistController
+                                                  .getCompleteAppointmentsListModel
+                                                  .data?[index]
+                                                  .appointment
+                                                  ?.id;
+                                              if (aid == null || aid.isEmpty) {
+                                                return;
+                                              }
+                                              Get.to(() => BookingOverviewPage(
+                                                    appointmentId: aid,
+                                                    callback: () {
+                                                      _stylistController
+                                                          .doGetServedBooking(
+                                                              distribution:
+                                                                  "all_time");
+                                                    },
+                                                  ));
+                                            },
                                           ),
                                         );
                                       }),
@@ -377,7 +334,7 @@ class _StylistBookingOverViewPageState
               ),
             ),
             "1": Text(
-              "Accepted",
+              "Completed",
               style: bookingOverView == "1"
                   ? AppTextTheme.bold
                       .copyWith(fontSize: 14, color: ColorConstant.blackColor)
@@ -386,11 +343,13 @@ class _StylistBookingOverViewPageState
             ),
           },
           onValueChanged: (dynamic value) {
-            bookingOverView = value;
+            setState(() {
+              bookingOverView = value;
+            });
             if (bookingOverView == "1") {
-              _stylistController.doAcceptAppointment();
+              _stylistController.doGetServedBooking(distribution: "all_time");
             } else {
-              _stylistController.doPendingAppointmentsListModel();
+              _stylistController.doAcceptAppointment();
             }
           }),
     );

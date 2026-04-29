@@ -61,6 +61,7 @@ class _StylistBottomBarPageState extends State<StylistBottomBarPage> {
                 ),
               )
             : const SizedBox(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
           currentIndex: _selectedIndex,

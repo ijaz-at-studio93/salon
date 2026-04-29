@@ -1,13 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:getwidget/components/progress_bar/gf_progress_bar.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
+import 'package:salon/page/stylist/stylist_about_page.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_service_row_widget.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/widget/service_breakdown_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
-import 'package:salon/util/NoItemsWidget.dart';
+import 'package:salon/project_specific/stylist_portfolio_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../constant/assetsconstant.dart';
@@ -28,6 +27,9 @@ class _HomePage2State extends State<HomePage2> {
   void initState() {
     super.initState();
     _stylistController.doGetArtiestDashBoard(distribution: "all_time");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _stylistController.doGetArtistPortfolio(showProgress: false);
+    });
   }
 
   @override
@@ -77,76 +79,97 @@ class _HomePage2State extends State<HomePage2> {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        Container(
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(7),
-                              color: ColorConstant.gray),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 15),
-                                child: Text(
-                                  "Service Breakdown",
-                                  style: AppTextTheme.bold.copyWith(
-                                      color: ColorConstant.blackColor,
-                                      fontSize: 13),
-                                ),
-                              ),
-                              _stylistController
-                                          .getArtiestDashboardModel
-                                          .data
-                                          ?.serviceCountData
-                                          ?.serviceBreakdown
-                                          ?.isEmpty ??
-                                      false
-                                  ? const NoItemsWidget(
-                                      text: "No breakdown services found.",
-                                    )
-                                  : GridView.builder(
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      padding: const EdgeInsets.only(
-                                        left: 20.0,
-                                        right: 20.0,
-                                        bottom: 40.0,
-                                      ),
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 3,
-                                        mainAxisSpacing: 20.0,
-                                        crossAxisSpacing: 20.0,
-                                        childAspectRatio: 2,
-                                      ),
-                                      itemCount: _stylistController
-                                              .getArtiestDashboardModel
-                                              .data
-                                              ?.serviceCountData
-                                              ?.serviceBreakdown
-                                              ?.length ??
-                                          0,
-                                      itemBuilder: (context, index) {
-                                        return ServiceBreakdownWidget(
-                                          imageUrl: AssetsConstant.haircutImage,
-                                          count:
-                                              "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.serviceBreakdown?[index].count ?? ""}",
-                                          name: _stylistController
-                                                  .getArtiestDashboardModel
-                                                  .data
-                                                  ?.serviceCountData
-                                                  ?.serviceBreakdown?[index]
-                                                  .name ??
-                                              "",
-                                        );
-                                      },
-                                    ),
-                            ],
-                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Obx(() {
+                            final portfolio = _stylistController
+                                    .getArtistPortfolioModel.data?.portfolio ??
+                                [];
+                            Future<void> openPortfolio() async {
+                              await Get.to(() => const StylistAboutPage());
+                              await _stylistController.doGetArtistPortfolio(
+                                  showProgress: false);
+                            }
+
+                            return StylistPortfolioSection(
+                              items: portfolio,
+                              onAdd: () => openPortfolio(),
+                              onFabPressed: () => openPortfolio(),
+                              onEdit: (_) => openPortfolio(),
+                            );
+                          }),
                         ),
-                        const SizedBox(height: 16),
-                        _reportAnalytics(),
+                        const SizedBox(height: 24),
+                        // Container(
+                        //   decoration: BoxDecoration(
+                        //       borderRadius: BorderRadius.circular(7),
+                        //       color: ColorConstant.gray),
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Padding(
+                        //         padding: const EdgeInsets.symmetric(
+                        //             horizontal: 20, vertical: 15),
+                        //         child: Text(
+                        //           "Service Breakdown",
+                        //           style: AppTextTheme.bold.copyWith(
+                        //               color: ColorConstant.blackColor,
+                        //               fontSize: 13),
+                        //         ),
+                        //       ),
+                        //       _stylistController
+                        //                   .getArtiestDashboardModel
+                        //                   .data
+                        //                   ?.serviceCountData
+                        //                   ?.serviceBreakdown
+                        //                   ?.isEmpty ??
+                        //               false
+                        //           ? const NoItemsWidget(
+                        //               text: "No breakdown services found.",
+                        //             )
+                        //           : GridView.builder(
+                        //               shrinkWrap: true,
+                        //               physics:
+                        //                   const NeverScrollableScrollPhysics(),
+                        //               padding: const EdgeInsets.only(
+                        //                 left: 20.0,
+                        //                 right: 20.0,
+                        //                 bottom: 40.0,
+                        //               ),
+                        //               gridDelegate:
+                        //                   const SliverGridDelegateWithFixedCrossAxisCount(
+                        //                 crossAxisCount: 3,
+                        //                 mainAxisSpacing: 20.0,
+                        //                 crossAxisSpacing: 20.0,
+                        //                 childAspectRatio: 2,
+                        //               ),
+                        //               itemCount: _stylistController
+                        //                       .getArtiestDashboardModel
+                        //                       .data
+                        //                       ?.serviceCountData
+                        //                       ?.serviceBreakdown
+                        //                       ?.length ??
+                        //                   0,
+                        //               itemBuilder: (context, index) {
+                        //                 return ServiceBreakdownWidget(
+                        //                   imageUrl: AssetsConstant.haircutImage,
+                        //                   count:
+                        //                       "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.serviceBreakdown?[index].count ?? ""}",
+                        //                   name: _stylistController
+                        //                           .getArtiestDashboardModel
+                        //                           .data
+                        //                           ?.serviceCountData
+                        //                           ?.serviceBreakdown?[index]
+                        //                           .name ??
+                        //                       "",
+                        //                 );
+                        //               },
+                        //             ),
+                        //     ],
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 16),
+                        // _reportAnalytics(),
                       ],
                     ),
             ),
@@ -200,6 +223,7 @@ class _HomePage2State extends State<HomePage2> {
       ),
     );
   }
+
   /*======================= LaunchDialer =========================*/
   Future<void> _launchDialer({required String phoneNumber}) async {
     final Uri url = Uri.parse('tel:$phoneNumber');
@@ -293,157 +317,157 @@ class _HomePage2State extends State<HomePage2> {
   }
 
   /*----------------- Report Analytics --------------*/
-  _reportAnalytics() {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      width: Get.width,
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: ColorConstant.grayTextColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Reports Analytics",
-            textScaler: const TextScaler.linear(0.85),
-            style: AppTextTheme.bold
-                .copyWith(color: ColorConstant.blackColor, fontSize: 20),
-          ),
-          const SizedBox(height: 20),
-          _stylistController.getArtiestDashboardModel.data
-                      ?.serviceWithReviewCount?.isEmpty ??
-                  false
-              ? const NoItemsWidget(
-                  text: "No data is available for report analytics.")
-              : ListView.builder(
-                  itemCount: _stylistController.getArtiestDashboardModel.data!
-                          .serviceWithReviewCount?.length ??
-                      0,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, i) {
-                    return Row(
-                      children: [
-                        SizedBox(
-                          width: Get.width * 0.2,
-                          child: Text(
-                            _stylistController.getArtiestDashboardModel.data!
-                                    .serviceWithReviewCount?[i].name ??
-                                "",
-                            style: AppTextTheme.medium.copyWith(
-                                color: ColorConstant.grayTextColor,
-                                fontSize: 13),
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              GFProgressBar(
-                                  lineHeight: 11,
-                                  circleWidth: 0,
-                                  isDragable: false,
-                                  percentage: double.parse(_stylistController
-                                              .getArtiestDashboardModel
-                                              .data
-                                              ?.serviceWithReviewCount?[i]
-                                              .rating
-                                              .toString() ??
-                                          "") /
-                                      100,
-                                  backgroundColor: Colors.transparent,
-                                  progressBarColor: const Color(0xff2178FC)),
-                              const SizedBox(height: 4),
-                              GFProgressBar(
-                                  lineHeight: 11,
-                                  circleWidth: 0,
-                                  isDragable: false,
-                                  percentage: _stylistController
-                                              .getArtiestDashboardModel
-                                              .data
-                                              ?.serviceWithReviewCount?[i]
-                                              .count ==
-                                          null
-                                      ? 0.0
-                                      : double.parse(_stylistController
-                                                  .getArtiestDashboardModel
-                                                  .data
-                                                  ?.serviceWithReviewCount?[i]
-                                                  .count
-                                                  .toString() ??
-                                              "") /
-                                          100,
-                                  backgroundColor: Colors.transparent,
-                                  progressBarColor: ColorConstant.service),
-                              const SizedBox(height: 10),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  }),
-          const Divider(
-            color: ColorConstant.dividerColor,
-            indent: 60.0,
-            endIndent: 10,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: List.generate(
-              data.length,
-              (index) => Center(
-                child: Text(
-                  "${data[index]}",
-                  style: AppTextTheme.medium.copyWith(
-                      color: ColorConstant.grayTextColor, fontSize: 13),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.service,
-                        borderRadius: BorderRadius.circular(3)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    "Service Done",
-                    style: AppTextTheme.regular.copyWith(
-                        color: ColorConstant.grayTextColor, fontSize: 13),
-                  )
-                ],
-              ),
-              Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                        color: ColorConstant.skyBlueColor,
-                        borderRadius: BorderRadius.circular(3)),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    "Ratings",
-                    style: AppTextTheme.regular.copyWith(
-                        color: ColorConstant.grayTextColor, fontSize: 13),
-                  )
-                ],
-              ),
-            ],
-          )
-        ],
-      ),
-    );
-  }
+  // _reportAnalytics() {
+  //   return Container(
+  //     margin: const EdgeInsets.symmetric(horizontal: 20),
+  //     width: Get.width,
+  //     padding: const EdgeInsets.all(15),
+  //     decoration: BoxDecoration(
+  //       color: ColorConstant.grayTextColor.withOpacity(0.1),
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     child: Column(
+  //       children: [
+  //         Text(
+  //           "Reports Analytics",
+  //           textScaler: const TextScaler.linear(0.85),
+  //           style: AppTextTheme.bold
+  //               .copyWith(color: ColorConstant.blackColor, fontSize: 20),
+  //         ),
+  //         const SizedBox(height: 20),
+  //         _stylistController.getArtiestDashboardModel.data
+  //                     ?.serviceWithReviewCount?.isEmpty ??
+  //                 false
+  //             ? const NoItemsWidget(
+  //                 text: "No data is available for report analytics.")
+  //             : ListView.builder(
+  //                 itemCount: _stylistController.getArtiestDashboardModel.data!
+  //                         .serviceWithReviewCount?.length ??
+  //                     0,
+  //                 shrinkWrap: true,
+  //                 physics: const NeverScrollableScrollPhysics(),
+  //                 itemBuilder: (context, i) {
+  //                   return Row(
+  //                     children: [
+  //                       SizedBox(
+  //                         width: Get.width * 0.2,
+  //                         child: Text(
+  //                           _stylistController.getArtiestDashboardModel.data!
+  //                                   .serviceWithReviewCount?[i].name ??
+  //                               "",
+  //                           style: AppTextTheme.medium.copyWith(
+  //                               color: ColorConstant.grayTextColor,
+  //                               fontSize: 13),
+  //                         ),
+  //                       ),
+  //                       Expanded(
+  //                         child: Column(
+  //                           children: [
+  //                             GFProgressBar(
+  //                                 lineHeight: 11,
+  //                                 circleWidth: 0,
+  //                                 isDragable: false,
+  //                                 percentage: double.parse(_stylistController
+  //                                             .getArtiestDashboardModel
+  //                                             .data
+  //                                             ?.serviceWithReviewCount?[i]
+  //                                             .rating
+  //                                             .toString() ??
+  //                                         "") /
+  //                                     100,
+  //                                 backgroundColor: Colors.transparent,
+  //                                 progressBarColor: const Color(0xff2178FC)),
+  //                             const SizedBox(height: 4),
+  //                             GFProgressBar(
+  //                                 lineHeight: 11,
+  //                                 circleWidth: 0,
+  //                                 isDragable: false,
+  //                                 percentage: _stylistController
+  //                                             .getArtiestDashboardModel
+  //                                             .data
+  //                                             ?.serviceWithReviewCount?[i]
+  //                                             .count ==
+  //                                         null
+  //                                     ? 0.0
+  //                                     : double.parse(_stylistController
+  //                                                 .getArtiestDashboardModel
+  //                                                 .data
+  //                                                 ?.serviceWithReviewCount?[i]
+  //                                                 .count
+  //                                                 .toString() ??
+  //                                             "") /
+  //                                         100,
+  //                                 backgroundColor: Colors.transparent,
+  //                                 progressBarColor: ColorConstant.service),
+  //                             const SizedBox(height: 10),
+  //                           ],
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   );
+  //                 }),
+  //         const Divider(
+  //           color: ColorConstant.dividerColor,
+  //           indent: 60.0,
+  //           endIndent: 10,
+  //         ),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  //           children: List.generate(
+  //             data.length,
+  //             (index) => Center(
+  //               child: Text(
+  //                 "${data[index]}",
+  //                 style: AppTextTheme.medium.copyWith(
+  //                     color: ColorConstant.grayTextColor, fontSize: 13),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //           children: [
+  //             Row(
+  //               children: [
+  //                 Container(
+  //                   width: 12,
+  //                   height: 12,
+  //                   decoration: BoxDecoration(
+  //                       color: ColorConstant.service,
+  //                       borderRadius: BorderRadius.circular(3)),
+  //                 ),
+  //                 const SizedBox(width: 12),
+  //                 Text(
+  //                   "Service Done",
+  //                   style: AppTextTheme.regular.copyWith(
+  //                       color: ColorConstant.grayTextColor, fontSize: 13),
+  //                 )
+  //               ],
+  //             ),
+  //             Row(
+  //               children: [
+  //                 Container(
+  //                   width: 12,
+  //                   height: 12,
+  //                   decoration: BoxDecoration(
+  //                       color: ColorConstant.skyBlueColor,
+  //                       borderRadius: BorderRadius.circular(3)),
+  //                 ),
+  //                 const SizedBox(width: 12),
+  //                 Text(
+  //                   "Ratings",
+  //                   style: AppTextTheme.regular.copyWith(
+  //                       color: ColorConstant.grayTextColor, fontSize: 13),
+  //                 )
+  //               ],
+  //             ),
+  //           ],
+  //         )
+  //       ],
+  //     ),
+  //   );
+  // }
 
   List data = [
     "0",

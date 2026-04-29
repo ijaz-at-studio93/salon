@@ -50,6 +50,11 @@ class ColorConstant {
   static const Color bookingViewMintBg = Color(0xFFE8F8EF);
   static const Color bookingViewGreen = Color(0xFF166534);
 
+  /// Stylist appointment overview cards (Figma-style white tiles)
+  static const Color appointmentCardNameTime = Color(0xFFD180C1);
+  static const Color appointmentCardDateServices = Color(0xFF8360E1);
+  static const Color appointmentCardViewButton = Color(0xFF8C52FF);
+
   /// Layered shadow similar to Material [Card] elevation (~3) for appointment tiles.
   static const List<BoxShadow> appointmentCardElevation = [
     BoxShadow(
