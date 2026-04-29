@@ -1,4 +1,3 @@
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,12 +16,13 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
   final _homeController = Get.find<HomeController>();
   @override
   Widget build(BuildContext context) {
-  final isUpfront = _homeController.getSalonDashboardModel.data?.isUpfront ?? false;
+    final isUpfront =
+        _homeController.getSalonDashboardModel.data?.isUpfront ?? false;
 
-  if (isUpfront) {
-    return const SalonWalletTransactionPage(); // 👈 new page
-  } else {
-    return OldTransactionHistoryPage(); // 👈 existing page
-  }
+    if (isUpfront) {
+      return const SalonWalletTransactionPage(); // 👈 new page
+    } else {
+      return const OldTransactionHistoryPage(); // 👈 existing page
+    }
   }
 }

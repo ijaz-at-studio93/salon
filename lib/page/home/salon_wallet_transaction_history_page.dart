@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/model/translation/salon_transaction_history_model.dart';
-import 'package:salon/page/home/widget/transaction_details_page.dart';
 import 'package:salon/page/home/widget/wallet_transaction_details_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
@@ -51,7 +50,7 @@ class _SalonWalletTransactionPageState
           _filterBar(),
           const SizedBox(height: 10),
           Obx(
-                () => Expanded(
+            () => Expanded(
               child: _homeController.showProgress
                   ? const ProgressBarView()
                   : _buildTransactionList(),
@@ -81,16 +80,35 @@ class _SalonWalletTransactionPageState
                     value: _showDepositsOnly,
                     visualDensity: VisualDensity.compact, // 👈 important
                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    activeColor: ColorConstant.primaryColor2,
+                    checkColor: ColorConstant.whiteColor,
+                    side: const BorderSide(
+                      color: ColorConstant.primaryColor2,
+                      style: BorderStyle.solid,
+                      width: 2,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
                     onChanged: (val) {
                       setState(() {
                         _showDepositsOnly = val ?? false;
                       });
                     },
                   ),
-                  const Text("Deposits"),
+                  Text(
+                    "Deposits",
+                    style: AppTextTheme.bold.copyWith(
+                      color: ColorConstant.blackColor,
+                      fontSize: 20,
+                      fontFamily: 'Outfit',
+                    ),
+                  ),
                 ],
               ),
-              SizedBox(width: 8,),
+              const SizedBox(
+                width: 8,
+              ),
               if (dashboardData?.isGSTRegistered == true) ...[
                 Row(
                   children: [
@@ -162,8 +180,7 @@ class _SalonWalletTransactionPageState
     final ascList = List<SalonTransactionData>.from(transactions.reversed);
 
     /// 🔥 STEP 2: find first credit
-    final firstCreditIndex =
-    ascList.indexWhere((tx) => tx.isCredit);
+    final firstCreditIndex = ascList.indexWhere((tx) => tx.isCredit);
 
     if (firstCreditIndex == -1) {
       return const NoItemsWidget(text: "No valid transactions");
@@ -174,8 +191,7 @@ class _SalonWalletTransactionPageState
 
     /// 🔥 STEP 4: forward calculation
     final dashboardData = _homeController.getSalonDashboardModel.data;
-    double runningBalance =
-    (dashboardData?.walletBalance ?? 0).toDouble();
+    double runningBalance = (dashboardData?.walletBalance ?? 0).toDouble();
 
     List<Widget> widgets = [];
 
@@ -187,26 +203,25 @@ class _SalonWalletTransactionPageState
       final balanceForRow = runningBalance;
 
       /// 🔥 safe signed logic
-      final signedAmount =
-      tx.isCredit ? amount.abs() : -amount.abs();
+      final signedAmount = tx.isCredit ? amount.abs() : -amount.abs();
 
       runningBalance -= signedAmount;
 
       widgets.add(_transactionCard(tx, balanceForRow));
     }
 
-    return ListView.separated(
+    return ListView.builder(
       itemCount: widgets.length,
-      separatorBuilder: (_, __) => const Divider(
-        color: ColorConstant.dividerColor,
-        indent: 20,
-        endIndent: 20,
-      ),
+      // separatorBuilder: (_, __) => const Divider(
+      //   color: ColorConstant.dividerColor,
+      //   indent: 20,
+      //   endIndent: 20,
+      // ),
       itemBuilder: (context, index) => widgets[index],
     );
   }
 
-  Widget _transactionCard(SalonTransactionData tx,double balance) {
+  Widget _transactionCard(SalonTransactionData tx, double balance) {
     final isCredit = tx.isCredit;
     final rawAmount = tx.amount ?? 0;
     double displayAmount = rawAmount.abs();
@@ -214,7 +229,7 @@ class _SalonWalletTransactionPageState
     /// 🔥 GST OFF → apply TCS on BASE (correct logic)
     if (!_includeGST && tx.isDebit) {
       final baseAmount = displayAmount / 1.05; // remove GST
-      final tcs = baseAmount * 0.01;           // 1% of base
+      final tcs = baseAmount * 0.01; // 1% of base
       displayAmount = displayAmount - tcs;
     }
 
@@ -222,104 +237,101 @@ class _SalonWalletTransactionPageState
         ? '+${displayAmount.toStringAsFixed(0)}'
         : '-${displayAmount.toStringAsFixed(0)}';
     final amountColor = isCredit
-        ? const Color(0xFF8454E5)//
-        : Colors.red;//const Color(0xFF01AB4D);
+        ? const Color(0xFF8454E5) //
+        : Colors.red; //const Color(0xFF01AB4D);
     final userName = tx.user?.name ?? '-';
     final date = _formatDate(tx.createdAt ?? '');
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Stack(
+        alignment: Alignment.center,
         children: [
-          /// LEFT CONTENT
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Received From',
-                  style: AppTextTheme.medium.copyWith(
-                    color: ColorConstant.blackColor,
-                    fontSize: 14,
-                    fontFamily: 'Outfit',
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Stack(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// LEFT CONTENT
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    /// LEFT → NAME
+                    Text(
+                      'Received From',
+                      style: AppTextTheme.medium.copyWith(
+                        color: ColorConstant.blackColor,
+                        fontSize: 14,
+                        fontFamily: 'Outfit',
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
                         userName,
                         style: AppTextTheme.bold.copyWith(
-                          color: ColorConstant.primaryColor,
+                          color: ColorConstant.bookingPriceMagenta2,
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
-
-                    /// CENTER → BALANCE (true center)
-                    Center(
-                      child: Text(
-                        "(Balance: ${balance.toStringAsFixed(0)})",
-                        style: AppTextTheme.semibold.copyWith(
-                          color: Colors.green,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    const SizedBox(height: 4),
+                    RichText(
+                      text: TextSpan(
+                        children: [
+                          TextSpan(
+                            text: 'Date : ',
+                            style: AppTextTheme.regular.copyWith(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontFamily: 'Outfit',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          TextSpan(
+                            text: date,
+                            style: AppTextTheme.semibold.copyWith(
+                              color: const Color(0xFF8454E5),
+                              fontSize: 14,
+                              fontFamily: 'Outfit',
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
+                    )
                   ],
                 ),
-                const SizedBox(height: 4),
-                RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Date : ',
-                        style: AppTextTheme.regular.copyWith(
-                          color: Colors.black,
-                          fontSize: 14,
-                          fontFamily: 'Outfit',
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: AppTextTheme.semibold.copyWith(
-                          color: const Color(0xFF8454E5),
-                          fontSize: 14,
-                          fontFamily: 'Outfit',
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-
-          /// RIGHT CONTENT
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                amountStr,
-                style: AppTextTheme.bold.copyWith(
-                  color: amountColor,
-                  fontSize: 18,
-                ),
               ),
-              const SizedBox(height: 8),
-              _viewButton(tx), // 👈 always show view button
+
+              /// RIGHT CONTENT
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    amountStr,
+                    style: AppTextTheme.bold.copyWith(
+                      color: amountColor,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _viewButton(tx), // 👈 always show view button
+                ],
+              ),
             ],
+          ),
+          Center(
+            child: Text(
+              "(Balance: ${balance.toStringAsFixed(0)})",
+              style: AppTextTheme.semibold.copyWith(
+                color: Colors.green,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -344,7 +356,7 @@ class _SalonWalletTransactionPageState
       borderRadius: BorderRadius.circular(20),
       child: Container(
         height: 29, // 🔥 fixed height
-        width: 61,  // 🔥 fixed width
+        width: 61, // 🔥 fixed width
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: const Color(0x4D01AB4D), // 30% opacity
@@ -357,12 +369,12 @@ class _SalonWalletTransactionPageState
         child: Text(
           'View',
           style: AppTextTheme.regular.copyWith(
-            color: Colors.black, // 🔥 FIXED
-            fontSize: 14,
-            fontFamily: 'Outfit',
-            fontWeight:FontWeight.w400
-            // 🔥 closer to figma
-          ),
+              color: Colors.black, // 🔥 FIXED
+              fontSize: 14,
+              fontFamily: 'Outfit',
+              fontWeight: FontWeight.w400
+              // 🔥 closer to figma
+              ),
         ),
       ),
     );
@@ -387,30 +399,30 @@ class _SalonWalletTransactionPageState
           alignment: Alignment.topCenter,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                height: Get.height * 0.7,   // 🔥 increase here
-                width: double.infinity,
-                child: CachedNetworkImage(
-                  imageUrl: '${APIConstants.image}$paymentProof',
-                  //fit: BoxFit.contain,
-                  placeholder: (context, url) => Container(
-                    width: double.infinity,
-                    height: Get.height * 0.7,
-                    color: Colors.white,
-                    child: const Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => Container(
-                    width: double.infinity,
-                    height: Get.height * 0.7,
-                    color: Colors.white,
-                    child: const Center(
-                      child: Icon(Icons.broken_image, size: 60, color: Colors.grey),
+                borderRadius: BorderRadius.circular(16),
+                child: SizedBox(
+                  height: Get.height * 0.7, // 🔥 increase here
+                  width: double.infinity,
+                  child: CachedNetworkImage(
+                    imageUrl: '${APIConstants.image}$paymentProof',
+                    //fit: BoxFit.contain,
+                    placeholder: (context, url) => Container(
+                      width: double.infinity,
+                      height: Get.height * 0.7,
+                      color: Colors.white,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      width: double.infinity,
+                      height: Get.height * 0.7,
+                      color: Colors.white,
+                      child: const Center(
+                        child: Icon(Icons.broken_image,
+                            size: 60, color: Colors.grey),
+                      ),
                     ),
                   ),
-                ),
-              )
-            ),
+                )),
             GestureDetector(
               onTap: () => Get.back(),
               child: Container(
@@ -481,16 +493,16 @@ class _SalonWalletTransactionPageState
           items: dataList
               .map(
                 (item) => DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                item,
-                style: AppTextTheme.medium.copyWith(
-                  color: ColorConstant.blackColor,
-                  fontSize: 13,
+                  value: item,
+                  child: Text(
+                    item,
+                    style: AppTextTheme.medium.copyWith(
+                      color: ColorConstant.blackColor,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          )
+              )
               .toList(),
           onChanged: (value) {
             if (value == null) return;

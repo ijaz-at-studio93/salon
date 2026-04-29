@@ -86,4 +86,6 @@ class AssetsConstant {
   static const String appointmentAcceptedGif = "assets/gifs/success.gif";
   static const String appointmentRejectedGif = "assets/gifs/reject.gif";
   static const String timeLeftIcon = "assets/icon/time-left.png";
+  static const String productAddIcon = "assets/icon/product_add_icon.png";
+  static const String deleteIcon = "assets/icon/delete.png";
 }

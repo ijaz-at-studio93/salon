@@ -122,16 +122,12 @@ class _ProductListPageState extends State<ProductListPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.add,
-              size: 40,
-              color: Colors.grey.shade500,
-            ),
-            const SizedBox(height: 8),
+            Image.asset(AssetsConstant.productAddIcon, width: 53, height: 68),
+            // const SizedBox(height: 8),
             Text(
               "Add",
               style: AppTextTheme.regular
-                  .copyWith(fontSize: 16, color: Colors.grey.shade600),
+                  .copyWith(fontSize: 20, color: ColorConstant.blackColor),
             ),
           ],
         ),
@@ -167,57 +163,38 @@ class _ProductListPageState extends State<ProductListPage> {
 
           // ── Action Buttons Overlay ─────────────────
           Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.55),
-                    Colors.transparent,
-                  ],
+            left: 6,
+            top: 6,
+            child: GestureDetector(
+              onTap: () => _confirmDelete(product),
+              child:
+                  Image.asset(AssetsConstant.deleteIcon, width: 24, height: 24),
+            ),
+          ),
+          Positioned(
+            bottom: 10,
+            left: 10,
+            right: 10,
+            child: Center(
+              child: GestureDetector(
+                onTap: () => _openEditPage(product),
+                child: Container(
+                  width: 70,
+                  height: 25,
+                  decoration: ShapeDecoration(
+                    color: Colors.black.withValues(alpha: 0.30),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Edit',
+                      style: AppTextTheme.regular.copyWith(
+                          color: ColorConstant.whiteColor, fontSize: 12),
+                    ),
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Edit
-                  GestureDetector(
-                    onTap: () => _openEditPage(product),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.edit_outlined,
-                        size: 16,
-                        color: ColorConstant.primaryColor,
-                      ),
-                    ),
-                  ),
-                  // Delete
-                  GestureDetector(
-                    onTap: () => _confirmDelete(product),
-                    child: Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.delete_outline,
-                        size: 16,
-                        color: ColorConstant.redColor,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
           ),
