@@ -5,7 +5,7 @@ import 'package:salon/constant/api_constant.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/auth_controller.dart';
-import 'package:salon/page/blog/Insights_home_page.dart';
+import 'package:salon/page/stylist_all_module/profile/stylist_content_page.dart';
 import 'package:salon/page/setting/faq_page.dart';
 import 'package:salon/page/stylist_all_module/profile/served_booking_page.dart';
 import 'package:salon/page/stylist_all_module/profile/stylist_review_and_rating_page.dart';
@@ -35,7 +35,7 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
           _imageRowWidget(),
           _dividerCustom(),
           _customRowWidget(
-              titleName: "Served Service",
+              titleName: "Services Done",
               image: AssetsConstant.booking,
               onTap: () {
                 Get.to(() => const ServedBookingPage());
@@ -49,12 +49,10 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
               }),
           _dividerCustom(),
           _customRowWidget(
-              titleName: "Blog",
+              titleName: "Content",
               image: AssetsConstant.insights,
               onTap: () {
-                Get.to(() => const InsightsHomePage(
-                      url: "artist/blog/list",
-                    ));
+                Get.to(() => const StylistContentPage());
               }),
           _dividerCustom(),
           _customRowWidget(
@@ -143,11 +141,11 @@ class _StylistProfilePageState extends State<StylistProfilePage> {
                   Get.to(() => const EditProfileStylistPage());
                 },
                 child: Container(
-                  height: 30,
-                  width: 106,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: ColorConstant.primaryColor)),
+                    height: 30,
+                    width: 106,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: ColorConstant.primaryColor)),
                     child: Center(
                       child: Text(
                         "View Profile",

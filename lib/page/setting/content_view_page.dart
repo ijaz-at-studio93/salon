@@ -239,6 +239,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
                                   body: _item.value.body,
                                   viewCount: _item.value.viewCount,
                                   likeCount: _item.value.likeCount,
+                                  externalLink: _item.value.externalLink,
                                   artist: _item.value.artist,
                                 );
                                 _editPickedFile.value = null;

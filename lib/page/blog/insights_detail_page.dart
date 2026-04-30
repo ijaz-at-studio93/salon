@@ -28,7 +28,6 @@ class InsightsDetailPage extends StatefulWidget {
 }
 
 class _InsightsDetailPageState extends State<InsightsDetailPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,22 +75,6 @@ class _InsightsDetailPageState extends State<InsightsDetailPage> {
                   )
                 : NetworkVideoViewWidget(videoString: widget.video),
             const SizedBox(height: 18),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                widget.title,
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.primaryColor, fontSize: 14),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Text(
-                widget.subTitle,
-                style: AppTextTheme.medium
-                    .copyWith(color: ColorConstant.blackColor, fontSize: 16),
-              ),
-            ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
               child: ReadMoreText(

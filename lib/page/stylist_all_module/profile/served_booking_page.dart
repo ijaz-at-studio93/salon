@@ -1,11 +1,10 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/api_constant.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/profile/widget/served_booking_widget.dart';
-import 'package:salon/page/stylist_all_module/profile/widget/served_filter_widgtet.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
@@ -21,6 +20,13 @@ class ServedBookingPage extends StatefulWidget {
 class _ServedBookingPageState extends State<ServedBookingPage> {
   final _stylistController = Get.find<StylistController>();
 
+  final List<String> _servedFilterList = [
+    'All',
+    'This Week',
+    'This Month',
+    'This year',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +40,7 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
       appBar:
-          const AppBarWidget(nameOfScreen: "Served Booking", isBackIcon: true),
+          const AppBarWidget(nameOfScreen: "Services Done", isBackIcon: true),
       body: Column(
         children: [
           _bookingOverview(),
@@ -113,66 +119,85 @@ class _ServedBookingPageState extends State<ServedBookingPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            "Booking Overview",
-            style: AppTextTheme.medium
-                .copyWith(fontSize: 23, color: ColorConstant.blackColor),
+          Expanded(
+            child: Text(
+              "Booking Overview",
+              style: AppTextTheme.medium
+                  .copyWith(fontSize: 23, color: ColorConstant.blackColor),
+            ),
           ),
-          GestureDetector(
-            onTap: () async {
-              int index = await showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
-                  )),
-                  context: context,
-                  builder: (context) {
-                    return ServedFilterWidget(
-                      callback: () {},
-                    );
-                  });
-
-              if (index == 0) {
-                _stylistController.doGetServedBooking(distribution: "all_time");
-              } else if (index == 1) {
-                _stylistController.doGetServedBooking(
-                    distribution: "this_week");
-              } else if (index == 2) {
-                _stylistController.doGetServedBooking(
-                    distribution: "this_month");
-              } else if (index == 3) {
-                _stylistController.doGetServedBooking(
-                    distribution: "this_year");
-              }
-            },
-            child: Container(
-              height: 50,
-              width: Get.width * 0.2,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(4),
-                border:
-                    Border.all(color: ColorConstant.grayTextColor, width: 1),
+          SizedBox(
+            height: 50,
+            width: Get.width * 0.38,
+            child: DropdownButtonFormField2<String>(
+              isExpanded: true,
+              decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Color(0xFF01AB4D)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Color(0xFF01AB4D)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Color(0xFF01AB4D)),
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Filter",
-                    style: AppTextTheme.medium.copyWith(
-                        color: ColorConstant.blackColor, fontSize: 13),
-                  ),
-                  const SizedBox(width: 5),
-                  Image.asset(
-                    AssetsConstant.filter,
-                    height: 18,
-                    width: 18,
-                  )
-                ],
+              hint: Text(
+                'All',
+                style: AppTextTheme.extraBold
+                    .copyWith(color: ColorConstant.blackColor, fontSize: 13),
+              ),
+              items: _servedFilterList
+                  .map((item) => DropdownMenuItem<String>(
+                        value: item,
+                        child: Text(
+                          item,
+                          style: AppTextTheme.extraBold.copyWith(
+                            color: ColorConstant.blackColor,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ))
+                  .toList(),
+              validator: (value) => null,
+              onChanged: (value) {
+                if (value == 'All') {
+                  _stylistController.doGetServedBooking(distribution: "all_time");
+                } else if (value == 'This Week') {
+                  _stylistController.doGetServedBooking(
+                      distribution: "this_week");
+                } else if (value == 'This Month') {
+                  _stylistController.doGetServedBooking(
+                      distribution: "this_month");
+                } else if (value == 'This year') {
+                  _stylistController.doGetServedBooking(
+                      distribution: "this_year");
+                }
+              },
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.only(right: 8),
+              ),
+              iconStyleData: const IconStyleData(
+                icon: Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              dropdownStyleData: DropdownStyleData(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+              ),
+              menuItemStyleData: const MenuItemStyleData(
+                padding: EdgeInsets.symmetric(horizontal: 16),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

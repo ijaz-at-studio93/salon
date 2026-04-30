@@ -40,6 +40,7 @@ class BlogData {
   String? body;
   int? viewCount;
   int? likeCount;
+  String? externalLink;
   Artist? artist;
 
   BlogData(
@@ -52,25 +53,30 @@ class BlogData {
       this.body,
       this.viewCount,
       this.likeCount,
+      this.externalLink,
       this.artist});
 
   BlogData.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    title = json['title'];
-    description = json['description'];
-    image = _fixPath(json['image']);
-    video = _fixPath(json['video']);
-    createdAt = json['createdAt'];
-    body = json['body'];
-    viewCount = json['viewCount'];
-    likeCount = json['likeCount'];
-    artist = json['artist'] != null ? Artist.fromJson(json['artist']) : null;
+    id = json['id']?.toString();
+    title = json['title'] as String?;
+    description = json['description'] as String?;
+    image = json['image'];
+    video = json['video'];
+    createdAt = json['createdAt'] as String?;
+    body = json['body'] as String?;
+    viewCount = _asInt(json['viewCount']);
+    likeCount = _asInt(json['likeCount']);
+    externalLink = json['externalLink'] as String?;
+    artist = json['artist'] != null
+        ? Artist.fromJson(json['artist'] as Map<String, dynamic>)
+        : null;
   }
 
-  static String? _fixPath(dynamic raw) {
-    if (raw == null) return null;
-    final s = raw as String;
-    return s.replaceAll('salon/artist/blog', 'salon/blog');
+  static int? _asInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString());
   }
 
   Map<String, dynamic> toJson() {
@@ -84,6 +90,7 @@ class BlogData {
     data['body'] = body;
     data['viewCount'] = viewCount;
     data['likeCount'] = likeCount;
+    data['externalLink'] = externalLink;
     if (artist != null) {
       data['artist'] = artist!.toJson();
     }
@@ -100,10 +107,12 @@ class Artist {
   Artist({this.id, this.name, this.profileImage, this.salon});
 
   Artist.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    profileImage = json['profileImage'];
-    salon = json['salon'] != null ? Salon.fromJson(json['salon']) : null;
+    id = json['id']?.toString();
+    name = json['name'] as String?;
+    profileImage = json['profileImage'] as String?;
+    salon = json['salon'] != null
+        ? Salon.fromJson(json['salon'] as Map<String, dynamic>)
+        : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -126,9 +135,9 @@ class Salon {
   Salon({this.id, this.name, this.image});
 
   Salon.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    image = json['image'];
+    id = json['id']?.toString();
+    name = json['name'] as String?;
+    image = json['image'] as String?;
   }
 
   Map<String, dynamic> toJson() {

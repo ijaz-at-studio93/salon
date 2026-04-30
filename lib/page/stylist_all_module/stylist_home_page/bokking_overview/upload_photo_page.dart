@@ -15,7 +15,18 @@ import 'package:salon/util/pick_image.dart';
 class UploadPhotoPage extends StatefulWidget {
   final String appointmentId;
 
-  const UploadPhotoPage({super.key, required this.appointmentId});
+  /// Pre-filled image paths (e.g. camera vs gallery chosen before this screen).
+  final List<String>? initialImagePaths;
+
+  /// Called after portfolio upload succeeds (e.g. refresh booking lists).
+  final VoidCallback? onUploadSuccess;
+
+  const UploadPhotoPage({
+    super.key,
+    required this.appointmentId,
+    this.initialImagePaths,
+    this.onUploadSuccess,
+  });
 
   @override
   State<UploadPhotoPage> createState() => _UploadPhotoPageState();
@@ -25,6 +36,15 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
   List gridImages = [];
   List gridVideo = [];
   final _stylistController = Get.find<StylistController>();
+
+  @override
+  void initState() {
+    super.initState();
+    final initial = widget.initialImagePaths;
+    if (initial != null && initial.isNotEmpty) {
+      gridImages.addAll(initial);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -253,6 +273,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                       multiplePath: data,
                       multiplePathVideo: videoData,
                       callback: () {
+                        widget.onUploadSuccess?.call();
                         Get.offAll(() => const StylistBottomBarPage());
                       });
                 } else if (gridImages.isNotEmpty) {
@@ -268,6 +289,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                       multiplePath: data,
                       multiplePathVideo: [],
                       callback: () {
+                        widget.onUploadSuccess?.call();
                         Get.offAll(() => const StylistBottomBarPage());
                       });
                 } else if (gridVideo.isNotEmpty) {
@@ -283,6 +305,7 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                       multiplePath: [],
                       multiplePathVideo: videoData,
                       callback: () {
+                        widget.onUploadSuccess?.call();
                         Get.offAll(() => const StylistBottomBarPage());
                       });
                 }

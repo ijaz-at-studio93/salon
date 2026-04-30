@@ -13,7 +13,7 @@ import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
 
-import 'social_page.dart';
+import 'package:salon/page/stylist_all_module/profile/stylist_content_page.dart';
 
 class PostBlogPage extends StatefulWidget {
   const PostBlogPage({super.key});
@@ -116,7 +116,7 @@ class _PostBlogPageState extends State<PostBlogPage> {
           video: videoPath,
           callback: () {
             Get.back();
-            Get.to(() => const SocialPage());
+            Get.to(() => const StylistContentPage());
           });
     }
   }

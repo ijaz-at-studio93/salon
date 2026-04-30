@@ -83,8 +83,10 @@ class StylistController extends GetxController {
       ArtistPortfolioModel().obs;
   ArtistPortfolioModel get getArtistPortfolioModel =>
       _artistPortfolioModel.value;
-  set setArtistPortfolioModel(val) =>
-      _overallStylistReviewListModel.value = val;
+  set setArtistPortfolioModel(val) => _artistPortfolioModel.value = val;
+
+  final RxBool _portfolioUploadBusy = false.obs;
+  bool get portfolioUploadBusy => _portfolioUploadBusy.value;
 
   /*---------------------- Get PendingAppointmentsListModel --------------------*/
   doPendingAppointmentsListModel() async {
@@ -242,6 +244,31 @@ class StylistController extends GetxController {
     }
   }
 
+  /// `PUT /artist/blog/:id` — only [description] and/or new [image] / [video] files.
+  Future<void> doUpdateArtistBlog({
+    required String blogId,
+    required String description,
+    File? image,
+    File? video,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      final descTrim = description.trim();
+      final ok = await StylistAPI.updateArtistBlog(
+        blogId: blogId,
+        description: descTrim,
+        image: image,
+        video: video,
+      );
+      if (ok) {
+        await doGetBlog();
+        onSuccess?.call();
+      }
+    } catch (e) {
+      showError(e);
+    }
+  }
+
   /*---------------------------- Get  Over  All Stylist Review -------------*/
   doGetOverallStylistReview() async {
     try {
@@ -280,21 +307,51 @@ class StylistController extends GetxController {
     }
   }
 
+  static const int portfolioMaxItems = 3;
+
+  /*--------------------  Add / fill portfolio (API create or PATCH slot) ------*/
+  Future<void> doUploadPortfolioMedia({
+    required File file,
+    required bool isImage,
+    required VoidCallback callback,
+  }) async {
+    final list = _artistPortfolioModel.value.data?.portfolio ?? [];
+    if (list.length >= portfolioMaxItems) {
+      showError('You can add up to $portfolioMaxItems portfolio items.');
+      return;
+    }
+
+    try {
+      _portfolioUploadBusy.value = true;
+      await StylistAPI.uploadSamplePortfolio(
+        imagePaths: isImage ? [file.path] : const [],
+        videoPaths: isImage ? const [] : [file.path],
+      );
+
+      await doGetArtistPortfolio(showProgress: false);
+      callback();
+    } catch (e) {
+      showError(e);
+    } finally {
+      _portfolioUploadBusy.value = false;
+    }
+  }
+
   /*--------------------  Update PortFolio  For Stylist  --------------*/
   doUpdatePostFolio({
     required String portfolioId,
     required bool isImage,
-    required File image,
-    required File video,
+    required File file,
     required VoidCallback callback,
   }) async {
     try {
       _showProgress.value = true;
       bool result = await StylistAPI.updatePortFolio(
-          portfolioId: portfolioId,
-          isImage: isImage,
-          image: image,
-          video: video);
+        portfolioId: portfolioId,
+        image: file,
+        video: file,
+        isImage: isImage,
+      );
 
       if (result) {
         callback.call();

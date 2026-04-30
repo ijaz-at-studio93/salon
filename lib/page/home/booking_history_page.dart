@@ -151,7 +151,8 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           appt?.artist?.name,
                                                   listStylistId:
                                                       firstStylist?.id ??
-                                                          appt?.stylistIds?.firstOrNull,
+                                                          appt?.stylistIds
+                                                              ?.firstOrNull,
                                                 ));
                                           },
                                         ),
@@ -197,7 +198,8 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                                           appt?.artist?.name,
                                                   listStylistId:
                                                       firstStylist?.id ??
-                                                          appt?.stylistIds?.firstOrNull,
+                                                          appt?.stylistIds
+                                                              ?.firstOrNull,
                                                 ));
                                           },
                                         ),

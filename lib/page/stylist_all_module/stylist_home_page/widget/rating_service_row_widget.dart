@@ -6,10 +6,16 @@ import '../../../../project_specific/text_theme.dart';
 class RatingServicesRowWidget extends StatelessWidget {
   final String image;
   final String title;
-  final Color color ;
+  final Color color;
   final String titleValue;
   final String subTitleValue;
-  const RatingServicesRowWidget({super.key, required this.image, required this.title, required this.color, required this.titleValue, required this.subTitleValue});
+  const RatingServicesRowWidget(
+      {super.key,
+      required this.image,
+      required this.title,
+      required this.color,
+      required this.titleValue,
+      required this.subTitleValue});
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +28,9 @@ class RatingServicesRowWidget extends StatelessWidget {
           Container(
             height: 48,
             width: 48,
-            decoration:   BoxDecoration(
+            decoration: BoxDecoration(
                 shape: BoxShape.circle,
-            border: Border.all(
-              color: color,
-              width: 3
-            )
-            ),
+                border: Border.all(color: color, width: 3)),
             child: Center(
               child: Image.asset(
                 image,
@@ -50,10 +52,8 @@ class RatingServicesRowWidget extends StatelessWidget {
               Text(
                 titleValue,
                 textScaler: const TextScaler.linear(0.80),
-                style: AppTextTheme.bold
-                    .copyWith(color: color ),
+                style: AppTextTheme.bold.copyWith(color: color),
               ),
-
             ],
           )
         ],

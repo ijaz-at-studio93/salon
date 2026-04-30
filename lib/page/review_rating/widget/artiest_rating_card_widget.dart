@@ -9,7 +9,15 @@ import 'package:salon/project_specific/text_theme.dart';
 
 class ArtiestRatingCardWidget extends StatefulWidget {
   final OverAllArtists overAllArtists;
-  const ArtiestRatingCardWidget({super.key, required this.overAllArtists});
+
+  /// When false, only the review card is shown (use when the artist header is rendered once above the list).
+  final bool showArtistHeader;
+
+  const ArtiestRatingCardWidget({
+    super.key,
+    required this.overAllArtists,
+    this.showArtistHeader = true,
+  });
 
   @override
   State<ArtiestRatingCardWidget> createState() =>
@@ -22,30 +30,31 @@ class _ArtiestRatingCardWidgetState extends State<ArtiestRatingCardWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(100),
-                child: Image.network(
-                  "${APIConstants.image}${widget.overAllArtists.artist?.profileImage ?? ""}",
-                  height: 39,
-                  width: 39,
-                  fit: BoxFit.cover,
+        if (widget.showArtistHeader) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: Image.network(
+                    "${APIConstants.image}${widget.overAllArtists.artist?.profileImage ?? ""}",
+                    height: 39,
+                    width: 39,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Text(
-                widget.overAllArtists.artist?.name ?? "",
-                style: AppTextTheme.medium
-                    .copyWith(fontSize: 15, color: ColorConstant.blackColor),
-              ),
-
-            ],
+                const SizedBox(width: 10),
+                Text(
+                  widget.overAllArtists.artist?.name ?? "",
+                  style: AppTextTheme.medium
+                      .copyWith(fontSize: 15, color: ColorConstant.blackColor),
+                ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
+          const SizedBox(height: 12),
+        ],
         Container(
           width: Get.width,
           margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -97,9 +106,6 @@ class _ArtiestRatingCardWidgetState extends State<ArtiestRatingCardWidget> {
     // Define the desired date format
     DateFormat dateFormat = DateFormat('dd MMMM yyyy');
     // Format the date
-    String formattedDate = dateFormat.format(dateTime);
-    print(formattedDate); //
-
-    return formattedDate; // Output: 04 June 2024
+    return dateFormat.format(dateTime);
   }
 }

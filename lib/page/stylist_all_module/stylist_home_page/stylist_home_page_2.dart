@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
-import 'package:salon/page/stylist/stylist_about_page.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_service_row_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/stylist_portfolio_section.dart';
@@ -85,17 +84,8 @@ class _HomePage2State extends State<HomePage2> {
                             final portfolio = _stylistController
                                     .getArtistPortfolioModel.data?.portfolio ??
                                 [];
-                            Future<void> openPortfolio() async {
-                              await Get.to(() => const StylistAboutPage());
-                              await _stylistController.doGetArtistPortfolio(
-                                  showProgress: false);
-                            }
-
                             return StylistPortfolioSection(
                               items: portfolio,
-                              onAdd: () => openPortfolio(),
-                              onFabPressed: () => openPortfolio(),
-                              onEdit: (_) => openPortfolio(),
                             );
                           }),
                         ),

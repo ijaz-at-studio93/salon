@@ -40,16 +40,15 @@ class _StylistBottomBarPageState extends State<StylistBottomBarPage> {
             ? FloatingActionButton(
                 onPressed: () {
                   showModalBottomSheet(
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(32),
-                        topRight: Radius.circular(32),
-                      )),
-                      context: context,
-                      builder: (context) {
-                        return const BlogAddSheetPage();
-                      });
+                    isScrollControlled: true,
+                    backgroundColor: ColorConstant.whiteColor,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.vertical(top: Radius.circular(20)),
+                    ),
+                    context: context,
+                    builder: (context) => const BlogAddSheetPage(),
+                  );
                 },
                 backgroundColor: ColorConstant.primaryColor,
                 child: const Center(

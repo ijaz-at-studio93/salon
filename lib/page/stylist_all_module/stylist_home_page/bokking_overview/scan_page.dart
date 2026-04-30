@@ -15,8 +15,12 @@ import 'package:salon/project_specific/project_appbar.dart';
 class ScanPage extends StatefulWidget {
   final VoidCallback callback;
   final String appointmentId;
-  const ScanPage(
-      {super.key, required this.callback, required this.appointmentId});
+
+  const ScanPage({
+    super.key,
+    required this.callback,
+    required this.appointmentId,
+  });
 
   @override
   State<ScanPage> createState() => _ScanPageState();

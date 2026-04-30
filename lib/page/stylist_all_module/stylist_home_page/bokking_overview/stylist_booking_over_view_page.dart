@@ -3,17 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:salon/constant/api_constant.dart';
-import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/profile/widget/served_booking_widget.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/accepted_booking_overview_widget.dart';
-import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/acceptnce_overview_page.dart';
+import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/stylist_appointment_details_page.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/status_bar_color_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/NoItemsWidget.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class StylistBookingOverViewPage extends StatefulWidget {
   const StylistBookingOverViewPage({super.key});
@@ -42,8 +40,6 @@ class _StylistBookingOverViewPageState
       appBar: statusBarTheme(context),
       body: Column(
         children: [
-          _headerWidget(),
-          Container(height: 1, color: ColorConstant.bgColor),
           /* ---------------- Booking Overview -------------- */
           Obx(
             () => Expanded(
@@ -54,14 +50,17 @@ class _StylistBookingOverViewPageState
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 15),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Text(
-                              "Bookings Overview",
-                              textScaler: const TextScaler.linear(0.85),
-                              style: AppTextTheme.medium.copyWith(
-                                  color: ColorConstant.grayTextColor,
-                                  fontSize: 23),
+                          Center(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Text(
+                                "Bookings Overview",
+                                textScaler: const TextScaler.linear(0.85),
+                                style: AppTextTheme.semibold.copyWith(
+                                    color: ColorConstant.blackColor,
+                                    fontSize: 23),
+                              ),
                             ),
                           ),
                           const SizedBox(height: 15),
@@ -101,19 +100,21 @@ class _StylistBookingOverViewPageState
                                                     .serviceCount ??
                                                 0,
                                             onPress: () {
-                                              Get.to(() => BookingOverviewPage(
-                                                    appointmentId:
-                                                        _stylistController
-                                                                .getAcceptAppointmentsListModel
-                                                                .data?[index]
-                                                                .appointment
-                                                                ?.id ??
-                                                            "",
-                                                    callback: () {
-                                                      _stylistController
-                                                          .doAcceptAppointment();
-                                                    },
-                                                  ));
+                                              Get.to(
+                                                () =>
+                                                    StylistAppointmentDetailsPage(
+                                                  appointmentId: _stylistController
+                                                          .getAcceptAppointmentsListModel
+                                                          .data?[index]
+                                                          .appointment
+                                                          ?.id ??
+                                                      "",
+                                                  callback: () {
+                                                    _stylistController
+                                                        .doAcceptAppointment();
+                                                  },
+                                                ),
+                                              );
                                             },
                                             startTime: _stylistController
                                                     .getAcceptAppointmentsListModel
@@ -190,15 +191,18 @@ class _StylistBookingOverViewPageState
                                               if (aid == null || aid.isEmpty) {
                                                 return;
                                               }
-                                              Get.to(() => BookingOverviewPage(
-                                                    appointmentId: aid,
-                                                    callback: () {
-                                                      _stylistController
-                                                          .doGetServedBooking(
-                                                              distribution:
-                                                                  "all_time");
-                                                    },
-                                                  ));
+                                              Get.to(
+                                                () =>
+                                                    StylistAppointmentDetailsPage(
+                                                  appointmentId: aid,
+                                                  callback: () {
+                                                    _stylistController
+                                                        .doGetServedBooking(
+                                                      distribution: "all_time",
+                                                    );
+                                                  },
+                                                ),
+                                              );
                                             },
                                           ),
                                         );
@@ -211,96 +215,6 @@ class _StylistBookingOverViewPageState
         ],
       ),
     );
-  }
-
-  /* --------------- Header Widget ------------ */
-  _headerWidget() {
-    return Container(
-      height: 60,
-      color: ColorConstant.whiteColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "My Dashboard",
-              style: AppTextTheme.bold
-                  .copyWith(color: ColorConstant.blackColor, fontSize: 19),
-            ),
-            Row(
-              children: [
-                /*GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.primaryColor.withOpacity(0.2),
-                    ),
-                    child: Stack(
-                      children: [
-                        Center(
-                          child: Image.asset(
-                            AssetsConstant.notificationIcon,
-                            height: 20,
-                            width: 20,
-                          ),
-                        ),
-                        Positioned(
-                          top: 10,
-                          left: 23,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: const BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: ColorConstant.orangeDotColor),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                ),*/
-
-                GestureDetector(
-                  onTap: () {
-                    _launchDialer(phoneNumber: "88970 90838");
-                  },
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.redColor,
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        AssetsConstant.sosIcon,
-                        height: 20,
-                        width: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  /*======================= LaunchDialer =========================*/
-  Future<void> _launchDialer({required String phoneNumber}) async {
-    final Uri url = Uri.parse('tel:$phoneNumber');
-
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
   }
 
   /* --------------- Tab Bar variable  ---------------- */
