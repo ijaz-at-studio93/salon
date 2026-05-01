@@ -30,6 +30,7 @@ class _HomepageState extends State<Homepage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _homeController.ensureSalonWalletSocket();
       _homeController.doCheckEligibility(callback: () {
         _homeController.doGetSalonDashBoard(distribution: "all_time");
       });

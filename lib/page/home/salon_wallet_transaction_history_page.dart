@@ -32,6 +32,7 @@ class _SalonWalletTransactionPageState
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _homeController.ensureSalonWalletSocket();
       _homeController.doGetSalonWalletTransactions(distribution: 'all_time');
     });
   }

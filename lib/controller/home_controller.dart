@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -5,8 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:socket_io_client/socket_io_client.dart' as socket_io;
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/api/home_api.dart';
+import 'package:salon/constant/api_constant.dart';
+import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/model/artist_model/blog_data_get_model.dart';
 import 'package:salon/model/availability/artiest_availability_get_model.dart';
 import 'package:salon/model/availability/salon_avibility_model.dart';
@@ -32,6 +36,7 @@ import '../model/stylist/allow_portfolio_upload_model.dart';
 import '../model/translation/salon_transaction_history_model.dart';
 import '../model/translation/translation_history_model.dart';
 import '../model/service_model/rejection_reason_model.dart';
+import '../util/shared_prefs.dart';
 
 class HomeController extends GetxController {
   /*---------------  Show Progressbar --------------*/
@@ -220,6 +225,10 @@ class HomeController extends GetxController {
   SalonDashboardModel get getSalonDashboardModel => _salonDashboardModel.value;
   set setSalonDashboardModel(val) => _salonDashboardModel.value = val;
 
+  socket_io.Socket? _salonWalletSocket;
+  String? _salonWalletSocketSalonId;
+  DateTime? _lastWalletSocketDashboardRefresh;
+
   /*----------------------  TransactionsHistoryModel --------------*/
   final Rx<TransactionsHistoryModel> _transactionsHistoryModel =
       TransactionsHistoryModel().obs;
@@ -232,7 +241,8 @@ class HomeController extends GetxController {
       SalonTransactionsHistoryModel().obs;
   SalonTransactionsHistoryModel get getSalonTransactionsHistoryModel =>
       _salonTransactionsHistoryModel.value;
-  set setSalonTransactionsHistoryModel(val) => _salonTransactionsHistoryModel.value = val;
+  set setSalonTransactionsHistoryModel(val) =>
+      _salonTransactionsHistoryModel.value = val;
 
   /*------------------- TransactionsHistoryUnsettledModel  ---------------------*/
   final Rx<TransactionsHistoryModel> _transactionsHistoryUnsettledModel =
@@ -643,9 +653,8 @@ class HomeController extends GetxController {
     try {
       _showProgress.value = true;
       final requested = distribution ?? _lastUpcomingDistribution;
-      final d = _pendingDistributionValues.contains(requested)
-          ? requested
-          : 'today';
+      final d =
+          _pendingDistributionValues.contains(requested) ? requested : 'today';
       _lastUpcomingDistribution = d;
       _salonUpcomingList.value =
           await HomeAPI.getPendingAppointments(distribution: d);
@@ -1057,16 +1066,151 @@ class HomeController extends GetxController {
   }
 
   /*-----------------  Get Salon DashBoard -----------------*/
-  doGetSalonDashBoard({required String distribution}) async {
+  doGetSalonDashBoard(
+      {required String distribution, bool silent = false}) async {
     try {
-      _showProgress.value = true;
+      if (!silent) _showProgress.value = true;
       _salonDashboardModel.value =
           await HomeAPI.getSalonDashBoard(distribution: distribution);
     } catch (e) {
-      showError(e);
+      if (!silent) showError(e);
     } finally {
-      _showProgress.value = false;
+      if (!silent) _showProgress.value = false;
     }
+  }
+
+  /// Connects to Socket.IO and listens for [transaction_update] so dashboard wallet
+  /// and salon wallet transaction list refresh when the server debits the wallet.
+  /// Server should either join this client to `salonId` on auth, or handle `emit('join', salonId)`.
+  void ensureSalonWalletSocket() {
+    if (!SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
+      _logSalonSocket('ensure skipped: not salon session');
+      return;
+    }
+    if (!SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
+      _logSalonSocket('ensure skipped: not logged in');
+      return;
+    }
+
+    final dynamic raw = SharedPrefs.read(PrefConstants.userModel);
+    if (raw is! Map<String, dynamic>) {
+      _logSalonSocket('ensure skipped: no userModel in storage');
+      return;
+    }
+
+    final model = SalonResponseModel.fromJson(raw);
+    final salonId = model.data?.salonData?.id;
+    if (salonId == null || salonId.isEmpty) {
+      _logSalonSocket('ensure skipped: missing salonData.id');
+      return;
+    }
+
+    final existing = _salonWalletSocket;
+    if (existing != null &&
+        _salonWalletSocketSalonId == salonId &&
+        existing.connected) {
+      _logSalonSocket('already connected salonId=$salonId');
+      return;
+    }
+
+    unbindSalonWalletSocket();
+
+    final refreshToken = model.data?.refreshToken ?? '';
+    if (refreshToken.isEmpty) {
+      _logSalonSocket(
+          'ensure skipped: empty refreshToken (re-login may be required)');
+      return;
+    }
+
+    _logSalonSocket('connecting url=${APIConstants.socketUrl} path=/socket.io '
+        'salonId=$salonId');
+
+    final socket = socket_io.io(
+      APIConstants.socketUrl,
+      socket_io.OptionBuilder()
+          .setTransports(['websocket'])
+          .setPath('/socket.io')
+          .enableForceNew()
+          // Backend samples use enableAutoConnect; in this client the manager
+          // opens the connection as soon as `io()` runs, before listeners are
+          // attached — use disableAutoConnect + connect() after onConnect.
+          .disableAutoConnect()
+          .setTimeout(20000)
+          .setAuth({'refreshToken': refreshToken})
+          .build(),
+    );
+
+    socket.onConnect((_) {
+      _logSalonSocket('connected id=${socket.id} → emit join salonId=$salonId');
+      socket.emit('join', salonId);
+    });
+
+    socket.onConnectError((dynamic data) {
+      _logSalonSocket('connect_error: $data');
+    });
+
+    socket.onDisconnect((dynamic reason) {
+      _logSalonSocket('disconnect: $reason');
+    });
+
+    socket.onError((dynamic data) {
+      _logSalonSocket('engine/manager error: $data');
+    });
+
+    socket.onReconnectAttempt((dynamic n) {
+      _logSalonSocket('reconnect_attempt: $n');
+    });
+
+    socket.onReconnectError((dynamic data) {
+      _logSalonSocket('reconnect_error: $data');
+    });
+
+    socket.on('transaction_update', (dynamic data) {
+      _logSalonSocket('transaction_update received: $data');
+      final now = DateTime.now();
+      final last = _lastWalletSocketDashboardRefresh;
+      if (last != null && now.difference(last).inMilliseconds < 400) {
+        _logSalonSocket('transaction_update ignored (debounced)');
+        return;
+      }
+      _lastWalletSocketDashboardRefresh = now;
+      _logSalonSocket('transaction_update → refresh dashboard + wallet txs');
+      doGetSalonDashBoard(distribution: 'all_time', silent: true);
+      doGetSalonWalletTransactions(distribution: 'all_time', silent: true);
+    });
+
+    socket.connect();
+    _logSalonSocket('connect() invoked (handlers registered first); '
+        'immediate connected=${socket.connected}');
+
+    scheduleMicrotask(() {
+      _logSalonSocket(
+          'microtask: connected=${socket.connected} id=${socket.id}');
+    });
+
+    _salonWalletSocket = socket;
+    _salonWalletSocketSalonId = salonId;
+  }
+
+  void unbindSalonWalletSocket() {
+    if (_salonWalletSocket != null) {
+      _logSalonSocket('disposing socket (salonId=$_salonWalletSocketSalonId)');
+    }
+    _salonWalletSocket?.dispose();
+    _salonWalletSocket = null;
+    _salonWalletSocketSalonId = null;
+  }
+
+  static void _logSalonSocket(String message) {
+    if (kDebugMode) {
+      debugPrint('[SalonSocket] $message');
+    }
+  }
+
+  @override
+  void onClose() {
+    unbindSalonWalletSocket();
+    super.onClose();
   }
 
   /*-----------------  Salon wallet recharge request -----------------*/
@@ -1114,15 +1258,17 @@ class HomeController extends GetxController {
   }
 
   /* -------------------- Salon Transaction History -------------------- */
-  doGetSalonWalletTransactions({required String distribution}) async {
+  doGetSalonWalletTransactions(
+      {required String distribution, bool silent = false}) async {
     try {
-      _showProgress.value = true;
+      if (!silent) _showProgress.value = true;
       _salonTransactionsHistoryModel.value =
-      await HomeAPI.getSalonWalletTransactionHistory(distribution: distribution);
+          await HomeAPI.getSalonWalletTransactionHistory(
+              distribution: distribution);
     } catch (e) {
-      showError(e);
+      if (!silent) showError(e);
     } finally {
-      _showProgress.value = false;
+      if (!silent) _showProgress.value = false;
     }
   }
 

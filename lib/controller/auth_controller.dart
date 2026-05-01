@@ -10,6 +10,7 @@ import 'package:salon/model/auth/otp_verify_model.dart';
 import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/page/auth/login_page.dart';
+import 'package:salon/controller/home_controller.dart';
 
 import '../util/shared_prefs.dart';
 
@@ -366,6 +367,9 @@ class AuthController extends GetxController {
 
 /*------------------- RestAPP --------------*/
   resetApp() async {
+    if (Get.isRegistered<HomeController>()) {
+      Get.find<HomeController>().unbindSalonWalletSocket();
+    }
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, false);
     await SharedPrefs.writeValue(PrefConstants.isFirstTime, true);
     SharedPrefs.writeValue(PrefConstants.isSalon, false);
