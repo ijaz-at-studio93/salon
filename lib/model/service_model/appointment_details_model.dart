@@ -356,7 +356,21 @@ class User {
   String? mobile;
   String? countryCode;
 
-  User({this.id, this.name, this.profileImage, this.mobile, this.countryCode});
+  /// Artist gender when API sends it (e.g. MALE / FEMALE); used for men/women staff lanes.
+  String? gender;
+
+  /// HAIR / BEAUTY when API sends `profession`.
+  String? profession;
+
+  User({
+    this.id,
+    this.name,
+    this.profileImage,
+    this.mobile,
+    this.countryCode,
+    this.gender,
+    this.profession,
+  });
 
   User.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -364,6 +378,8 @@ class User {
     profileImage = json['profileImage'];
     mobile = json['mobile'];
     countryCode = json['countryCode'];
+    gender = json['gender']?.toString();
+    profession = json['profession']?.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -373,6 +389,8 @@ class User {
     data['profileImage'] = profileImage;
     data['mobile'] = mobile;
     data['countryCode'] = countryCode;
+    data['gender'] = gender;
+    data['profession'] = profession;
     return data;
   }
 }

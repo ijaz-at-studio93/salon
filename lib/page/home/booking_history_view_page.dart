@@ -1,3 +1,5 @@
+import 'dart:math' show Random;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,6 +48,10 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   List<User> _stylistOptions = [];
   List<AppointmentTimeSlot> _slotOptions = [];
   Set<String> _selectedStylistIds = {};
+
+  /// When [same-profession + men/women lanes], maps each preferred stylist to a lane for chips & approve order.
+  String? _menLaneStylistId;
+  String? _womenLaneStylistId;
   int _maxStylistSelection = 0;
   int _selectedSlotIndex = 0;
   String? _selectionSyncKey;
@@ -87,6 +93,8 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       _stylistOptions = [];
       _slotOptions = [];
       _selectedStylistIds = {};
+      _menLaneStylistId = null;
+      _womenLaneStylistId = null;
       _maxStylistSelection = 0;
       _selectedSlotIndex = 0;
     }
@@ -102,6 +110,8 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
       _stylistOptions = [];
       _slotOptions = [];
       _selectedStylistIds = {};
+      _menLaneStylistId = null;
+      _womenLaneStylistId = null;
       _maxStylistSelection = 0;
       _selectedSlotIndex = 0;
       _selectionSyncKey = key;
@@ -111,11 +121,23 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
 
     _slotOptions = _slotsFromAppointment(appt);
     _stylistOptions = _stylistsFromAppointmentWithListFallback(appt);
-    final categorized = appt.artists ?? {};
 
     final preferredIds = appt.stylistIds ?? [];
     _maxStylistSelection = preferredIds.length;
     _selectedStylistIds = preferredIds.toSet();
+
+    _menLaneStylistId = null;
+    _womenLaneStylistId = null;
+
+    final lists = _hairBeautyLists(appt);
+    final crossProfession = lists.hair.isNotEmpty && lists.beauty.isNotEmpty;
+    if (!crossProfession) {
+      final roster = lists.hair.isNotEmpty ? lists.hair : lists.beauty;
+      final laneCfg = _genderLaneConfig(roster);
+      if (laneCfg.useGenderLanes && preferredIds.length == 2) {
+        _assignLanesFromPreferredIds(preferredIds, roster, laneCfg);
+      }
+    }
 
     _selectedSlotIndex = _defaultSlotIndex(appt);
 
@@ -198,6 +220,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
               id: e.id,
               name: e.name,
               profileImage: e.profileImage,
+              gender: e.gender,
             ),
           )
           .toList();
@@ -458,18 +481,387 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     );
   }
 
-  Widget _buildStylistSection() {
+  /// Normalizes artist gender from API. UNISEX appears in both men and women lanes.
+  String? _normalizedArtistGender(User u) {
+    final raw = (u.gender ?? '').trim();
+    if (raw.isEmpty) return null;
+    final upper = raw.toUpperCase();
+    if (upper == 'MALE' || upper == 'M') return 'male';
+    if (upper == 'FEMALE' || upper == 'F') return 'female';
+    if (upper == 'UNISEX') return 'unisex';
+    final lower = raw.toLowerCase();
+    if (lower == 'male') return 'male';
+    if (lower == 'female') return 'female';
+    if (lower == 'unisex') return 'unisex';
+    return null;
+  }
 
-    final appt =
-        _homeController.getAppointmentDetailsModel.data?.appointment;
+  ({List<User> hair, List<User> beauty}) _hairBeautyLists(Appointment appt) {
+    final categorized = appt.artists ?? {};
+    var hairList = <User>[];
+    var beautyList = <User>[];
+    if (categorized.isEmpty) {
+      hairList = _stylistOptions;
+    } else {
+      categorized.forEach((key, value) {
+        final k = key.toUpperCase();
+        if (k == 'HAIR') hairList = value;
+        if (k == 'BEAUTY') beautyList = value;
+      });
+    }
+    return (hair: hairList, beauty: beautyList);
+  }
+
+  ({
+    List<User> menLane,
+    List<User> womenLane,
+    bool useGenderLanes,
+  }) _genderLaneConfig(List<User> users) {
+    final males = <User>[];
+    final females = <User>[];
+    final unisex = <User>[];
+    for (final u in users) {
+      final g = _normalizedArtistGender(u);
+      if (g == 'male') {
+        males.add(u);
+      } else if (g == 'female') {
+        females.add(u);
+      } else if (g == 'unisex') {
+        unisex.add(u);
+      }
+    }
+    final menLane = <User>[...males, ...unisex];
+    final womenLane = <User>[...females, ...unisex];
+    final useGenderLanes =
+        _maxStylistSelection >= 2 && menLane.isNotEmpty && womenLane.isNotEmpty;
+    return (
+      menLane: menLane,
+      womenLane: womenLane,
+      useGenderLanes: useGenderLanes,
+    );
+  }
+
+  bool _stylistIdInLaneList(String id, List<User> lane) {
+    if (id.isEmpty) return false;
+    return lane.any((u) => (u.id ?? '') == id);
+  }
+
+  /// Maps the two preferred stylist IDs to men/women lanes (stable random if both UNISEX).
+  void _assignLanesFromPreferredIds(
+    List<String> ids,
+    List<User> roster,
+    ({
+      List<User> menLane,
+      List<User> womenLane,
+      bool useGenderLanes,
+    }) cfg,
+  ) {
+    if (ids.length != 2) return;
+    final menLaneList = cfg.menLane;
+    final womenLaneList = cfg.womenLane;
+
+    User? userOf(String rawId) {
+      for (final u in roster) {
+        if ((u.id ?? '') == rawId) return u;
+      }
+      return null;
+    }
+
+    bool inMen(String id) => _stylistIdInLaneList(id, menLaneList);
+    bool inWomen(String id) => _stylistIdInLaneList(id, womenLaneList);
+
+    int stableSeed() => widget.appointmentId.hashCode ^ ids.join('-').hashCode;
+
+    void randomSplitUnisexPair() {
+      final order = List<String>.from(ids)..shuffle(Random(stableSeed()));
+      _menLaneStylistId = order[0];
+      _womenLaneStylistId = order[1];
+    }
+
+    final u1 = userOf(ids[0]);
+    final u2 = userOf(ids[1]);
+    if (u1 == null || u2 == null) {
+      _menLaneStylistId = ids[0];
+      _womenLaneStylistId = ids[1];
+      return;
+    }
+
+    final g1 = _normalizedArtistGender(u1);
+    final g2 = _normalizedArtistGender(u2);
+
+    String idOf(User u) => u.id ?? '';
+
+    // Male + UNISEX → male For men, unisex For women
+    if ((g1 == 'male' && g2 == 'unisex') || (g1 == 'unisex' && g2 == 'male')) {
+      final maleUser = g1 == 'male' ? u1 : u2;
+      final uniUser = g1 == 'unisex' ? u1 : u2;
+      _menLaneStylistId = idOf(maleUser);
+      _womenLaneStylistId = idOf(uniUser);
+    } else if ((g1 == 'female' && g2 == 'unisex') ||
+        (g1 == 'unisex' && g2 == 'female')) {
+      // Female + UNISEX → unisex For men, female For women
+      final femaleUser = g1 == 'female' ? u1 : u2;
+      final uniUser = g1 == 'unisex' ? u1 : u2;
+      _menLaneStylistId = idOf(uniUser);
+      _womenLaneStylistId = idOf(femaleUser);
+    } else if ((g1 == 'male' && g2 == 'female') ||
+        (g1 == 'female' && g2 == 'male')) {
+      final maleUser = g1 == 'male' ? u1 : u2;
+      final femaleUser = g1 == 'female' ? u1 : u2;
+      _menLaneStylistId = idOf(maleUser);
+      _womenLaneStylistId = idOf(femaleUser);
+    } else if (g1 == 'unisex' && g2 == 'unisex') {
+      randomSplitUnisexPair();
+    } else {
+      _menLaneStylistId = ids[0];
+      _womenLaneStylistId = ids[1];
+    }
+
+    String? m = _menLaneStylistId;
+    String? w = _womenLaneStylistId;
+    if (m != null &&
+        w != null &&
+        m.isNotEmpty &&
+        w.isNotEmpty &&
+        inMen(m) &&
+        inWomen(w)) {
+      return;
+    }
+    if (m != null &&
+        w != null &&
+        m.isNotEmpty &&
+        w.isNotEmpty &&
+        inMen(w) &&
+        inWomen(m)) {
+      final t = m;
+      m = w;
+      w = t;
+      _menLaneStylistId = m;
+      _womenLaneStylistId = w;
+      return;
+    }
+    if (g1 == 'unisex' && g2 == 'unisex') {
+      randomSplitUnisexPair();
+      return;
+    }
+    if (inMen(ids[0]) && inWomen(ids[1])) {
+      _menLaneStylistId = ids[0];
+      _womenLaneStylistId = ids[1];
+    } else if (inMen(ids[1]) && inWomen(ids[0])) {
+      _menLaneStylistId = ids[1];
+      _womenLaneStylistId = ids[0];
+    }
+  }
+
+  void _syncSelectedIdsFromGenderLanes() {
+    final out = <String>{};
+    final m = _menLaneStylistId ?? '';
+    final w = _womenLaneStylistId ?? '';
+    if (m.isNotEmpty) out.add(m);
+    if (w.isNotEmpty) out.add(w);
+    _selectedStylistIds = out;
+  }
+
+  void _pickMenLaneStylist(String id) {
+    setState(() {
+      if (id == _womenLaneStylistId) {
+        _womenLaneStylistId = _menLaneStylistId;
+      }
+      _menLaneStylistId = id;
+      _syncSelectedIdsFromGenderLanes();
+    });
+  }
+
+  void _pickWomenLaneStylist(String id) {
+    setState(() {
+      if (id == _menLaneStylistId) {
+        _menLaneStylistId = _womenLaneStylistId;
+      }
+      _womenLaneStylistId = id;
+      _syncSelectedIdsFromGenderLanes();
+    });
+  }
+
+  Widget _stylistChipWrapGenderLane(List<User> laneUsers, {required bool men}) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: laneUsers.map((u) {
+        final id = u.id ?? '';
+        final picked = men ? _menLaneStylistId : _womenLaneStylistId;
+        final isSelected = id.isNotEmpty && id == picked;
+        return _selectionChip(
+          u.name ?? '—',
+          selected: isSelected,
+          onTap: _pendingSelectable
+              ? () => men ? _pickMenLaneStylist(id) : _pickWomenLaneStylist(id)
+              : null,
+        );
+      }).toList(),
+    );
+  }
+
+  List<String>? _stylistIdsForApprove() {
+    if (_maxStylistSelection <= 0) return null;
+    final m = _menLaneStylistId;
+    final w = _womenLaneStylistId;
+    if (m != null &&
+        w != null &&
+        m.isNotEmpty &&
+        w.isNotEmpty &&
+        _maxStylistSelection == 2) {
+      return [m, w];
+    }
+    return _selectedStylistIds.toList();
+  }
+
+  void _replaceStylistSelectionWithinGroup(
+      List<User> group, String selectedId) {
+    for (final u in group) {
+      final rid = u.id ?? '';
+      if (rid.isNotEmpty) _selectedStylistIds.remove(rid);
+    }
+    if (selectedId.isNotEmpty) _selectedStylistIds.add(selectedId);
+  }
+
+  void _toggleStylistMultiSelect(String selectedId) {
+    if (_selectedStylistIds.contains(selectedId)) {
+      _selectedStylistIds.remove(selectedId);
+      return;
+    }
+    if (_selectedStylistIds.length >= _maxStylistSelection) {
+      showSnackBar(
+        message: 'Max $_maxStylistSelection stylist(s) allowed.',
+      );
+      return;
+    }
+    _selectedStylistIds.add(selectedId);
+  }
+
+  Widget _staffNameHeader() {
+    return Row(
+      children: [
+        Text(
+          'Staff Name :',
+          style: AppTextTheme.bold.copyWith(
+            color: ColorConstant.blackColor,
+            fontSize: 14,
+          ),
+        ),
+        if (_pendingSelectable)
+          Text(
+            ' (You can change staff)',
+            style: AppTextTheme.semibold.copyWith(
+              color: ColorConstant.grayTextColor,
+              fontSize: 14,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _professionSubheading(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        label,
+        style: AppTextTheme.medium.copyWith(
+          fontSize: 14,
+          color: ColorConstant.bookingPriceMagenta2,
+        ),
+      ),
+    );
+  }
+
+  Widget _genderLaneHeading(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6, top: 4),
+      child: Text(
+        label,
+        style: AppTextTheme.medium.copyWith(
+          fontSize: 13,
+          color: ColorConstant.grayTextColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _stylistChipWrap(List<User> users, void Function(String id) onPick) {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: users.map((u) {
+        final id = u.id ?? '';
+        final isSelected = _selectedStylistIds.contains(id);
+        return _selectionChip(
+          u.name ?? '—',
+          selected: isSelected,
+          onTap: _pendingSelectable ? () => onPick(id) : null,
+        );
+      }).toList(),
+    );
+  }
+
+  /// One profession bucket (HAIR only or BEAUTY only): either men/women lanes or multi/single select.
+  List<Widget> _sameProfessionStaffBlocks({
+    required String sectionTitle,
+    required List<User> users,
+  }) {
+    final unknown = <User>[];
+    for (final u in users) {
+      final g = _normalizedArtistGender(u);
+      if (g == null) unknown.add(u);
+    }
+
+    final cfg = _genderLaneConfig(users);
+    final menLane = cfg.menLane;
+    final womenLane = cfg.womenLane;
+    final useGenderLanes = cfg.useGenderLanes;
+
+    final out = <Widget>[
+      _professionSubheading('$sectionTitle :'),
+    ];
+
+    if (useGenderLanes) {
+      out.add(_genderLaneHeading('For men'));
+      out.add(_stylistChipWrapGenderLane(menLane, men: true));
+      out.add(_genderLaneHeading('For women'));
+      out.add(_stylistChipWrapGenderLane(womenLane, men: false));
+      if (unknown.isNotEmpty) {
+        out.add(_genderLaneHeading('Also available'));
+        out.add(
+          _stylistChipWrap(unknown, (id) {
+            setState(() => _toggleStylistMultiSelect(id));
+          }),
+        );
+      }
+      return out;
+    }
+
+    // Single lane: max 1 → pick one; max 2+ without M/F split → pick up to max from pool.
+    final pool = [...users];
+    out.add(
+      _stylistChipWrap(pool, (id) {
+        setState(() {
+          if (_maxStylistSelection <= 1) {
+            _replaceStylistSelectionWithinGroup(pool, id);
+          } else {
+            _toggleStylistMultiSelect(id);
+          }
+        });
+      }),
+    );
+    return out;
+  }
+
+  Widget _buildStylistSection() {
+    final appt = _homeController.getAppointmentDetailsModel.data?.appointment;
 
     final categorized = appt?.artists ?? {};
     List<User> hairList = [];
     List<User> beautyList = [];
 
-    /// Fallback (important — do not break existing)
     if (categorized.isEmpty) {
-      //return _buildFlatStylistSection(); // 👈 your existing UI
       hairList = _stylistOptions;
     }
 
@@ -483,164 +875,80 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     });
     final hasHair = hairList.isNotEmpty;
     final hasBeauty = beautyList.isNotEmpty;
-    final showHeadings = hasHair && hasBeauty;
-    print('categorized keys: ${categorized.keys}');
-    print('hairList length: ${hairList.length}');
-    print('beautyList length: ${beautyList.length}');
+    final crossProfession = hasHair && hasBeauty;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              'Staff Name :',
-              style: AppTextTheme.bold.copyWith(
-                color: ColorConstant.blackColor,
-                fontSize: 14,
-              ),
-            ),
-            if (_pendingSelectable)
-              Text(
-                ' (You can change staff)',
-                style: AppTextTheme.semibold.copyWith(
-                  color: ColorConstant.grayTextColor,
-                  fontSize: 14,
-                ),
-              ),
-          ],
-        ),
+        _staffNameHeader(),
         const SizedBox(height: 6),
-
-        /// 🔥 HAIR
-        if (hairList.isNotEmpty) ...[
-          if (showHeadings) ...[
-            Text('Stylist :', style: AppTextTheme.medium.copyWith(fontSize: 14, color: ColorConstant.bookingPriceMagenta2)),
-            const SizedBox(height: 6),
-          ],
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: hairList.map((u) {
-              final id = u.id ?? '';
-              final isSelected = _selectedStylistIds.contains(id);
-              return _selectionChip(
-                u.name ?? '—',
-                selected: isSelected,
-                onTap: _pendingSelectable
-                    ? () {
-                  setState(() {
-                    for (final h in hairList) {
-                      _selectedStylistIds.remove(h.id ?? ''); // 👈 remove all hair
-                    }
-                    _selectedStylistIds.add(id); // 👈 add only tapped one
-                  });
-                }
-                    : null,
-              );
-            }).toList(),
+        if (crossProfession) ...[
+          _professionSubheading('Stylist :'),
+          _stylistChipWrap(hairList, (id) {
+            setState(() => _replaceStylistSelectionWithinGroup(hairList, id));
+          }),
+          const SizedBox(height: 8),
+          _professionSubheading('Beautician :'),
+          _stylistChipWrap(beautyList, (id) {
+            setState(() => _replaceStylistSelectionWithinGroup(beautyList, id));
+          }),
+        ] else if (hasHair) ...[
+          ..._sameProfessionStaffBlocks(
+            sectionTitle: 'Stylist',
+            users: hairList,
           ),
-          const SizedBox(height: 5),
-        ],
-
-        /// 🔥 BEAUTY
-        if (beautyList.isNotEmpty) ...[
-          if (showHeadings) ...[
-            Text('Beautician :', style: AppTextTheme.medium.copyWith(fontSize: 14, color: ColorConstant.bookingPriceMagenta2)),
-            const SizedBox(height: 6),
-          ],
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: beautyList.map((u) {
-              final id = u.id ?? '';
-              final isSelected = _selectedStylistIds.contains(id);
-              return _selectionChip(
-                u.name ?? '—',
-                selected: isSelected,
-                onTap: _pendingSelectable
-                    ? () {
-                  setState(() {
-                    for (final b in beautyList) {
-                      _selectedStylistIds.remove(b.id ?? ''); // 👈 remove all beauty
-                    }
-                    _selectedStylistIds.add(id); // 👈 add only tapped one
-                  });
-                }
-                    : null,
-              );
-            }).toList(),
+        ] else if (hasBeauty) ...[
+          ..._sameProfessionStaffBlocks(
+            sectionTitle: 'Beautician',
+            users: beautyList,
           ),
-        ],
+        ] else
+          _buildFlatStylistFallbackBody(),
       ],
     );
   }
 
-  Widget _buildFlatStylistSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              'Stylist Name :',
-              style: AppTextTheme.bold.copyWith(
-                color: ColorConstant.blackColor,
-                fontSize: 14,
-              ),
-            ),
-            if (_pendingSelectable)
-              Text(
-                ' (You can change staff)',
-                style: AppTextTheme.semibold.copyWith(
-                  color: ColorConstant.grayTextColor,
-                  fontSize: 14,
-                ),
-              ),
-          ],
+  /// Chips only — outer [ _staffNameHeader ] is already shown above.
+  Widget _buildFlatStylistFallbackBody() {
+    if (_maxStylistSelection == 0) {
+      return Text(
+        'No stylist preference',
+        style: AppTextTheme.medium.copyWith(
+          color: ColorConstant.grayTextColor,
+          fontSize: 14,
         ),
-        const SizedBox(height: 6),
-        if (_maxStylistSelection == 0)
-          Text(
-            'No stylist preference',
-            style: AppTextTheme.medium.copyWith(
-              color: ColorConstant.grayTextColor,
-              fontSize: 14,
-            ),
-          )
-        else
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: List.generate(_stylistOptions.length, (i) {
-              final u = _stylistOptions[i];
-              final id = u.id ?? '';
-              final label = u.name ?? '—';
-              final isSelected = _selectedStylistIds.contains(id);
-              return _selectionChip(
-                label,
-                selected: isSelected,
-                onTap: _pendingSelectable
-                    ? () {
-                        setState(() {
-                          if (isSelected) {
-                            _selectedStylistIds.remove(id);
-                          } else if (_selectedStylistIds.length <
-                              _maxStylistSelection) {
-                            _selectedStylistIds.add(id);
-                          } else {
-                            showSnackBar(
-                              message:
-                                  'Max $_maxStylistSelection stylist(s) allowed.',
-                            );
-                          }
-                        });
-                      }
-                    : null,
-              );
-            }),
-          ),
-      ],
+      );
+    }
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: List.generate(_stylistOptions.length, (i) {
+        final u = _stylistOptions[i];
+        final id = u.id ?? '';
+        final label = u.name ?? '—';
+        final isSelected = _selectedStylistIds.contains(id);
+        return _selectionChip(
+          label,
+          selected: isSelected,
+          onTap: _pendingSelectable
+              ? () {
+                  setState(() {
+                    if (isSelected) {
+                      _selectedStylistIds.remove(id);
+                    } else if (_selectedStylistIds.length <
+                        _maxStylistSelection) {
+                      _selectedStylistIds.add(id);
+                    } else {
+                      showSnackBar(
+                        message:
+                            'Max $_maxStylistSelection stylist(s) allowed.',
+                      );
+                    }
+                  });
+                }
+              : null,
+        );
+      }),
     );
   }
 
@@ -1229,9 +1537,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     _homeController.doBookingApprove(
                       appointmentId: widget.appointmentId,
                       status: 'confirmed',
-                      stylistIds: _maxStylistSelection > 0
-                          ? _selectedStylistIds.toList()
-                          : null,
+                      stylistIds: _stylistIdsForApprove(),
                       startsAt: slot.startsAt,
                       endsAt: slot.endsAt,
                       callback: () {
