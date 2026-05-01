@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +21,8 @@ class DioClient {
   static CancelToken? cancelToken;
   static Dio? _dio;
 
-  static bool isRefreshing = false;
+  static bool _isRefreshing = false;
+  static Completer<bool>? _refreshCompleter;
 
   static Dio get client {
     return Get.find<Dio>();
@@ -95,20 +98,6 @@ class DioClient {
           /// ---------------------------
           onError: (DioException error, ErrorInterceptorHandler handler) async {
             final int? statusCode = error.response?.statusCode;
-            final String message =
-                error.response?.data?['message']?.toString() ?? "";
-
-            /// ------------------------------------------------
-            /// 🚨 STOP LOOP IF TOKEN COMPLETELY INVALID
-            /// ------------------------------------------------
-            if (message == "Invalid authorization token") {
-              isRefreshing = false;
-
-              /// Logout user immediately
-              Get.find<AuthController>().resetApp();
-
-              return handler.next(error);
-            }
 
             /// ------------------------------------------------
             /// 🔥 ACCESS TOKEN EXPIRED (401 / 403)
@@ -117,42 +106,57 @@ class DioClient {
               try {
                 final RequestOptions requestOptions = error.requestOptions;
 
-                /// ✅ Prevent infinite retry loop
+                /// Prevent infinite retry loop
                 if (requestOptions.extra["retried"] == true) {
                   return handler.next(error);
                 }
 
-                /// Avoid multiple refresh calls
-                if (!isRefreshing) {
-                  isRefreshing = true;
+                bool refreshSuccess;
 
-                  await AuthAPI.refreshAccessToken();
+                if (!_isRefreshing) {
+                  // This request owns the refresh — others will await its Completer
+                  _isRefreshing = true;
+                  _refreshCompleter = Completer<bool>();
 
-                  isRefreshing = false;
+                  bool result = false;
+                  try {
+                    result = await AuthAPI.refreshAccessToken();
+                  } catch (_) {
+                    result = false;
+                  }
+
+                  _isRefreshing = false;
+                  _refreshCompleter!.complete(result);
+                  _refreshCompleter = null;
+                  refreshSuccess = result;
                 } else {
-                  /// wait until refresh finishes
-                  await Future.delayed(const Duration(milliseconds: 500));
+                  // Another request is already refreshing — await its result
+                  refreshSuccess = await _refreshCompleter!.future;
                 }
 
-                /// ---------------------------
-                /// RETRY ORIGINAL REQUEST
-                /// ---------------------------
-                String newToken =
-                    SharedPrefs.readStringValue(PrefConstants.token);
+                if (!refreshSuccess) {
+                  Get.find<AuthController>().resetApp();
+                  return handler.next(error);
+                }
 
+                /// Retry original request with the new token
+                final String newToken =
+                    SharedPrefs.readStringValue(PrefConstants.token);
                 requestOptions.headers['Authorization'] = 'Bearer $newToken';
                 requestOptions.headers['x-access-token'] = newToken;
-
-                /// Mark request as retried (VERY IMPORTANT)
                 requestOptions.extra["retried"] = true;
 
                 final Response retryResponse =
                     await _dio!.fetch(requestOptions);
-
                 return handler.resolve(retryResponse);
               } catch (e) {
-                isRefreshing = false;
-                Get.find<AuthController>().resetApp();
+                // Transient error during refresh (e.g. SocketException) — do NOT logout
+                _isRefreshing = false;
+                if (_refreshCompleter != null &&
+                    !_refreshCompleter!.isCompleted) {
+                  _refreshCompleter!.complete(false);
+                  _refreshCompleter = null;
+                }
                 return handler.next(error);
               }
             }

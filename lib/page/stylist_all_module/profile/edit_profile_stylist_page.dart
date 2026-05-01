@@ -311,7 +311,7 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
     m.data?.salonArtistData?.mobile = newMobile;
     m.data?.salonArtistData?.whatsapp = newMobile;
     m.data?.salonArtistData?.countryCode = countryDialDigits;
-    _authController.userDataStoreToArtiestSharedPrefs(m);
+    _authController.userArtiestDataStoreToSharedPrefs(m);
   }
 
   void _showChangeMobileDialog() {

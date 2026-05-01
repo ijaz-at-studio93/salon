@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart' as getX;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
@@ -291,48 +292,68 @@ class AuthAPI {
     }
   }
 
-  static Future<saloonAuth.SalonResponseModel?> refreshAccessToken() async {
+  static Future<bool> refreshAccessToken() async {
+    final isSalon = SharedPrefs.readBoolValue(PrefConstants.isSalon);
     try {
-      final storedJson = SharedPrefs.read(PrefConstants.userModel);
+      if (isSalon) {
+        final storedJson = SharedPrefs.read(PrefConstants.userModel);
+        if (storedJson == null) return false;
 
-      if (storedJson == null) return null;
+        final model = saloonAuth.SalonResponseModel.fromJson(storedJson);
+        final refreshToken = model.data?.refreshToken ?? "";
+        debugPrint("refreshToken: $refreshToken");
+        if (refreshToken.isEmpty) return false;
 
-      final existingModel = saloonAuth.SalonResponseModel.fromJson(storedJson);
+        final response = await DioClient.client.get(
+          APIEndPoint.refreshToken,
+          options: Options(
+            headers: {'Cookie': 'refresh-token=$refreshToken'},
+            extra: {'skipAuth': true},
+          ),
+        );
 
-      final refreshToken = existingModel.data?.refreshToken ?? "";
+        final data = saloonAuth.Data.fromJson(response.data['data']);
+        model.data = model.data?.copyWith(
+          accessToken: data.accessToken,
+          accessTokenValidTill: data.accessTokenValidTill,
+          refreshToken: data.refreshToken,
+          refreshTokenValidTill: data.refreshTokenValidTill,
+        );
+        await getX.Get.find<AuthController>().userDataStoreToSharedPrefs(model);
+        return true;
+      } else {
+        final storedJson = SharedPrefs.read(PrefConstants.stylistModel);
+        if (storedJson == null) return false;
 
-      if (refreshToken.isEmpty) return null;
+        final model = SalonArtistResponseModel.fromJson(storedJson);
+        final refreshToken = model.data?.refreshToken ?? "";
+        if (refreshToken.isEmpty) return false;
 
-      final response = await DioClient.client.get(
-        APIEndPoint.refreshToken,
-        options: Options(
-          headers: {
-            'Cookie': 'refresh-token=$refreshToken',
-          },
-          extra: {
-            'skipAuth': true,
-          },
-        ),
-      );
+        final response = await DioClient.client.get(
+          APIEndPoint.refreshToken,
+          options: Options(
+            headers: {'Cookie': 'refresh-token=$refreshToken'},
+            extra: {'skipAuth': true},
+          ),
+        );
 
-      final data = saloonAuth.Data.fromJson(response.data['data']);
-      existingModel.data = existingModel.data?.copyWith(
-        accessToken: data.accessToken,
-        accessTokenValidTill: data.accessTokenValidTill,
-        refreshToken: data.refreshToken,
-        refreshTokenValidTill: data.refreshTokenValidTill,
-      );
-
-      getX.Get.find<AuthController>().userDataStoreToSharedPrefs(existingModel);
-
-      return existingModel;
-    } on DioException catch (e) {
-      /// 🚨 If refresh token invalid → Logout user
-      if (e.response?.statusCode == 401) {
-        getX.Get.find<AuthController>().resetApp();
-        return null;
+        final rawData = response.data['data'] as Map<String, dynamic>;
+        model.data = model.data?.copyWith(
+          accessToken: rawData['accessToken'],
+          accessTokenValidTill: rawData['accessTokenValidTill'],
+          refreshToken: rawData['refreshToken'],
+          refreshTokenValidTill: rawData['refreshTokenValidTill'],
+        );
+        await getX.Get.find<AuthController>()
+            .userArtiestDataStoreToSharedPrefs(model);
+        return true;
       }
-
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+        getX.Get.find<AuthController>().resetApp();
+        return false;
+      }
+      // Transient network error — let caller decide, do not logout
       rethrow;
     }
   }

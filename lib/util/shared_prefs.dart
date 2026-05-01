@@ -33,7 +33,7 @@ class PrefConstants {
   static const String fcmToken = 'FCMToken';
   static const String isUserLogin = "isLogin";
   static const String userModel = "userModel";
-  static const String stylistModel = "userModel";
+  static const String stylistModel = "stylistModel";
   static const String isFirstTime = 'isFirstTime';
   static const String isStylist = 'isStylist';
   static const String isSalon = 'isSalon';

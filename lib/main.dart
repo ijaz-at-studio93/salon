@@ -96,6 +96,29 @@ void main() async {
   await GetStorage.init();
   Get.put(AuthController());
   await Get.find<AuthController>().initUserData();
+
+  // ── DEBUG ONLY ──────────────────────────────────────────────────────────
+  // Overwrite the stored access token with a garbage value so the next API
+  // call receives a 401. The interceptor should silently refresh and retry.
+  // To test refresh-token expiry too, also corrupt PrefConstants.userModel /
+  // stylistModel (set refreshToken inside to "invalid") → expect logout.
+  // if (kDebugMode) {
+  //   final hasToken =
+  //       SharedPrefs.readStringValue(PrefConstants.token).isNotEmpty;
+  //   if (hasToken) {
+  //     await SharedPrefs.writeValue(
+  //         PrefConstants.token, "invalid_access_token_test");
+  //     await SharedPrefs.writeValue(
+  //         PrefConstants.userModel, "invalid_user_model_test");
+  //     await SharedPrefs.writeValue(
+  //         PrefConstants.stylistModel, "invalid_stylist_model_test");
+  //     debugPrint("🔐 DEBUG: access token corrupted for 401 flow test");
+  //     debugPrint("🔐 DEBUG: user model corrupted for 401 flow test");
+  //     debugPrint("🔐 DEBUG: stylist model corrupted for 401 flow test");
+  //   }
+  // }
+  // ── END DEBUG ────────────────────────────────────────────────────────────
+
   DioClient.init();
   Get.put(HomeController());
   Get.put(StylistController());

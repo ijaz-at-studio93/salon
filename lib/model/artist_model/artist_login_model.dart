@@ -65,6 +65,25 @@ class Data {
     }
     return data;
   }
+
+  Data copyWith({
+    String? id,
+    String? accessToken,
+    String? accessTokenValidTill,
+    String? refreshToken,
+    String? refreshTokenValidTill,
+    SalonArtistData? salonArtistData,
+  }) {
+    return Data(
+      id: id ?? this.id,
+      accessToken: accessToken ?? this.accessToken,
+      accessTokenValidTill: accessTokenValidTill ?? this.accessTokenValidTill,
+      refreshToken: refreshToken ?? this.refreshToken,
+      refreshTokenValidTill:
+          refreshTokenValidTill ?? this.refreshTokenValidTill,
+      salonArtistData: salonArtistData ?? this.salonArtistData,
+    );
+  }
 }
 
 class SalonArtistData {

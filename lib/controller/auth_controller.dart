@@ -231,19 +231,6 @@ class AuthController extends GetxController {
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
   }
 
-  Future<void> userDataStoreToArtiestSharedPrefs(
-      SalonArtistResponseModel model) async {
-    _salonArtistResponseModel.value = model;
-    debugPrint(model.toString());
-    if (model.data?.accessToken != null) {
-      debugPrint("AccessTOKEN1:${model.data?.accessToken ?? ''}");
-      await SharedPrefs.writeValue(
-          PrefConstants.token, model.data?.accessToken);
-    }
-    await SharedPrefs.writeValue(PrefConstants.userModel, model.toJson());
-    await SharedPrefs.writeValue(PrefConstants.isUserLogin, true);
-  }
-
   /*---------------  init User Data -----------*/
   initUserData() async {
     if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
@@ -265,7 +252,7 @@ class AuthController extends GetxController {
         if (SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) {
           _salonArtistResponseModel.value = SalonArtistResponseModel.fromJson(
               SharedPrefs.read(PrefConstants.stylistModel));
-          userDataStoreToArtiestSharedPrefs(_salonArtistResponseModel.value);
+          userArtiestDataStoreToSharedPrefs(_salonArtistResponseModel.value);
         }
       } catch (e) {
         debugPrint(e.toString());
@@ -370,10 +357,15 @@ class AuthController extends GetxController {
     if (Get.isRegistered<HomeController>()) {
       Get.find<HomeController>().unbindSalonWalletSocket();
     }
+    // Explicitly clear all auth tokens so they cannot be read after logout.
+    // fcmToken and deviceId are kept for push re-registration on next login.
+    await SharedPrefs.remove(PrefConstants.token);
+    await SharedPrefs.remove(PrefConstants.userModel);
+    await SharedPrefs.remove(PrefConstants.stylistModel);
     await SharedPrefs.writeValue(PrefConstants.isUserLogin, false);
     await SharedPrefs.writeValue(PrefConstants.isFirstTime, true);
-    SharedPrefs.writeValue(PrefConstants.isSalon, false);
-    SharedPrefs.writeValue(PrefConstants.isStylist, false);
+    await SharedPrefs.writeValue(PrefConstants.isSalon, false);
+    await SharedPrefs.writeValue(PrefConstants.isStylist, false);
     Get.offAll(() => const LoginPage());
   }
 
