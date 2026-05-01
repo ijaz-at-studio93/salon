@@ -47,7 +47,7 @@ class AppBarWidget extends StatelessWidget implements PreferredSizeWidget {
               style: AppTextTheme.bold
                   .copyWith(color: ColorConstant.blackColor, fontSize: 19)),
       // show leading only when required
-      leadingWidth: isBackIcon ? 80 : 0,
+      leadingWidth: isBackIcon ? 55 : 0,
       leading: isBackIcon
           ? InkWell(
               customBorder: const CircleBorder(),

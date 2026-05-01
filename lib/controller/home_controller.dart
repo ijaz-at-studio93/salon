@@ -629,10 +629,23 @@ class HomeController extends GetxController {
   /*----------------- Upcoming Booking  Data ----------------*/
   String _lastUpcomingDistribution = 'today';
 
+  static const Set<String> _pendingDistributionValues = {
+    'today',
+    'tomorrow',
+    'yesterday',
+    'this_week',
+    'this_month',
+    'this_year',
+    'all_time',
+  };
+
   doUpcomingData({String? distribution}) async {
     try {
       _showProgress.value = true;
-      final d = distribution ?? _lastUpcomingDistribution;
+      final requested = distribution ?? _lastUpcomingDistribution;
+      final d = _pendingDistributionValues.contains(requested)
+          ? requested
+          : 'today';
       _lastUpcomingDistribution = d;
       _salonUpcomingList.value =
           await HomeAPI.getPendingAppointments(distribution: d);
@@ -712,11 +725,18 @@ class HomeController extends GetxController {
   }
 
   /*-----------------------  Get Cancel Booking Data --------------*/
-  doCancelData({required String distribution}) async {
+  doCancelData({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+  }) async {
     try {
       _showProgress.value = true;
-      _salonCancelServedList.value =
-          await HomeAPI.getCancelAppointments(distribution: distribution);
+      _salonCancelServedList.value = await HomeAPI.getCancelAppointments(
+        distribution: distribution,
+        fromDate: fromDate,
+        toDate: toDate,
+      );
     } catch (e) {
       showError(e);
     } finally {
@@ -725,11 +745,18 @@ class HomeController extends GetxController {
   }
 
   /*----------------- Complete Booking  Data ----------------*/
-  doCompleteBookingData({required String distribution}) async {
+  doCompleteBookingData({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+  }) async {
     try {
       _showProgress.value = true;
-      _salonServedList.value =
-          await HomeAPI.getServedAppointments(distribution: distribution);
+      _salonServedList.value = await HomeAPI.getServedAppointments(
+        distribution: distribution,
+        fromDate: fromDate,
+        toDate: toDate,
+      );
     } catch (e) {
       showError(e);
     } finally {

@@ -687,11 +687,33 @@ class HomeAPI {
   }
 
   /*----------------------  Get Cancelled Booking  History ----------------------*/
-  static Future<PendingAppointmentsListModel> getCancelAppointments(
-      {required String distribution}) async {
+  static Future<PendingAppointmentsListModel> getCancelAppointments({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+  }) async {
+    final useDateRange = fromDate != null &&
+        fromDate.isNotEmpty &&
+        toDate != null &&
+        toDate.isNotEmpty;
+    final Map<String, dynamic> queryParameters;
+    if (useDateRange) {
+      queryParameters = {
+        'fromDate': fromDate,
+        'toDate': toDate,
+      };
+    } else {
+      final d = distribution;
+      if (d == null || d.isEmpty) {
+        throw ArgumentError(
+          'getCancelAppointments: provide distribution, or both fromDate and toDate',
+        );
+      }
+      queryParameters = {'distribution': d};
+    }
     final response = await DioClient.client.get(
         "salon/appointments/cancel-appointments",
-        queryParameters: {"distribution": distribution});
+        queryParameters: queryParameters);
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {
@@ -700,11 +722,33 @@ class HomeAPI {
   }
 
   /*--------------------------  Get Served Appointments --------------------*/
-  static Future<PendingAppointmentsListModel> getServedAppointments(
-      {required String distribution}) async {
+  static Future<PendingAppointmentsListModel> getServedAppointments({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+  }) async {
+    final useDateRange = fromDate != null &&
+        fromDate.isNotEmpty &&
+        toDate != null &&
+        toDate.isNotEmpty;
+    final Map<String, dynamic> queryParameters;
+    if (useDateRange) {
+      queryParameters = {
+        'fromDate': fromDate,
+        'toDate': toDate,
+      };
+    } else {
+      final d = distribution;
+      if (d == null || d.isEmpty) {
+        throw ArgumentError(
+          'getServedAppointments: provide distribution, or both fromDate and toDate',
+        );
+      }
+      queryParameters = {'distribution': d};
+    }
     final response = await DioClient.client.get(
         "salon/appointments/served-appointments",
-        queryParameters: {"distribution": distribution});
+        queryParameters: queryParameters);
     if (response.isSuccess) {
       return PendingAppointmentsListModel.fromJson(response.data);
     } else {

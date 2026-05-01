@@ -17,6 +17,7 @@ class AssetsConstant {
   static const String stylist = "assets/icon/stylist.png";
   static const String service = "assets/icon/service.png";
   static const String receivedIcon = "assets/icon/received.png";
+  static const String contentBtnIcon = "assets/images/content_btn.png";
   static const String receiveDoneIcon = "assets/icon/servicedone.png";
   static const String topRatedDoneIcon = "assets/icon/top_rated.png";
   static const String serviceDoneIcon = "assets/icon/service_done_2.png";

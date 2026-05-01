@@ -4,13 +4,13 @@ import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/booking_history_page.dart';
 import 'package:salon/page/home/home_page.dart';
 import 'package:salon/page/setting/adding_service/add_service_bottm_sheet_page.dart';
+import 'package:salon/page/setting/content_page.dart';
 import 'package:salon/page/setting/my_details_page.dart';
 import '../api/dio_client.dart';
 import '../constant/assetsconstant.dart';
 import '../constant/color_constant.dart';
 import '../project_specific/status_bar_color_appbar.dart';
 import '../project_specific/text_theme.dart';
-import 'home/old_transaction_history_page.dart';
 import 'home/transaction_history_page.dart';
 
 class BottomBarPage extends StatefulWidget {
@@ -45,29 +45,60 @@ class _BottomBarPageState extends State<BottomBarPage> {
                     : const MyDetailsPage(),
         extendBody: false,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (_homeController.getEligibilityModel.data?.isApproved ?? false) {
-              showModalBottomSheet(
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
-                  )),
-                  context: context,
-                  builder: (context) {
-                    return const AddServiceBottomSheetPage();
-                  });
-            }
-          },
-          backgroundColor: ColorConstant.primaryColor,
-          child: const Center(
-            child: Icon(
-              Icons.add,
-              size: 40,
-              color: ColorConstant.whiteColor,
-            ),
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ColorFiltered(
+                colorFilter:
+                    const ColorFilter.mode(Colors.transparent, BlendMode.srcIn),
+                child: FloatingActionButton(
+                  onPressed: () {},
+                  backgroundColor: ColorConstant.primaryColor,
+                  child: Image.asset(AssetsConstant.contentBtnIcon),
+                ),
+              ),
+              FloatingActionButton(
+                heroTag: 'Add Btn',
+                onPressed: () {
+                  if (_homeController.getEligibilityModel.data?.isApproved ??
+                      false) {
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        )),
+                        context: context,
+                        builder: (context) {
+                          return const AddServiceBottomSheetPage();
+                        });
+                  }
+                },
+                backgroundColor: ColorConstant.primaryColor,
+                child: const Center(
+                  child: Icon(
+                    Icons.add,
+                    size: 40,
+                    color: ColorConstant.whiteColor,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 45),
+                child: FloatingActionButton(
+                  heroTag: 'Content Btn',
+                  onPressed: () {
+                    // navigate to content page
+                    Get.to(() => const ContentPage());
+                  },
+                  backgroundColor: ColorConstant.primaryColor,
+                  child: Image.asset(AssetsConstant.contentBtnIcon),
+                ),
+              ),
+            ],
           ),
         ),
         bottomNavigationBar: BottomNavigationBar(
