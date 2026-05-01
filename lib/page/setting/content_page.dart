@@ -116,14 +116,14 @@ class _ContentPageState extends State<ContentPage> {
 
   // ── Upload ───────────────────────────────────────────────────────────────
 
-  void _doUpload({required BuildContext sheetContext}) {
+  bool _doUpload({required BuildContext sheetContext}) {
     if (_pickedFile.value == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please select a picture or video first',
             style:
                 AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
       ));
-      return;
+      return false;
     }
 
     _homeController.doCreateSalonContent(
@@ -137,6 +137,7 @@ class _ContentPageState extends State<ContentPage> {
         _homeController.doGetSalonContentList();
       },
     );
+    return true;
   }
 
   // ── Upload bottom sheet (used by "+" button on grid) ─────────────────────
@@ -241,8 +242,10 @@ class _ContentPageState extends State<ContentPage> {
                       onPressed: _homeController.showContentProgress
                           ? null
                           : () {
-                              _doUpload(sheetContext: sheetCtx);
-                              if (Navigator.canPop(sheetCtx)) {
+                              final didStartUpload =
+                                  _doUpload(sheetContext: sheetCtx);
+                              if (didStartUpload &&
+                                  Navigator.canPop(sheetCtx)) {
                                 Navigator.pop(sheetCtx);
                               }
                             },

@@ -104,37 +104,37 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                   ),
                 ),
                 const SizedBox(width: 15),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: (){
-                      Get.back();
-                      Get.to(()=> const AddNewServicePage());
-                    },
-                    child: Container(
-                      width: 170,
-                      padding: const EdgeInsets.all(50),
-                      decoration: BoxDecoration(
-                          color: ColorConstant.whiteColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: ColorConstant.addServiceBorderColor)),
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            AssetsConstant.service,
-                            height: 54,
-                            width: 54,
-                          ),
-                          const SizedBox(height: 15),
-                          Text(
-                            "Service",
-                            style: AppTextTheme.regular
-                                .copyWith(color: ColorConstant.blackColor, fontSize: 14),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // Expanded(
+                //   child: GestureDetector(
+                //     onTap: (){
+                //       Get.back();
+                //       Get.to(()=> const AddNewServicePage());
+                //     },
+                //     child: Container(
+                //       width: 170,
+                //       padding: const EdgeInsets.all(50),
+                //       decoration: BoxDecoration(
+                //           color: ColorConstant.whiteColor,
+                //           borderRadius: BorderRadius.circular(12),
+                //           border: Border.all(color: ColorConstant.addServiceBorderColor)),
+                //       child: Column(
+                //         children: [
+                //           Image.asset(
+                //             AssetsConstant.service,
+                //             height: 54,
+                //             width: 54,
+                //           ),
+                //           const SizedBox(height: 15),
+                //           Text(
+                //             "Service",
+                //             style: AppTextTheme.regular
+                //                 .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+                //           )
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           )

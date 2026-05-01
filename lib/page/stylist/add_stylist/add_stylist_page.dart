@@ -145,8 +145,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
-      appBar: const AppBarWidget(
-        nameOfScreen: "Add Stylist",
+      appBar: AppBarWidget(
+        nameOfScreen: widget.isBasicInfoUpdate ? "Edit Stylist" : "Add Stylist",
         isBackIcon: true,
       ),
       body: Column(
@@ -769,7 +769,13 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             borderRadius: BorderRadius.circular(10),
                             child: Image.file(file, fit: BoxFit.cover),
                           )
-                        : null,
+                        : const Center(
+                            child: Icon(
+                              Icons.add,
+                              color: ColorConstant.grayTextColor,
+                              size: 32,
+                            ),
+                          ),
                   ),
                 ),
               );

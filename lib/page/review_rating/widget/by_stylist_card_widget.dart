@@ -35,6 +35,7 @@ class _ByStylistCardWidgetState extends State<ByStylistCardWidget> {
   @override
   Widget build(BuildContext context) {
     final salonArtiestReviewOverall = widget.salonArtiestReviewOverall;
+    final rating = salonArtiestReviewOverall.rating ?? 0.0;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,20 +99,32 @@ class _ByStylistCardWidgetState extends State<ByStylistCardWidget> {
         if (_expanded) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-            child: RatingBar.builder(
-              initialRating: salonArtiestReviewOverall.rating ?? 0.0,
-              minRating: 1,
-              direction: Axis.horizontal,
-              allowHalfRating: true,
-              itemCount: 5,
-              itemSize: 25.0,
-              ignoreGestures: true,
-              itemBuilder: (context, _) => const Icon(
-                Icons.star,
-                color: ColorConstant.primaryColor,
-                size: 25,
-              ),
-              onRatingUpdate: (rating) {},
+            child: Row(
+              children: [
+                RatingBar.builder(
+                  initialRating: rating,
+                  minRating: 1,
+                  direction: Axis.horizontal,
+                  allowHalfRating: true,
+                  itemCount: 5,
+                  itemSize: 25.0,
+                  ignoreGestures: true,
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+                    color: ColorConstant.primaryColor,
+                    size: 25,
+                  ),
+                  onRatingUpdate: (rating) {},
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  rating.toStringAsFixed(1),
+                  style: AppTextTheme.medium.copyWith(
+                    color: ColorConstant.blackColor,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 12),

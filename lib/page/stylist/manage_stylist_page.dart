@@ -250,6 +250,15 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                           return _ManageStylistCard(
                             name: artist.name ?? "",
                             imageUrl: imageUrl,
+                            onEdit: () {
+                              if (id.isEmpty) return;
+                              Get.to(
+                                () => AddStylistPage(
+                                  artistId: id,
+                                  isBasicInfoUpdate: true,
+                                ),
+                              );
+                            },
                             onRemove: () {
                               if (id.isEmpty) return;
                               _confirmRemove(context, id);
@@ -493,11 +502,13 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
 class _ManageStylistCard extends StatelessWidget {
   final String name;
   final String imageUrl;
+  final VoidCallback onEdit;
   final VoidCallback onRemove;
 
   const _ManageStylistCard({
     required this.name,
     required this.imageUrl,
+    required this.onEdit,
     required this.onRemove,
   });
 
@@ -560,30 +571,76 @@ class _ManageStylistCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 8),
-            Material(
-              color: ColorConstant.redColor2.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(100),
-              child: InkWell(
-                onTap: onRemove,
-                borderRadius: BorderRadius.circular(100),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Material(
+                  color: ColorConstant.redColor2.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(100),
+                  child: InkWell(
+                    onTap: onRemove,
                     borderRadius: BorderRadius.circular(100),
-                    border: Border.all(color: ColorConstant.redColor2),
-                  ),
-                  child: Text(
-                    "Remove",
-                    style: AppTextTheme.semibold.copyWith(
-                      color: ColorConstant.redColor2,
-                      fontSize: 14,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: ColorConstant.redColor2),
+                      ),
+                      child: Text(
+                        "Remove",
+                        style: AppTextTheme.semibold.copyWith(
+                          color: ColorConstant.redColor2,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(width: 8),
+                Material(
+                  color: ColorConstant.lightColor,
+                  borderRadius: BorderRadius.circular(100),
+                  child: PopupMenuButton<String>(
+                    onSelected: (value) {
+                      if (value == 'edit') {
+                        onEdit();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Text(
+                          'Edit',
+                          style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.blackColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    padding: EdgeInsets.zero,
+                    icon: Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        border: Border.all(color: ColorConstant.borderColor),
+                      ),
+                      child: const Icon(
+                        Icons.more_vert,
+                        color: ColorConstant.blackColor,
+                        size: 22,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

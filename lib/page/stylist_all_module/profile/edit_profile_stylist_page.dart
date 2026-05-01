@@ -72,7 +72,7 @@ class _EditProfileStylistPageState extends State<EditProfileStylistPage> {
                     indent: 20,
                   ),
                   _profileRowWidget(
-                      title: "Gender",
+                      title: "Gender ",
                       subTitle: _authController.getSalonArtistResponseModel.data
                               ?.salonArtistData?.gender ??
                           ""),
