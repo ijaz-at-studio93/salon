@@ -151,6 +151,9 @@ class StylistPortfolioSection extends StatelessWidget {
       builder: (sheetCtx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            // Reset state when sheet opens
+            showUploadMediaError.value = false;
+            showPortfolioLimitError.value = false;
             void pick(File file, bool video) {
               pickedFile = file;
               isVideo = video;

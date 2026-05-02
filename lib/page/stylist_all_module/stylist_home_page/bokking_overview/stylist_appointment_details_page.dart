@@ -70,6 +70,16 @@ class _StylistAppointmentDetailsPageState
     }
   }
 
+  bool _shouldShowTakePicturesButton() {
+    // Check if portfolio upload is allowed AND there are no existing images
+    final allowPortfolioUpload = _stylistController.getAllowPortfolioUploadModel.data?.allowPortfolioUpload ?? false;
+    final existingPortfolio = _stylistController.getArtistPortfolioModel.data?.portfolio ?? [];
+    final hasExistingImages = existingPortfolio.any((portfolio) => portfolio.image != null && portfolio.image!.isNotEmpty);
+    
+    // Only show the button if both conditions are met: permission granted AND no existing images
+    return allowPortfolioUpload && !hasExistingImages;
+  }
+
   Future<void> _onTakePicturesPressed() async {
     try {
       await FileUtils.openPlatformImagePicker(
@@ -257,41 +267,42 @@ class _StylistAppointmentDetailsPageState
               },
             ),
           ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Material(
-                color: ColorConstant.primaryColor2,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: _onTakePicturesPressed,
+          if (_shouldShowTakePicturesButton())
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                child: Material(
+                  color: ColorConstant.primaryColor2,
                   borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.camera_alt_rounded,
-                          color: ColorConstant.whiteColor,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Take Pictures',
-                          style: AppTextTheme.bold.copyWith(
+                  child: InkWell(
+                    onTap: _onTakePicturesPressed,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.camera_alt_rounded,
                             color: ColorConstant.whiteColor,
-                            fontSize: 16,
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          Text(
+                            'Take Pictures',
+                            style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.whiteColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
         ],
       ),
     );

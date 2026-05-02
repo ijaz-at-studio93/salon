@@ -43,7 +43,7 @@ class _HomePage2State extends State<HomePage2> {
         ),
         child: Column(
           children: [
-            _sidBanner(context),
+            
             Container(height: 1, color: ColorConstant.bgColor),
           Obx(
             () => Expanded(
@@ -51,6 +51,7 @@ class _HomePage2State extends State<HomePage2> {
                   ? const ProgressBarView()
                   : ListView(
                       children: [
+                        _sidBanner(context),
                         _dashBoardTabBar(),
                         Padding(
                           padding: const EdgeInsets.symmetric(

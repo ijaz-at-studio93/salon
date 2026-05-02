@@ -40,126 +40,130 @@ class _HomepageState extends State<Homepage> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () => _homeController.showProgress
-          ? const ProgressBarView()
-          : _homeController.getEligibilityModel.data?.isApproved ?? false
-              ? Container(
-                  color: ColorConstant.bgColor,
-                  child: Column(
-                    children: [
-                      _headerWidget(),
-                      if (_homeController
-                              .getSalonDashboardModel.data?.isUpfront ==
-                          true)
-                        _walletBalanceWidget(),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              if (_homeController
-                                      .getSalonDashboardModel.data?.isUpfront !=
-                                  true)
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 16),
-                                  child: Row(
-                                    children: [
-                                      // 🟣 TOTAL EARNING navigates to Transaction Page
-                                      Expanded(
-                                        child: EarningWidget(
-                                          color: ColorConstant.primaryColor,
-                                          title: "Total Earning",
-                                          subTitle: "",
-                                          amount:
-                                              "₹ ${_homeController.getSalonDashboardModel.data?.totalEarnings}",
-                                          callback: () {
-                                            Get.to(() =>
-                                                const TransactionHistoryPage());
-                                          },
+    return SafeArea(
+      bottom: false,
+      
+      child: Obx(
+        () => _homeController.showProgress
+            ? const ProgressBarView()
+            : _homeController.getEligibilityModel.data?.isApproved ?? false
+                ? Container(
+                    color: ColorConstant.bgColor,
+                    child: Column(
+                      children: [
+                        _headerWidget(),
+                        if (_homeController
+                                .getSalonDashboardModel.data?.isUpfront ==
+                            true)
+                          _walletBalanceWidget(),
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              children: [
+                                if (_homeController
+                                        .getSalonDashboardModel.data?.isUpfront !=
+                                    true)
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 16),
+                                    child: Row(
+                                      children: [
+                                        // 🟣 TOTAL EARNING navigates to Transaction Page
+                                        Expanded(
+                                          child: EarningWidget(
+                                            color: ColorConstant.primaryColor,
+                                            title: "Total Earning",
+                                            subTitle: "",
+                                            amount:
+                                                "₹ ${_homeController.getSalonDashboardModel.data?.totalEarnings}",
+                                            callback: () {
+                                              Get.to(() =>
+                                                  const TransactionHistoryPage());
+                                            },
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 16),
-
-                                      // 🟠 RATING navigates to Review & Rating Page
-                                      Expanded(
-                                        child: EarningWidget(
-                                          callback: () {
-                                            Get.to(() =>
-                                                const ReviewAndRatingPage());
-                                          },
-                                          color: ColorConstant.orangeDotColor,
-                                          title: "Rating",
-                                          subTitle: "",
-                                          amount:
-                                              "✰ ${_homeController.getSalonDashboardModel.data?.ratingReview?.rating}",
+                                        const SizedBox(width: 16),
+      
+                                        // 🟠 RATING navigates to Review & Rating Page
+                                        Expanded(
+                                          child: EarningWidget(
+                                            callback: () {
+                                              Get.to(() =>
+                                                  const ReviewAndRatingPage());
+                                            },
+                                            color: ColorConstant.orangeDotColor,
+                                            title: "Rating",
+                                            subTitle: "",
+                                            amount:
+                                                "✰ ${_homeController.getSalonDashboardModel.data?.ratingReview?.rating}",
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              _dashBoardTabBar(),
-                              _statCards(),
-                              // Padding(
-                              //   padding: const EdgeInsets.symmetric(
-                              //       horizontal: 20, vertical: 16),
-                              //   child: Row(
-                              //     children: [
-                              //       Expanded(
-                              //         child: BookingWidget(
-                              //           callback: () {
-                              //             Get.to(
-                              //                 () => const BookingHistoryPage());
-                              //           },
-                              //           color: ColorConstant.grayTextColor
-                              //               .withOpacity(0.1),
-                              //           amount:
-                              //               "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingCount}",
-                              //           title: "Total bookings",
-                              //           imageUrl:
-                              //               AssetsConstant.totalBookingsIcon,
-                              //           imageColor:
-                              //               ColorConstant.orangeContainer,
-                              //           total: "",
-                              //           valueColor:
-                              //               ColorConstant.totalContainer,
-                              //         ),
-                              //       ),
-                              //       const SizedBox(width: 12),
-                              //       Expanded(
-                              //         child: BookingWidget(
-                              //           callback: () {},
-                              //           color: ColorConstant.grayTextColor
-                              //               .withOpacity(0.1),
-                              //           amount:
-                              //               "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingRevenue}",
-                              //           title: "Total Revenue",
-                              //           imageUrl:
-                              //               AssetsConstant.totalRevenueIcon,
-                              //           imageColor:
-                              //               ColorConstant.totalRevenueContainer,
-                              //           total: "",
-                              //           valueColor:
-                              //               ColorConstant.totalContainer,
-                              //         ),
-                              //       )
-                              //     ],
-                              //   ),
-                              // ),
-                              _reportAnalytics(),
-                              const SizedBox(height: 25),
-                            ],
+                                _dashBoardTabBar(),
+                                _statCards(),
+                                // Padding(
+                                //   padding: const EdgeInsets.symmetric(
+                                //       horizontal: 20, vertical: 16),
+                                //   child: Row(
+                                //     children: [
+                                //       Expanded(
+                                //         child: BookingWidget(
+                                //           callback: () {
+                                //             Get.to(
+                                //                 () => const BookingHistoryPage());
+                                //           },
+                                //           color: ColorConstant.grayTextColor
+                                //               .withOpacity(0.1),
+                                //           amount:
+                                //               "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingCount}",
+                                //           title: "Total bookings",
+                                //           imageUrl:
+                                //               AssetsConstant.totalBookingsIcon,
+                                //           imageColor:
+                                //               ColorConstant.orangeContainer,
+                                //           total: "",
+                                //           valueColor:
+                                //               ColorConstant.totalContainer,
+                                //         ),
+                                //       ),
+                                //       const SizedBox(width: 12),
+                                //       Expanded(
+                                //         child: BookingWidget(
+                                //           callback: () {},
+                                //           color: ColorConstant.grayTextColor
+                                //               .withOpacity(0.1),
+                                //           amount:
+                                //               "${_homeController.getSalonDashboardModel.data?.distributedRevenue?.bookingRevenue}",
+                                //           title: "Total Revenue",
+                                //           imageUrl:
+                                //               AssetsConstant.totalRevenueIcon,
+                                //           imageColor:
+                                //               ColorConstant.totalRevenueContainer,
+                                //           total: "",
+                                //           valueColor:
+                                //               ColorConstant.totalContainer,
+                                //         ),
+                                //       )
+                                //     ],
+                                //   ),
+                                // ),
+                                _reportAnalytics(),
+                                const SizedBox(height: 25),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                )
-              : _homeController.getEligibilityModel.data?.documentData
-                          ?.isAllSubmitted ??
-                      false
-                  ? const DocumentSubmittedPage()
-                  : const CompleteProfilePage(),
+                      ],
+                    ),
+                  )
+                : _homeController.getEligibilityModel.data?.documentData
+                            ?.isAllSubmitted ??
+                        false
+                    ? const DocumentSubmittedPage()
+                    : const CompleteProfilePage(),
+      ),
     );
   }
 

@@ -567,7 +567,7 @@ class _ContentCard extends StatelessWidget {
                       ),
                     Positioned(
                       top: 12,
-                      left: 16,
+                      left: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 10,
@@ -590,40 +590,32 @@ class _ContentCard extends StatelessWidget {
                     ),
                     if (hasDesc)
                       Positioned(
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                Colors.black.withValues(alpha: 0.0),
-                                Colors.black.withValues(alpha: 0.58),
-                                Colors.black.withValues(alpha: 0.82),
-                              ],
-                              stops: const [0.0, 0.45, 1.0],
+                        left: 10,
+                        bottom: 12,
+                        child: Container(
+                          constraints: const BoxConstraints(
+                            maxWidth: _mediaFrameWidth *
+                                0.65, // stops before edit button
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: ShapeDecoration(
+                            color: Colors.black.withValues(alpha: 0.35),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
                             ),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                              12,
-                              10,
-                              96,
-                              8,
+                          child: Text(
+                            desc,
+                            style: AppTextTheme.medium.copyWith(
+                              color: ColorConstant.whiteColor,
+                              fontSize: 14,
+                              height: 1.3,
                             ),
-                            child: Text(
-                              desc,
-                              style: AppTextTheme.medium.copyWith(
-                                color: ColorConstant.whiteColor,
-                                fontSize: 12,
-                                height: 1.3,
-                                shadows: _descShadows,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ),

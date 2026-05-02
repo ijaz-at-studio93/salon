@@ -176,6 +176,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             title: "Phone Number"),
                         if (isOTPField) _otpField(),
                         if (isOTPField) const SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         if (!widget.isBasicInfoUpdate)
                           _styledPasswordField(
                               controller: _password,
