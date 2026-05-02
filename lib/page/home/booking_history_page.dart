@@ -40,7 +40,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     overall = widget.initialTab;
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (overall == "0") {
-        _homeController.doUpcomingData(distribution: "today");
+        _homeController.doUpcomingData(distribution: "all_time");
       } else if (overall == "1") {
         _homeController.doCompleteBookingData(distribution: "all_time");
       } else if (overall == "2") {
@@ -65,7 +65,6 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 const SizedBox(),
-                // overall == "0" ? const SizedBox() :
                 _noOfServiceYouOffer(),
               ],
             ),
@@ -83,6 +82,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                               )
                             : ListView.builder(
                                 shrinkWrap: true,
+                                padding: const EdgeInsets.only(bottom: 60),
                                 itemCount: _homeController
                                         .getSalonUpcomingList.data?.length ??
                                     0,
@@ -129,6 +129,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                   )
                                 : ListView.builder(
                                     shrinkWrap: true,
+                                    padding: const EdgeInsets.only(bottom: 60),
                                     itemCount: _homeController
                                             .getSalonServedList.data?.length ??
                                         0,
@@ -173,6 +174,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                   )
                                 : ListView.builder(
                                     shrinkWrap: true,
+                                    padding: const EdgeInsets.only(bottom: 60),
                                     itemCount: _homeController
                                             .getSalonCancelServedList
                                             .data
@@ -218,12 +220,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     );
   }
 
-  /*--------------- Date filters: Upcoming vs Completed/Cancelled ---------*/
-  final List<String> upcomingDataList = [
-    'Today',
-    'Tomorrow',
-    'This Week',
-  ];
+  /*--------------- Date filters: Completed / Cancelled (Upcoming is all_time only) ---------*/
 
   final List<String> dataList = [
     'Today',
@@ -304,15 +301,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
     if (value == _filterCustom) {
       return;
     }
-    if (overall == "0") {
-      if (value == 'Today') {
-        _homeController.doUpcomingData(distribution: "today");
-      } else if (value == 'Tomorrow') {
-        _homeController.doUpcomingData(distribution: "tomorrow");
-      } else if (value == 'This Week') {
-        _homeController.doUpcomingData(distribution: "this_week");
-      }
-    } else if (overall == "2") {
+    if (overall == "2") {
       if (value == 'Today') {
         _homeController.doCancelData(distribution: "today");
       } else if (value == 'yesterday') {
@@ -371,7 +360,10 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
   }
 
   _noOfServiceYouOffer() {
-    final filterList = overall == "0" ? upcomingDataList : dataList;
+    if (overall == "0") {
+      return const SizedBox.shrink();
+    }
+    final filterList = dataList;
     final showCustomRange = _selectedFilter == _filterCustom;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -497,7 +489,7 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
             _selectedFilter = 'Today';
             _customRangeStart = null;
             _customRangeEnd = null;
-            _homeController.doUpcomingData(distribution: "today");
+            _homeController.doUpcomingData(distribution: "all_time");
           });
         } else if (overall == "1") {
           setState(() {

@@ -94,7 +94,8 @@ class _BottomBarPageState extends State<BottomBarPage> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 45, right: 20),
+                  padding: const EdgeInsets.only(
+                      bottom: kBottomNavigationBarHeight - 8, right: 20),
                   child: FloatingActionButton(
                     heroTag: 'Content Btn',
                     onPressed: () {
