@@ -204,9 +204,9 @@ class _EditProfileState extends State<EditProfile> {
                         textInputAction: Platform.isAndroid
                             ? TextInputAction.none
                             : TextInputAction.done,
-                        title: "Description"),
-                    _dividerWidget(),
-                    _homeService()
+                        title: "Overview")
+                    // _dividerWidget(),
+                    // _homeService()
                     /*Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
@@ -253,184 +253,159 @@ class _EditProfileState extends State<EditProfile> {
     );
   }
 
-/*------------ is Home Service --------------*/
   int serviceSelect = 0;
-  _homeService() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            "Provide Service",
-            style: AppTextTheme.regular
-                .copyWith(fontSize: 13, color: ColorConstant.blackColor),
-          ),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 20),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          height: 50,
-          width: Get.width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    serviceSelect = 0;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorConstant.blackColor),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: serviceSelect == 0
-                                  ? ColorConstant.primaryColor
-                                  : Colors.transparent,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Home",
-                        style: AppTextTheme.regular.copyWith(
-                            fontSize: 13, color: ColorConstant.blackColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    serviceSelect = 1;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorConstant.blackColor),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: serviceSelect == 1
-                                  ? ColorConstant.primaryColor
-                                  : Colors.transparent,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Salon",
-                        style: AppTextTheme.regular.copyWith(
-                            fontSize: 13, color: ColorConstant.blackColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    serviceSelect = 2;
-                  });
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(5),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20,
-                        height: 20,
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: ColorConstant.blackColor),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Container(
-                            width: 15,
-                            height: 15,
-                            decoration: BoxDecoration(
-                              color: serviceSelect == 2
-                                  ? ColorConstant.primaryColor
-                                  : Colors.transparent,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Both",
-                        style: AppTextTheme.regular.copyWith(
-                            fontSize: 13, color: ColorConstant.blackColor),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-          /*decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: ColorConstant.borderColor,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              */ /*Text(
-                "Is home service",
-                style: AppTextTheme.regular
-                    .copyWith(fontSize: 13, color: ColorConstant.blackColor),
-              ),
-              CupertinoSwitch(
-                activeColor: ColorConstant.primaryColor,
-                value: isHomeServiceEnable,
-                onChanged: (value) {
-                  setState(() {
-                    isHomeServiceEnable =
-                        value; // Update the CupertinoSwitch state
-                  });
-                },
-              ),*/ /*
-            ],
-          ),*/
-        ),
-      ],
-    );
-  }
+
+// /*------------ is Home Service --------------*/
+//   _homeService() {
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 20),
+//           child: Text(
+//             "Provide Service",
+//             style: AppTextTheme.regular
+//                 .copyWith(fontSize: 13, color: ColorConstant.blackColor),
+//           ),
+//         ),
+//         const SizedBox(height: 12),
+//         Container(
+//           margin: const EdgeInsets.symmetric(horizontal: 20),
+//           padding: const EdgeInsets.symmetric(horizontal: 10),
+//           height: 50,
+//           width: Get.width,
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     serviceSelect = 0;
+//                   });
+//                 },
+//                 child: Container(
+//                   padding: const EdgeInsets.all(5),
+//                   child: Row(
+//                     children: [
+//                       Container(
+//                         width: 20,
+//                         height: 20,
+//                         padding: const EdgeInsets.all(3),
+//                         decoration: BoxDecoration(
+//                           border: Border.all(color: ColorConstant.blackColor),
+//                           shape: BoxShape.circle,
+//                         ),
+//                         child: Center(
+//                           child: Container(
+//                             width: 15,
+//                             height: 15,
+//                             decoration: BoxDecoration(
+//                               color: serviceSelect == 0
+//                                   ? ColorConstant.primaryColor
+//                                   : Colors.transparent,
+//                               shape: BoxShape.circle,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(width: 10),
+//                       Text(
+//                         "Home",
+//                         style: AppTextTheme.regular.copyWith(
+//                             fontSize: 13, color: ColorConstant.blackColor),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//               GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     serviceSelect = 1;
+//                   });
+//                 },
+//                 child: Container(
+//                   padding: const EdgeInsets.all(5),
+//                   child: Row(
+//                     children: [
+//                       Container(
+//                         width: 20,
+//                         height: 20,
+//                         padding: const EdgeInsets.all(3),
+//                         decoration: BoxDecoration(
+//                           border: Border.all(color: ColorConstant.blackColor),
+//                           shape: BoxShape.circle,
+//                         ),
+//                         child: Center(
+//                           child: Container(
+//                             width: 15,
+//                             height: 15,
+//                             decoration: BoxDecoration(
+//                               color: serviceSelect == 1
+//                                   ? ColorConstant.primaryColor
+//                                   : Colors.transparent,
+//                               shape: BoxShape.circle,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(width: 10),
+//                       Text(
+//                         "Salon",
+//                         style: AppTextTheme.regular.copyWith(
+//                             fontSize: 13, color: ColorConstant.blackColor),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//               GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     serviceSelect = 2;
+//                   });
+//                 },
+//                 child: Container(
+//                   padding: const EdgeInsets.all(5),
+//                   child: Row(
+//                     children: [
+//                       Container(
+//                         width: 20,
+//                         height: 20,
+//                         padding: const EdgeInsets.all(3),
+//                         decoration: BoxDecoration(
+//                           border: Border.all(color: ColorConstant.blackColor),
+//                           shape: BoxShape.circle,
+//                         ),
+//                         child: Center(
+//                           child: Container(
+//                             width: 15,
+//                             height: 15,
+//                             decoration: BoxDecoration(
+//                               color: serviceSelect == 2
+//                                   ? ColorConstant.primaryColor
+//                                   : Colors.transparent,
+//                               shape: BoxShape.circle,
+//                             ),
+//                           ),
+//                         ),
+//                       ),
+//                       const SizedBox(width: 10),
+//                       Text(
+//                         "Both",
+//                         style: AppTextTheme.regular.copyWith(
+//                             fontSize: 13, color: ColorConstant.blackColor),
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ],
+//     );
+//   }
 
   /*------------ Saloon Address TextField -----------*/
   _saloonAddress({

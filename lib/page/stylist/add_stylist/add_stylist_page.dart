@@ -145,8 +145,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
-      appBar: const AppBarWidget(
-        nameOfScreen: "Add Stylist",
+      appBar: AppBarWidget(
+        nameOfScreen: widget.isBasicInfoUpdate ? "Edit Stylist" : "Add Stylist",
         isBackIcon: true,
       ),
       body: Column(
@@ -176,6 +176,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             title: "Phone Number"),
                         if (isOTPField) _otpField(),
                         if (isOTPField) const SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         if (!widget.isBasicInfoUpdate)
                           _styledPasswordField(
                               controller: _password,
@@ -495,7 +496,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Gender",
+          Text("Serviceable Gender",
               style: AppTextTheme.semibold
                   .copyWith(fontSize: 13, color: ColorConstant.blackColor)),
           const SizedBox(height: 12),
@@ -535,6 +536,9 @@ class _AddStylistPageState extends State<AddStylistPage> {
                       ))
                   .toList(),
               onChanged: (_) {},
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.only(right: 8),
+              ),
             ),
           ),
         ],
@@ -769,7 +773,13 @@ class _AddStylistPageState extends State<AddStylistPage> {
                             borderRadius: BorderRadius.circular(10),
                             child: Image.file(file, fit: BoxFit.cover),
                           )
-                        : null,
+                        : const Center(
+                            child: Icon(
+                              Icons.add,
+                              color: ColorConstant.grayTextColor,
+                              size: 32,
+                            ),
+                          ),
                   ),
                 ),
               );

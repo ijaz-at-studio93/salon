@@ -13,7 +13,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   static const _labelStyle = TextStyle(
     fontWeight: FontWeight.w700,
     color: Colors.black,
-    fontSize: 14,
+    fontSize: 15,
   );
 
   @override
@@ -48,7 +48,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
     final statusColor = _statusColor(statusText);
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(horizontal: 18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -72,24 +72,24 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                     value: idx,
                     valueColor: ColorConstant.bookingValuePurple,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                 ],
                 _inlineLabelValue(
                   label: 'Date : ',
                   value: dateStr,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 _inlineLabelValue(
                   label: 'Stylist : ',
                   value: stylistName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 RichText(
                   text: TextSpan(
                     style: AppTextTheme.bold.copyWith(
-                      fontSize: 14,
+                      fontSize: 15,
                       color: ColorConstant.bookingPriceMagenta2,
                     ),
                     children: [
@@ -116,7 +116,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                 valueColor: ColorConstant.bookingValuePurple,
                 alignEnd: true,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -130,7 +130,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               _actionButton(),
             ],
           ),
@@ -159,37 +159,37 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   }) {
     if (alignEnd) {
       return RichText(
-        textAlign: TextAlign.end,
-        text: TextSpan(
-          style: _labelStyle.copyWith(fontSize: 13),
+          textAlign: TextAlign.end,
+          text: TextSpan(
+            style: _labelStyle.copyWith(fontSize: 15),
           children: [
             TextSpan(text: label),
             TextSpan(
               text: value,
-              style: AppTextTheme.bold.copyWith(
-                fontSize: 13,
-                color: valueColor,
+                style: AppTextTheme.bold.copyWith(
+                  fontSize: 15,
+                  color: valueColor,
+                ),
               ),
-            ),
           ],
         ),
       );
     }
     return RichText(
       text: TextSpan(
-        style: _labelStyle.copyWith(fontSize: 13),
+        style: _labelStyle.copyWith(fontSize: 15),
         children: [
           TextSpan(
             text: label,
             style: AppTextTheme.semibold.copyWith(
-              fontSize: 13,
+              fontSize: 15,
               color: Colors.black,
             ),
           ),
           TextSpan(
             text: value,
             style: AppTextTheme.bold.copyWith(
-              fontSize: 13,
+              fontSize: 15,
               color: valueColor,
             ),
           ),
@@ -215,7 +215,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
             'Respond',
             style: AppTextTheme.bold.copyWith(
               color: ColorConstant.redColor2,
-              fontSize: 16,
+              fontSize: 17,
             ),
           ),
         ),
@@ -240,7 +240,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
             'View',
             style: AppTextTheme.bold.copyWith(
               color: ColorConstant.lightGreenColor,
-              fontSize: 16,
+              fontSize: 17,
             ),
           ),
         ),
@@ -253,7 +253,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
     if (s.contains('cancel')) {
       return ColorConstant.bookingStatusCancelled;
     }
-    if (s.contains('complete')) {
+    if (s.contains('complete') || s.contains('confirm')) {
       return Colors.green.shade700;
     }
     return ColorConstant.redColor;

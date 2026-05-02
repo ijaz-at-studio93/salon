@@ -173,7 +173,7 @@ class _ContentViewPageState extends State<ContentViewPage> {
               const SizedBox(height: 6),
               Center(
                 child: Text(
-                  'Tap to change media',
+                  'Tap on photo or video to change',
                   style: AppTextTheme.regular.copyWith(
                       color: ColorConstant.grayTextColor, fontSize: 12),
                 ),

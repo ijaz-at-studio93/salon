@@ -1,15 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/widget/rating_service_row_widget.dart';
 import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/stylist_portfolio_section.dart';
-import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart'; // SOS / dial
 
 import '../../../constant/assetsconstant.dart';
-import '../../../project_specific/status_bar_color_appbar.dart';
 import '../../../project_specific/text_theme.dart';
 
 class HomePage2 extends StatefulWidget {
@@ -35,195 +35,196 @@ class _HomePage2State extends State<HomePage2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
-      appBar: statusBarTheme(context),
-      body: Column(
-        children: [
-          _headerWidget(),
-          Container(height: 1, color: ColorConstant.bgColor),
-          Obx(
-            () => Expanded(
-              child: _stylistController.showProgress
-                  ? const ProgressBarView()
-                  : ListView(
-                      children: [
-                        _dashBoardTabBar(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 10),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: RatingServicesRowWidget(
-                                  image: AssetsConstant.overallDoneIcon,
-                                  title: "Overall Rating",
-                                  titleValue:
-                                      "${_stylistController.getArtiestDashboardModel.data?.ratingData?.rating ?? ""}",
-                                  color: ColorConstant.primaryColor,
-                                  subTitleValue: "",
-                                ),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light.copyWith(
+          statusBarColor: Colors.transparent,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Container(height: 1, color: ColorConstant.bgColor),
+              Obx(
+                () => Expanded(
+                  child: _stylistController.showProgress
+                      ? const ProgressBarView()
+                      : ListView(
+                          children: [
+                            _sidBanner(context),
+                            _dashBoardTabBar(),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 15, vertical: 10),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: RatingServicesRowWidget(
+                                      image: AssetsConstant.overallDoneIcon,
+                                      title: "Overall Rating",
+                                      titleValue:
+                                          "${_stylistController.getArtiestDashboardModel.data?.ratingData?.rating ?? ""}",
+                                      color: ColorConstant.primaryColor,
+                                      subTitleValue: "",
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: RatingServicesRowWidget(
+                                      image: AssetsConstant.serviceDoneIcon,
+                                      title: "Service Done",
+                                      titleValue:
+                                          "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.totalServiceCount ?? ""}",
+                                      color:
+                                          ColorConstant.totalRevenueContainer,
+                                      subTitleValue: " ",
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: RatingServicesRowWidget(
-                                  image: AssetsConstant.serviceDoneIcon,
-                                  title: "Service Done",
-                                  titleValue:
-                                      "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.totalServiceCount ?? ""}",
-                                  color: ColorConstant.totalRevenueContainer,
-                                  subTitleValue: " ",
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: Obx(() {
+                                final portfolio = _stylistController
+                                        .getArtistPortfolioModel
+                                        .data
+                                        ?.portfolio ??
+                                    [];
+                                return StylistPortfolioSection(
+                                  items: portfolio,
+                                );
+                              }),
+                            ),
+                            const SizedBox(height: 80),
+                            // Container(
+                            //   decoration: BoxDecoration(
+                            //       borderRadius: BorderRadius.circular(7),
+                            //       color: ColorConstant.gray),
+                            //   child: Column(
+                            //     crossAxisAlignment: CrossAxisAlignment.start,
+                            //     children: [
+                            //       Padding(
+                            //         padding: const EdgeInsets.symmetric(
+                            //             horizontal: 20, vertical: 15),
+                            //         child: Text(
+                            //           "Service Breakdown",
+                            //           style: AppTextTheme.bold.copyWith(
+                            //               color: ColorConstant.blackColor,
+                            //               fontSize: 13),
+                            //         ),
+                            //       ),
+                            //       _stylistController
+                            //                   .getArtiestDashboardModel
+                            //                   .data
+                            //                   ?.serviceCountData
+                            //                   ?.serviceBreakdown
+                            //                   ?.isEmpty ??
+                            //               false
+                            //           ? const NoItemsWidget(
+                            //               text: "No breakdown services found.",
+                            //             )
+                            //           : GridView.builder(
+                            //               shrinkWrap: true,
+                            //               physics:
+                            //                   const NeverScrollableScrollPhysics(),
+                            //               padding: const EdgeInsets.only(
+                            //                 left: 20.0,
+                            //                 right: 20.0,
+                            //                 bottom: 40.0,
+                            //               ),
+                            //               gridDelegate:
+                            //                   const SliverGridDelegateWithFixedCrossAxisCount(
+                            //                 crossAxisCount: 3,
+                            //                 mainAxisSpacing: 20.0,
+                            //                 crossAxisSpacing: 20.0,
+                            //                 childAspectRatio: 2,
+                            //               ),
+                            //               itemCount: _stylistController
+                            //                       .getArtiestDashboardModel
+                            //                       .data
+                            //                       ?.serviceCountData
+                            //                       ?.serviceBreakdown
+                            //                       ?.length ??
+                            //                   0,
+                            //               itemBuilder: (context, index) {
+                            //                 return ServiceBreakdownWidget(
+                            //                   imageUrl: AssetsConstant.haircutImage,
+                            //                   count:
+                            //                       "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.serviceBreakdown?[index].count ?? ""}",
+                            //                   name: _stylistController
+                            //                           .getArtiestDashboardModel
+                            //                           .data
+                            //                           ?.serviceCountData
+                            //                           ?.serviceBreakdown?[index]
+                            //                           .name ??
+                            //                       "",
+                            //                 );
+                            //               },
+                            //             ),
+                            //     ],
+                            //   ),
+                            // ),
+                            // const SizedBox(height: 16),
+                            // _reportAnalytics(),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Obx(() {
-                            final portfolio = _stylistController
-                                    .getArtistPortfolioModel.data?.portfolio ??
-                                [];
-                            return StylistPortfolioSection(
-                              items: portfolio,
-                            );
-                          }),
-                        ),
-                        const SizedBox(height: 24),
-                        // Container(
-                        //   decoration: BoxDecoration(
-                        //       borderRadius: BorderRadius.circular(7),
-                        //       color: ColorConstant.gray),
-                        //   child: Column(
-                        //     crossAxisAlignment: CrossAxisAlignment.start,
-                        //     children: [
-                        //       Padding(
-                        //         padding: const EdgeInsets.symmetric(
-                        //             horizontal: 20, vertical: 15),
-                        //         child: Text(
-                        //           "Service Breakdown",
-                        //           style: AppTextTheme.bold.copyWith(
-                        //               color: ColorConstant.blackColor,
-                        //               fontSize: 13),
-                        //         ),
-                        //       ),
-                        //       _stylistController
-                        //                   .getArtiestDashboardModel
-                        //                   .data
-                        //                   ?.serviceCountData
-                        //                   ?.serviceBreakdown
-                        //                   ?.isEmpty ??
-                        //               false
-                        //           ? const NoItemsWidget(
-                        //               text: "No breakdown services found.",
-                        //             )
-                        //           : GridView.builder(
-                        //               shrinkWrap: true,
-                        //               physics:
-                        //                   const NeverScrollableScrollPhysics(),
-                        //               padding: const EdgeInsets.only(
-                        //                 left: 20.0,
-                        //                 right: 20.0,
-                        //                 bottom: 40.0,
-                        //               ),
-                        //               gridDelegate:
-                        //                   const SliverGridDelegateWithFixedCrossAxisCount(
-                        //                 crossAxisCount: 3,
-                        //                 mainAxisSpacing: 20.0,
-                        //                 crossAxisSpacing: 20.0,
-                        //                 childAspectRatio: 2,
-                        //               ),
-                        //               itemCount: _stylistController
-                        //                       .getArtiestDashboardModel
-                        //                       .data
-                        //                       ?.serviceCountData
-                        //                       ?.serviceBreakdown
-                        //                       ?.length ??
-                        //                   0,
-                        //               itemBuilder: (context, index) {
-                        //                 return ServiceBreakdownWidget(
-                        //                   imageUrl: AssetsConstant.haircutImage,
-                        //                   count:
-                        //                       "${_stylistController.getArtiestDashboardModel.data?.serviceCountData?.serviceBreakdown?[index].count ?? ""}",
-                        //                   name: _stylistController
-                        //                           .getArtiestDashboardModel
-                        //                           .data
-                        //                           ?.serviceCountData
-                        //                           ?.serviceBreakdown?[index]
-                        //                           .name ??
-                        //                       "",
-                        //                 );
-                        //               },
-                        //             ),
-                        //     ],
-                        //   ),
-                        // ),
-                        // const SizedBox(height: 16),
-                        // _reportAnalytics(),
-                      ],
-                    ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /*--------------- Header Widget ------------*/
-  _headerWidget() {
-    return Container(
-      height: 60,
-      color: ColorConstant.whiteColor,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              "My Dashboard",
-              style: AppTextTheme.bold
-                  .copyWith(color: ColorConstant.blackColor, fontSize: 19),
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    _launchDialer(phoneNumber: "88970 90838");
-                  },
-                  child: Container(
-                    height: 46,
-                    width: 46,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.redColor,
-                    ),
-                    child: Center(
-                      child: Image.asset(
-                        AssetsConstant.sosIcon,
-                        height: 20,
-                        width: 20,
-                      ),
-                    ),
-                  ),
                 ),
-              ],
-            )
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  /*======================= LaunchDialer =========================*/
-  Future<void> _launchDialer({required String phoneNumber}) async {
-    final Uri url = Uri.parse('tel:$phoneNumber');
+  Widget _sidBanner(BuildContext context) {
+    final sId = _stylistController.getArtistPortfolioModel.data?.sId?.trim() ??
+        'Loading...';
 
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      throw 'Could not launch $url';
-    }
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: const LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Color(0xffcd73b4),
+              Color(0xff8454e5),
+            ],
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          'SId : $sId',
+          textAlign: TextAlign.center,
+          style: AppTextTheme.bold.copyWith(
+            color: Colors.white,
+            fontSize: 30,
+            fontFamily: 'Outfit',
+            fontWeight: FontWeight.w800,
+            letterSpacing: 0.60,
+          ),
+        ),
+      ),
+    );
   }
+
+  // /*======================= LaunchDialer (SOS) =========================*/
+  // Future<void> _launchDialer({required String phoneNumber}) async {
+  //   final Uri url = Uri.parse('tel:$phoneNumber');
+  //
+  //   if (await canLaunchUrl(url)) {
+  //     await launchUrl(url, mode: LaunchMode.externalApplication);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
 
   /*----------- Tab Bar variable  ----------- */
   String? dashboard = "0";

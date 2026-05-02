@@ -54,11 +54,7 @@ class _StylistAppointmentDetailsPageState
   }
 
   String _displayId(detail.Data? data) {
-    final v = data?.idx?.trim();
-    if (v != null && v.isNotEmpty) return v;
-    final b = data?.bookingId?.trim();
-    if (b != null && b.isNotEmpty) return b;
-    return widget.appointmentId;
+    return data?.idx?.trim() ?? '';
   }
 
   String _formatDate(String? iso) {
@@ -68,6 +64,20 @@ class _StylistAppointmentDetailsPageState
     } catch (_) {
       return '--';
     }
+  }
+
+  bool _shouldShowTakePicturesButton() {
+    // Check if portfolio upload is allowed AND there are no existing images
+    final allowPortfolioUpload = _stylistController
+            .getAllowPortfolioUploadModel.data?.allowPortfolioUpload ??
+        false;
+    final existingPortfolio =
+        _stylistController.getArtistPortfolioModel.data?.portfolio ?? [];
+    final hasExistingImages = existingPortfolio.any(
+        (portfolio) => portfolio.image != null && portfolio.image!.isNotEmpty);
+
+    // Only show the button if both conditions are met: permission granted AND no existing images
+    return allowPortfolioUpload && !hasExistingImages;
   }
 
   Future<void> _onTakePicturesPressed() async {
@@ -112,7 +122,7 @@ class _StylistAppointmentDetailsPageState
       backgroundColor: ColorConstant.whiteColor,
       appBar: AppBarWidget(
         nameOfScreen: 'Appointment Details',
-        title: Builder(builder: (context) {
+        title: Obx(() {
           final details = _stylistController.getAppointmentsDetailsModel;
           if (_stylistController.showProgress) {
             return const ProgressBarView();
@@ -262,10 +272,14 @@ class _StylistAppointmentDetailsPageState
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               child: Material(
-                color: ColorConstant.primaryColor2,
+                color: _shouldShowTakePicturesButton()
+                    ? ColorConstant.primaryColor2
+                    : ColorConstant.lightGreyColor,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
-                  onTap: _onTakePicturesPressed,
+                  onTap: _shouldShowTakePicturesButton()
+                      ? _onTakePicturesPressed
+                      : null,
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),

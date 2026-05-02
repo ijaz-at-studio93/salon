@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/page/stylist/manage_stylist_page.dart';
 import '../../../project_specific/text_theme.dart';
-import '../../stylist/stylist_page.dart';
 import 'add_new_service_page.dart';
-
-
 
 class AddServiceBottomSheetPage extends StatefulWidget {
   const AddServiceBottomSheetPage({super.key});
@@ -21,7 +19,6 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       width: Get.width,
       decoration: const BoxDecoration(
         color: ColorConstant.whiteColor,
@@ -67,15 +64,15 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Get.back();
-                      Get.to(()=>const StylistPage());
+                      Get.to(() => const ManageStylistPage());
                     },
                     child: Container(
                       width: 170,
@@ -83,7 +80,8 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                       decoration: BoxDecoration(
                           color: ColorConstant.whiteColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: ColorConstant.addServiceBorderColor)),
+                          border: Border.all(
+                              color: ColorConstant.addServiceBorderColor)),
                       child: Column(
                         children: [
                           Image.asset(
@@ -95,50 +93,49 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                           const SizedBox(height: 15),
                           Text(
                             "Stylist",
-                            style: AppTextTheme.regular
-                                .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+                            style: AppTextTheme.regular.copyWith(
+                                color: ColorConstant.blackColor, fontSize: 14),
                           )
                         ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: (){
-                      Get.back();
-                      Get.to(()=> const AddNewServicePage());
-                    },
-                    child: Container(
-                      width: 170,
-                      padding: const EdgeInsets.all(50),
-                      decoration: BoxDecoration(
-                          color: ColorConstant.whiteColor,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: ColorConstant.addServiceBorderColor)),
-                      child: Column(
-                        children: [
-                          Image.asset(
-                            AssetsConstant.service,
-                            height: 54,
-                            width: 54,
-                          ),
-                          const SizedBox(height: 15),
-                          Text(
-                            "Service",
-                            style: AppTextTheme.regular
-                                .copyWith(color: ColorConstant.blackColor, fontSize: 14),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                // const SizedBox(width: 15),
+                // Expanded(
+                //   child: GestureDetector(
+                //     onTap: (){
+                //       Get.back();
+                //       Get.to(()=> const AddNewServicePage());
+                //     },
+                //     child: Container(
+                //       width: 170,
+                //       padding: const EdgeInsets.all(50),
+                //       decoration: BoxDecoration(
+                //           color: ColorConstant.whiteColor,
+                //           borderRadius: BorderRadius.circular(12),
+                //           border: Border.all(color: ColorConstant.addServiceBorderColor)),
+                //       child: Column(
+                //         children: [
+                //           Image.asset(
+                //             AssetsConstant.service,
+                //             height: 54,
+                //             width: 54,
+                //           ),
+                //           const SizedBox(height: 15),
+                //           Text(
+                //             "Service",
+                //             style: AppTextTheme.regular
+                //                 .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+                //           )
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
               ],
             ),
           )
-
         ],
       ),
     );

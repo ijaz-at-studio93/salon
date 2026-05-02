@@ -29,6 +29,8 @@ class _ContentPageState extends State<ContentPage> {
 
   final Rx<File?> _pickedFile = Rx<File?>(null);
   final RxBool _isVideo = false.obs;
+  final RxBool _showUploadMediaError = false.obs;
+  final RxBool _showUploadDescriptionError = false.obs;
 
   @override
   void initState() {
@@ -93,6 +95,7 @@ class _ContentPageState extends State<ContentPage> {
           onSelectVideo: (File file) {
             _pickedFile.value = file;
             _isVideo.value = true;
+            _showUploadMediaError.value = false;
           },
         );
       } else {
@@ -100,6 +103,7 @@ class _ContentPageState extends State<ContentPage> {
           onSelectImage: (File file) {
             _pickedFile.value = file;
             _isVideo.value = false;
+            _showUploadMediaError.value = false;
           },
         );
       }
@@ -116,14 +120,34 @@ class _ContentPageState extends State<ContentPage> {
 
   // ── Upload ───────────────────────────────────────────────────────────────
 
-  void _doUpload({required BuildContext sheetContext}) {
+  bool _doUpload({
+    required BuildContext sheetContext,
+    bool showInlineMediaError = false,
+  }) {
     if (_pickedFile.value == null) {
+      if (showInlineMediaError) {
+        _showUploadMediaError.value = true;
+        return false;
+      }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please select a picture or video first',
             style:
                 AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
       ));
-      return;
+      return false;
+    }
+
+    if (_descriptionController.text.trim().isEmpty) {
+      if (showInlineMediaError) {
+        _showUploadDescriptionError.value = true;
+        return false;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please write a description',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
+      ));
+      return false;
     }
 
     _homeController.doCreateSalonContent(
@@ -133,10 +157,13 @@ class _ContentPageState extends State<ContentPage> {
       callback: () {
         _pickedFile.value = null;
         _isVideo.value = false;
+        _showUploadMediaError.value = false;
+        _showUploadDescriptionError.value = false;
         _descriptionController.clear();
         _homeController.doGetSalonContentList();
       },
     );
+    return true;
   }
 
   // ── Upload bottom sheet (used by "+" button on grid) ─────────────────────
@@ -150,6 +177,9 @@ class _ContentPageState extends State<ContentPage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (sheetCtx) {
+        // Reset state when sheet opens
+        _showUploadMediaError.value = false;
+        _showUploadDescriptionError.value = false;
         return Padding(
           padding: EdgeInsets.only(
               bottom: MediaQuery.of(sheetCtx).viewInsets.bottom),
@@ -235,14 +265,79 @@ class _ContentPageState extends State<ContentPage> {
                 ),
                 const SizedBox(height: 20),
                 Obx(
+                  () => _showUploadMediaError.value
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorConstant.redColor2
+                                  .withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: ColorConstant.redColor2,
+                              ),
+                            ),
+                            child: Text(
+                              'Please select a picture or video first',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.redColor2,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                Obx(
+                  () => _showUploadDescriptionError.value
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorConstant.redColor2
+                                  .withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: ColorConstant.redColor2,
+                              ),
+                            ),
+                            child: Text(
+                              'Please write a description',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.redColor2,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                Obx(
                   () => SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: _homeController.showContentProgress
                           ? null
                           : () {
-                              _doUpload(sheetContext: sheetCtx);
-                              if (Navigator.canPop(sheetCtx)) {
+                              _showUploadMediaError.value = false;
+                              _showUploadDescriptionError.value = false;
+                              final didStartUpload =
+                                  _doUpload(
+                                sheetContext: sheetCtx,
+                                showInlineMediaError: true,
+                              );
+                              if (didStartUpload &&
+                                  Navigator.canPop(sheetCtx)) {
                                 Navigator.pop(sheetCtx);
                               }
                             },
@@ -378,7 +473,11 @@ class _ContentPageState extends State<ContentPage> {
           child: ElevatedButton(
             onPressed: _homeController.showContentProgress
                 ? null
-                : () => _doUpload(sheetContext: context),
+                : () {
+                    _showUploadMediaError.value = false;
+                    _showUploadDescriptionError.value = false;
+                    _doUpload(sheetContext: context);
+                  },
             style: ElevatedButton.styleFrom(
               elevation: 0,
               backgroundColor: ColorConstant.primaryColor2,

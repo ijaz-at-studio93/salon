@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
@@ -25,6 +24,8 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
 
   final Rx<File?> _pickedFile = Rx<File?>(null);
   final RxBool _isVideo = false.obs;
+  final RxBool _showUploadMediaError = false.obs;
+  final RxBool _showUploadDescriptionError = false.obs;
 
   @override
   void dispose() {
@@ -87,6 +88,7 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
           onSelectVideo: (File file) {
             _pickedFile.value = file;
             _isVideo.value = true;
+            _showUploadMediaError.value = false;
           },
         );
       } else {
@@ -94,6 +96,7 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
           onSelectImage: (File file) {
             _pickedFile.value = file;
             _isVideo.value = false;
+            _showUploadMediaError.value = false;
           },
         );
       }
@@ -126,6 +129,57 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
     return t.substring(0, 200);
   }
 
+  // ── Upload ───────────────────────────────────────────────────────────────
+
+  bool _doUpload({
+    required BuildContext sheetContext,
+    bool showInlineMediaError = false,
+  }) {
+    if (_pickedFile.value == null) {
+      if (showInlineMediaError) {
+        _showUploadMediaError.value = true;
+        return false;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please select a picture or video first',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
+      ));
+      return false;
+    }
+
+    if (_descriptionController.text.trim().isEmpty) {
+      if (showInlineMediaError) {
+        _showUploadDescriptionError.value = true;
+        return false;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Please write a description',
+            style:
+                AppTextTheme.regular.copyWith(color: ColorConstant.whiteColor)),
+      ));
+      return false;
+    }
+
+    final file = _pickedFile.value!;
+    final isVid = _isVideo.value;
+    _stylistController.doCreateBlog(
+      title: _deriveTitle(_descriptionController.text.trim()),
+      externalLink: '',
+      body: _deriveBody(_descriptionController.text.trim()),
+      description: _descriptionController.text.trim(),
+      image: isVid ? File('') : file,
+      video: isVid ? file : File(''),
+      callback: () {
+        Get.back();
+        Get.to(() => const StylistContentPage());
+      },
+    );
+    return true;
+  }
+
+  // ── Original approach with showMessage (commented for reference) ───────────────────────────────────────────
+  /*
   void _submit() {
     final desc = _descriptionController.text.trim();
     if (_pickedFile.value == null) {
@@ -152,9 +206,14 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
       },
     );
   }
+  */
 
   @override
   Widget build(BuildContext context) {
+    // Reset state when sheet opens
+    _showUploadMediaError.value = false;
+    _showUploadDescriptionError.value = false;
+    
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -244,10 +303,78 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
             ),
             const SizedBox(height: 20),
             Obx(
+              () => _showUploadMediaError.value
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.redColor2
+                              .withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: ColorConstant.redColor2,
+                          ),
+                        ),
+                        child: Text(
+                          'Please select a picture or video first',
+                          style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.redColor2,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Obx(
+              () => _showUploadDescriptionError.value
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.redColor2
+                              .withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: ColorConstant.redColor2,
+                          ),
+                        ),
+                        child: Text(
+                          'Please write a description',
+                          style: AppTextTheme.medium.copyWith(
+                            color: ColorConstant.redColor2,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
+            Obx(
               () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _stylistController.showProgress ? null : _submit,
+                  onPressed: _stylistController.showProgress ? null : () {
+                    _showUploadMediaError.value = false;
+                    _showUploadDescriptionError.value = false;
+                    final didStartUpload = _doUpload(
+                      sheetContext: context,
+                      showInlineMediaError: true,
+                    );
+                    if (didStartUpload && Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                    }
+                  },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: ColorConstant.primaryColor2,

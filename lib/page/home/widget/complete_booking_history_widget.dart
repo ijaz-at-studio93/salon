@@ -14,7 +14,7 @@ class CompleteHistoryWidget extends StatelessWidget {
   static const _labelStyle = TextStyle(
     fontWeight: FontWeight.w700,
     color: Colors.black,
-    fontSize: 14,
+    fontSize: 15,
   );
 
   @override
@@ -40,7 +40,7 @@ class CompleteHistoryWidget extends StatelessWidget {
         .toStringAsFixed(0);
 
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       margin: const EdgeInsets.symmetric(horizontal: 18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
@@ -65,29 +65,29 @@ class CompleteHistoryWidget extends StatelessWidget {
                     valueColor: ColorConstant.bookingValuePurple,
                     maxValueWidth: Get.width * 0.38,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                 ],
                 _inlineLabelValue(
                   label: 'Date : ',
                   value: dateStr,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 _inlineLabelValue(
                   label: 'Stylist : ',
                   value: stylistName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 RichText(
                   text: TextSpan(
                     style: AppTextTheme.bold.copyWith(
-                      fontSize: 14,
+                      fontSize: 15,
                       color: ColorConstant.bookingPriceMagenta2,
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Price : ',
+                        text: 'ApproxPrice : ',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                       TextSpan(text: priceStr),
@@ -106,7 +106,7 @@ class CompleteHistoryWidget extends StatelessWidget {
                 valueColor: ColorConstant.bookingValuePurple,
                 alignEnd: true,
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -120,7 +120,7 @@ class CompleteHistoryWidget extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
               _viewButton(),
             ],
           ),
@@ -142,13 +142,13 @@ class CompleteHistoryWidget extends StatelessWidget {
         child: RichText(
           textAlign: TextAlign.end,
           text: TextSpan(
-            style: _labelStyle.copyWith(fontSize: 13),
+            style: _labelStyle.copyWith(fontSize: 15),
             children: [
               TextSpan(text: label),
               TextSpan(
                 text: value,
                 style: AppTextTheme.bold.copyWith(
-                  fontSize: 13,
+                  fontSize: 15,
                   color: valueColor,
                 ),
               ),
@@ -162,7 +162,7 @@ class CompleteHistoryWidget extends StatelessWidget {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: _labelStyle.copyWith(fontSize: 13)),
+          Text(label, style: _labelStyle.copyWith(fontSize: 15)),
           SizedBox(
             width: maxValueWidth,
             child: Text(
@@ -170,7 +170,7 @@ class CompleteHistoryWidget extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextTheme.bold.copyWith(
-                fontSize: 13,
+                fontSize: 15,
                 color: valueColor,
               ),
             ),
@@ -181,19 +181,19 @@ class CompleteHistoryWidget extends StatelessWidget {
 
     return RichText(
       text: TextSpan(
-        style: _labelStyle.copyWith(fontSize: 13),
+        style: _labelStyle.copyWith(fontSize: 15),
         children: [
           TextSpan(
             text: label,
             style: AppTextTheme.semibold.copyWith(
-              fontSize: 13,
+              fontSize: 15,
               color: Colors.black,
             ),
           ),
           TextSpan(
             text: value,
             style: AppTextTheme.bold.copyWith(
-              fontSize: 13,
+              fontSize: 15,
               color: valueColor,
             ),
           ),
@@ -219,7 +219,7 @@ class CompleteHistoryWidget extends StatelessWidget {
             'View',
             style: AppTextTheme.bold.copyWith(
               color: ColorConstant.lightGreenColor,
-              fontSize: 16,
+              fontSize: 17,
             ),
           ),
         ),

@@ -138,6 +138,8 @@ class StylistPortfolioSection extends StatelessWidget {
     final stylistController = Get.find<StylistController>();
     File? pickedFile;
     var isVideo = false;
+    final RxBool showUploadMediaError = false.obs;
+    final RxBool showPortfolioLimitError = false.obs;
 
     showModalBottomSheet<void>(
       context: context,
@@ -149,6 +151,9 @@ class StylistPortfolioSection extends StatelessWidget {
       builder: (sheetCtx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
+            // Reset state when sheet opens
+            showUploadMediaError.value = false;
+            showPortfolioLimitError.value = false;
             void pick(File file, bool video) {
               pickedFile = file;
               isVideo = video;
@@ -220,6 +225,76 @@ class StylistPortfolioSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Obx(
+                      () => showPortfolioLimitError.value
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.redColor2
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: ColorConstant.redColor2,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.error_outline,
+                                      color: ColorConstant.redColor2,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        'Maximum $_maxItems portfolio items allowed. Remove an item to add another.',
+                                        style: AppTextTheme.medium.copyWith(
+                                          color: ColorConstant.redColor2,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    Obx(
+                      () => showUploadMediaError.value
+                          ? Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: ColorConstant.redColor2
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: ColorConstant.redColor2,
+                                  ),
+                                ),
+                                child: Text(
+                                  'Please select a picture or video first',
+                                  style: AppTextTheme.medium.copyWith(
+                                    color: ColorConstant.redColor2,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                    Obx(
                       () => SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
@@ -227,18 +302,28 @@ class StylistPortfolioSection extends StatelessWidget {
                               ? null
                               : () {
                                   if (pickedFile == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          'Please select a picture or video first',
-                                          style: AppTextTheme.regular.copyWith(
-                                            color: ColorConstant.whiteColor,
-                                          ),
-                                        ),
-                                      ),
-                                    );
+                                    setModalState(() {
+                                      showUploadMediaError.value = true;
+                                      showPortfolioLimitError.value = false;
+                                    });
                                     return;
                                   }
+                                  
+                                  // Check portfolio limit locally
+                                  final currentPortfolioItems = stylistController.getArtistPortfolioModel.data?.portfolio?.length ?? 0;
+                                  if (currentPortfolioItems >= _maxItems) {
+                                    setModalState(() {
+                                      showUploadMediaError.value = false;
+                                      showPortfolioLimitError.value = true;
+                                    });
+                                    return;
+                                  }
+                                  
+                                  setModalState(() {
+                                    showUploadMediaError.value = false;
+                                    showPortfolioLimitError.value = false;
+                                  });
+                                  
                                   stylistController.doUploadPortfolioMedia(
                                     file: pickedFile!,
                                     isImage: !isVideo,
