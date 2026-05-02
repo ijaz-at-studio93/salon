@@ -479,10 +479,29 @@ class _ContentCard extends StatelessWidget {
   final VoidCallback onOpenDetail;
   final VoidCallback onEdit;
 
+  /// Figma content card media frame — height follows width via [aspectRatio].
+  static const double _mediaFrameWidth = 368;
+  static const double _mediaFrameHeight = 220;
+
+  static final _descShadows = [
+    Shadow(
+      color: Colors.black.withValues(alpha: 0.75),
+      offset: const Offset(0, 1),
+      blurRadius: 4,
+    ),
+    Shadow(
+      color: Colors.black.withValues(alpha: 0.55),
+      offset: Offset.zero,
+      blurRadius: 12,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     final hasVideo = item.video != null && item.video!.isNotEmpty;
     final hasImage = !hasVideo && item.image != null && item.image!.isNotEmpty;
+    final desc = (item.description ?? '').trim();
+    final hasDesc = desc.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -494,117 +513,159 @@ class _ContentCard extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: onOpenDetail,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: ShapeDecoration(
-                            color: Colors.black.withValues(alpha: 0.30),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5)),
-                          ),
-                          child: Text(
-                            badgeLabel,
-                            style: AppTextTheme.bold.copyWith(
-                              color: ColorConstant.whiteColor,
-                              fontSize: 11,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onOpenDetail,
+              child: AspectRatio(
+                aspectRatio: _mediaFrameWidth / _mediaFrameHeight,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (hasImage)
+                      CachedNetworkImage(
+                        imageUrl: '${APIConstants.image}${item.image}',
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) => Container(
+                          color: ColorConstant.reviewCardColor,
+                          child: const Center(
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 14),
-                        if (hasImage)
-                          Builder(builder: (context) {
-                            print('${APIConstants.image}${item.image}');
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: CachedNetworkImage(
-                                imageUrl: '${APIConstants.image}${item.image}',
-                                height: 120,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => Container(
-                                  height: 120,
-                                  color: ColorConstant.reviewCardColor,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                    ),
-                                  ),
-                                ),
-                                errorWidget: (_, __, ___) => Container(
-                                  height: 120,
-                                  color: ColorConstant.reviewCardColor,
-                                  child: const Image(
-                                    image:
-                                        AssetImage(AssetsConstant.placeHolder),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        if ((item.description ?? '').isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            item.description ?? '',
-                            style: AppTextTheme.medium.copyWith(
-                              color: ColorConstant.grayTextColor,
-                              fontSize: 13,
-                              height: 1.35,
-                            ),
-                            maxLines: 4,
-                            overflow: TextOverflow.ellipsis,
+                        errorWidget: (_, __, ___) => Container(
+                          color: ColorConstant.reviewCardColor,
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            AssetsConstant.placeHolder,
+                            fit: BoxFit.cover,
                           ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      onTap: onEdit,
-                      borderRadius: BorderRadius.circular(8),
+                        ),
+                      )
+                    else if (hasVideo)
+                      ColoredBox(
+                        color: const Color(0xFF2C2C2C),
+                        child: Center(
+                          child: Icon(
+                            Icons.play_circle_rounded,
+                            size: 58,
+                            color: Colors.white.withValues(alpha: 0.85),
+                          ),
+                        ),
+                      )
+                    else
+                      ColoredBox(
+                        color: ColorConstant.reviewCardColor,
+                        child: Center(
+                          child: Image.asset(
+                            AssetsConstant.placeHolder,
+                            fit: BoxFit.contain,
+                            height: 72,
+                          ),
+                        ),
+                      ),
+                    Positioned(
+                      top: 12,
+                      left: 16,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 10,
+                          horizontal: 10,
+                          vertical: 6,
                         ),
-                        decoration: BoxDecoration(
-                          color: ColorConstant.editButtonColor,
-                          borderRadius: BorderRadius.circular(8),
+                        decoration: ShapeDecoration(
+                          color: Colors.black.withValues(alpha: 0.35),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
                         ),
                         child: Text(
-                          'Edit',
+                          badgeLabel,
                           style: AppTextTheme.bold.copyWith(
-                            color: ColorConstant.primaryColor2,
-                            fontSize: 14,
+                            color: ColorConstant.whiteColor,
+                            fontSize: 11,
                           ),
                         ),
                       ),
                     ),
-                  ),
+                    if (hasDesc)
+                      Positioned(
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withValues(alpha: 0.0),
+                                Colors.black.withValues(alpha: 0.58),
+                                Colors.black.withValues(alpha: 0.82),
+                              ],
+                              stops: const [0.0, 0.45, 1.0],
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                              12,
+                              10,
+                              96,
+                              8,
+                            ),
+                            child: Text(
+                              desc,
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.whiteColor,
+                                fontSize: 12,
+                                height: 1.3,
+                                shadows: _descShadows,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                    Positioned(
+                      right: 12,
+                      bottom: 12,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: onEdit,
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 18,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorConstant.editButtonColor,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.25),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              'Edit',
+                              style: AppTextTheme.bold.copyWith(
+                                color: ColorConstant.primaryColor2,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

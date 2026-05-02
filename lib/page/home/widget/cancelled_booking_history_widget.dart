@@ -95,7 +95,7 @@ class _CancelledBookingHistoryWidgetState
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Price : ',
+                        text: 'ApproxPrice : ',
                         style: TextStyle(fontWeight: FontWeight.w700),
                       ),
                       TextSpan(text: priceStr),

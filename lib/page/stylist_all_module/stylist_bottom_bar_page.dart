@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:salon/api/dio_client.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
@@ -27,10 +28,11 @@ class _StylistBottomBarPageState extends State<StylistBottomBarPage> {
           tapBackAgainToCloseApp();
         }
       },
-      child: Scaffold(
-        backgroundColor: ColorConstant.bgColor,
-        appBar: statusBarTheme(context),
-        body: _selectedIndex == 0
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: defaultStatusBarOverlayStyle(context),
+        child: Scaffold(
+          backgroundColor: ColorConstant.bgColor,
+          body: _selectedIndex == 0
             ? const HomePage2()
             : _selectedIndex == 1
                 ? const StylistBookingOverViewPage()
@@ -113,6 +115,7 @@ class _StylistBottomBarPageState extends State<StylistBottomBarPage> {
             });
           },
         ),
+      ),
       ),
     );
   }

@@ -94,7 +94,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                     ),
                     children: [
                       const TextSpan(
-                        text: 'Price : ',
+                        text: 'ApproxPrice : ',
                         style: TextStyle(
                           fontWeight: FontWeight.w700,
                           color: ColorConstant.blackColor,

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/page/home/booking_history_page.dart';
 import 'package:salon/page/home/home_page.dart';
+import 'package:salon/page/setting/adding_service/add_service_bottm_sheet_page.dart';
 import 'package:salon/page/setting/content_page.dart';
 import 'package:salon/page/setting/my_details_page.dart';
-import 'package:salon/page/stylist/manage_stylist_page.dart';
 import '../api/dio_client.dart';
 import '../constant/assetsconstant.dart';
 import '../constant/color_constant.dart';
@@ -33,10 +34,11 @@ class _BottomBarPageState extends State<BottomBarPage> {
           tapBackAgainToCloseApp();
         }
       },
-      child: Scaffold(
-        backgroundColor: ColorConstant.bgColor,
-        appBar: statusBarTheme(context),
-        body: _selectedIndex == 0
+      child: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: defaultStatusBarOverlayStyle(context),
+        child: Scaffold(
+          backgroundColor: ColorConstant.bgColor,
+          body: _selectedIndex == 0
             ? const Homepage()
             : _selectedIndex == 1
                 ? const BookingHistoryPage()
@@ -64,18 +66,17 @@ class _BottomBarPageState extends State<BottomBarPage> {
                 onPressed: () {
                   if (_homeController.getEligibilityModel.data?.isApproved ??
                       false) {
-                    // showModalBottomSheet(
-                    //     isScrollControlled: true,
-                    //     shape: const RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.only(
-                    //       topLeft: Radius.circular(32),
-                    //       topRight: Radius.circular(32),
-                    //     )),
-                    //     context: context,
-                    //     builder: (context) {
-                    //       return const AddServiceBottomSheetPage();
-                    //     });
-                    Get.to(() => const ManageStylistPage());
+                    showModalBottomSheet(
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        )),
+                        context: context,
+                        builder: (context) {
+                          return const AddServiceBottomSheetPage();
+                        });
                   }
                 },
                 backgroundColor: ColorConstant.primaryColor,
@@ -180,6 +181,7 @@ class _BottomBarPageState extends State<BottomBarPage> {
             }
           },
         ),
+      ),
       ),
     );
   }
