@@ -105,10 +105,13 @@ class SalonArtistData {
   String? panCard;
   String? whatsapp;
   String? salonId;
+  /// Public stylist code (SId) — same as `StaffData.sId` / add-stylist flow.
+  String? sId;
   WorkingPlan? workingPlan;
 
   SalonArtistData({
     this.id,
+    this.sId,
     this.name,
     this.email,
     this.dob,
@@ -148,6 +151,7 @@ class SalonArtistData {
     panCard = json['panCard'];
     whatsapp = json['whatsapp'];
     salonId = json['salonId'];
+    sId = json['sId'];
     workingPlan = json['workingPlan'] != null
         ? WorkingPlan.fromJson(json['workingPlan'])
         : null;
@@ -173,6 +177,7 @@ class SalonArtistData {
     data['panCard'] = panCard;
     data['whatsapp'] = whatsapp;
     data['salonId'] = salonId;
+    data['sId'] = sId;
     if (workingPlan != null) {
       data['workingPlan'] = workingPlan!.toJson();
     }

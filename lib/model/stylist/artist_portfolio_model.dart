@@ -34,6 +34,7 @@ class Data {
   String? dob;
   String? countryCode;
   String? mobile;
+  String? sId;
   String? profileImage;
   String? createdAt;
   int? experience;
@@ -52,6 +53,7 @@ class Data {
       this.dob,
       this.countryCode,
       this.mobile,
+      this.sId,
       this.profileImage,
       this.createdAt,
       this.experience,
@@ -74,6 +76,7 @@ class Data {
     createdAt = json['createdAt'];
     experience = json['experience'];
     gender = json['gender'];
+    sId = json['sId'];
     homeService = json['homeService'];
     reviewCount = json['reviewCount'];
     salon = json['salon'] != null ? Salon.fromJson(json['salon']) : null;
@@ -105,6 +108,7 @@ class Data {
     data['experience'] = experience;
     data['gender'] = gender;
     data['homeService'] = homeService;
+    data['sId'] = sId;
     data['reviewCount'] = reviewCount;
     if (salon != null) {
       data['salon'] = salon!.toJson();
