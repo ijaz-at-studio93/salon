@@ -62,30 +62,34 @@ class _BottomBarPageState extends State<BottomBarPage> {
                     child: Image.asset(AssetsConstant.contentBtnIcon),
                   ),
                 ),
-                FloatingActionButton(
-                  heroTag: 'Add Btn',
-                  onPressed: () {
-                    if (_homeController.getEligibilityModel.data?.isApproved ??
-                        false) {
-                      showModalBottomSheet(
-                          isScrollControlled: true,
-                          shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(32),
-                            topRight: Radius.circular(32),
-                          )),
-                          context: context,
-                          builder: (context) {
-                            return const AddServiceBottomSheetPage();
-                          });
-                    }
-                  },
-                  backgroundColor: ColorConstant.primaryColor,
-                  child: const Center(
-                    child: Icon(
-                      Icons.add,
-                      size: 40,
-                      color: ColorConstant.whiteColor,
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: FloatingActionButton(
+                    heroTag: 'Add Btn',
+                    onPressed: () {
+                      if (_homeController
+                              .getEligibilityModel.data?.isApproved ??
+                          false) {
+                        showModalBottomSheet(
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(32),
+                              topRight: Radius.circular(32),
+                            )),
+                            context: context,
+                            builder: (context) {
+                              return const AddServiceBottomSheetPage();
+                            });
+                      }
+                    },
+                    backgroundColor: ColorConstant.primaryColor,
+                    child: const Center(
+                      child: Icon(
+                        Icons.add,
+                        size: 40,
+                        color: ColorConstant.whiteColor,
+                      ),
                     ),
                   ),
                 ),
