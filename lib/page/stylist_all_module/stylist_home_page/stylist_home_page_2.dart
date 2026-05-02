@@ -197,8 +197,8 @@ class _HomePage2State extends State<HomePage2> {
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
                   colors: [
-                    Color(0xFFE85BA3),
-                    Color(0xFFD8C9F5),
+                    Color(0xffcd73b4),
+                    Color(0xff8454e5),
                   ],
                 ),
               ),
