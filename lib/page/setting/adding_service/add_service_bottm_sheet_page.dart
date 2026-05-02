@@ -7,8 +7,6 @@ import 'package:salon/page/stylist/manage_stylist_page.dart';
 import '../../../project_specific/text_theme.dart';
 import 'add_new_service_page.dart';
 
-
-
 class AddServiceBottomSheetPage extends StatefulWidget {
   const AddServiceBottomSheetPage({super.key});
 
@@ -21,7 +19,6 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-
       width: Get.width,
       decoration: const BoxDecoration(
         color: ColorConstant.whiteColor,
@@ -67,15 +64,15 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       Get.back();
-                      Get.to(()=>const ManageStylistPage());
+                      Get.to(() => const ManageStylistPage());
                     },
                     child: Container(
                       width: 170,
@@ -83,7 +80,8 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                       decoration: BoxDecoration(
                           color: ColorConstant.whiteColor,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: ColorConstant.addServiceBorderColor)),
+                          border: Border.all(
+                              color: ColorConstant.addServiceBorderColor)),
                       child: Column(
                         children: [
                           Image.asset(
@@ -95,15 +93,15 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                           const SizedBox(height: 15),
                           Text(
                             "Stylist",
-                            style: AppTextTheme.regular
-                                .copyWith(color: ColorConstant.blackColor, fontSize: 14),
+                            style: AppTextTheme.regular.copyWith(
+                                color: ColorConstant.blackColor, fontSize: 14),
                           )
                         ],
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 15),
+                // const SizedBox(width: 15),
                 // Expanded(
                 //   child: GestureDetector(
                 //     onTap: (){
@@ -138,7 +136,6 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
               ],
             ),
           )
-
         ],
       ),
     );
