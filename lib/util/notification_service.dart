@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kDebugMode, debugPrint;
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
@@ -48,6 +48,7 @@ Future<dynamic> firebaseMessagingBackgroundHandler(
         (data['android_channel_id'] ?? data['channel_id'] ?? '').toString();
     final isBooking = pushType.contains('booking') ||
         pushType.contains('appointment') ||
+        pushType.contains('cancel') ||
         channelId == 'booking';
 
     await plugin.show(
@@ -98,40 +99,43 @@ Future<void> handleNotification(Map<String, dynamic> data,
   // are absent. If we have an appointment ID, that's enough to navigate.
   if (appointmentId.isEmpty) return;
 
-  _openAppointmentDetails(appointmentId);
+  _openAppointmentDetails(appointmentId, data);
+}
+
+String _firstNonEmptyString(Map<String, dynamic> data, List<String> keys) {
+  for (final key in keys) {
+    final value = data[key];
+    if (value == null) continue;
+    final s = value.toString().trim();
+    if (s.isNotEmpty) return s;
+  }
+  return '';
 }
 
 String _readAppointmentId(Map<String, dynamic> data) {
-  final value = data['salonAppointmentId'];
-
-  return value?.toString() ?? '';
+  return _firstNonEmptyString(data, const [
+    'salonAppointmentId',
+    'appointmentId',
+    'appointment_id',
+  ]);
 }
 
-bool _isAppointmentNotification(Map<String, dynamic> data) {
-  final type =
-      (data['push_type'] ?? data['type'] ?? '').toString().toLowerCase();
-  final title = (data['title'] ?? '').toString().toLowerCase();
-  final channelId =
-      (data['android_channel_id'] ?? data['channel_id'] ?? '').toString();
-
-  return type == 'booking_received' ||
-      type == 'appointment_received' ||
-      type == 'new_booking' ||
-      type.contains('appointment') ||
-      type.contains('booking') ||
-      title.contains('appointment') ||
-      title.contains('booking') ||
-      channelId == 'booking';
-}
-
-void _openAppointmentDetails(String appointmentId) {
+void _openAppointmentDetails(
+  String appointmentId, [
+  Map<String, dynamic>? data,
+]) {
   if (!SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) return;
 
   if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
+    final status = data != null
+        ? data['status'] == 'cancelled'
+            ? 'Cancel'
+            : data['status']
+        : 'pending';
     Get.to(
       () => BookingHistoryViewpage(
         appointmentId: appointmentId,
-        status: 'pending',
+        status: status,
       ),
     );
     return;

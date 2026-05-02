@@ -59,13 +59,29 @@ class _SetStylistAvailabilityPageState
     }
   }
 
-  _StylistTodayStatus _classifyDay(DayData? day) {
+  /// True if any blocked slot / exception overlaps today's local calendar day.
+  bool _hasExceptionToday(Availability? a) {
+    final slots = a?.blockedSlots;
+    if (slots == null || slots.isEmpty) return false;
+    final now = DateTime.now();
+    final dayStart = DateTime(now.year, now.month, now.day);
+    final nextDay = dayStart.add(const Duration(days: 1));
+    for (final b in slots) {
+      final s = b.start;
+      final e = b.end;
+      if (s == null || e == null) continue;
+      if (s.isBefore(nextDay) && e.isAfter(dayStart)) return true;
+    }
+    return false;
+  }
+
+  _StylistTodayStatus _classifyAvailability(Availability? availability) {
+    final day = _todayData(availability);
     if (day == null) return _StylistTodayStatus.off;
     final s = day.start?.trim() ?? '';
     final e = day.end?.trim() ?? '';
     if (s.isEmpty || e.isEmpty) return _StylistTodayStatus.off;
-    final breaks = day.breaks;
-    if (breaks != null && breaks.isNotEmpty) {
+    if (_hasExceptionToday(availability)) {
       return _StylistTodayStatus.partial;
     }
     return _StylistTodayStatus.available;
@@ -75,7 +91,7 @@ class _SetStylistAvailabilityPageState
     setState(() => _statusByArtistId[id] = _StylistTodayStatus.loading);
     try {
       final model = await HomeAPI.getArtiestAvailability(artistId: id);
-      final status = _classifyDay(_todayData(model.data));
+      final status = _classifyAvailability(model.data);
       if (!mounted) return;
       setState(() => _statusByArtistId[id] = status);
     } catch (_) {
@@ -96,7 +112,7 @@ class _SetStylistAvailabilityPageState
       if (id == null || id.isEmpty) return;
       try {
         final model = await HomeAPI.getArtiestAvailability(artistId: id);
-        final status = _classifyDay(_todayData(model.data));
+        final status = _classifyAvailability(model.data);
         if (!mounted) return;
         setState(() => _statusByArtistId[id] = status);
       } catch (_) {
