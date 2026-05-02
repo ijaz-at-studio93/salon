@@ -495,7 +495,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("Gender",
+          Text("Serviceable Gender",
               style: AppTextTheme.semibold
                   .copyWith(fontSize: 13, color: ColorConstant.blackColor)),
           const SizedBox(height: 12),
@@ -535,6 +535,9 @@ class _AddStylistPageState extends State<AddStylistPage> {
                       ))
                   .toList(),
               onChanged: (_) {},
+              buttonStyleData: const ButtonStyleData(
+                padding: EdgeInsets.only(right: 8),
+              ),
             ),
           ),
         ],

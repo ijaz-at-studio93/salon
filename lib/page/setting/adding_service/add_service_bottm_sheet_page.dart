@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:salon/constant/assetsconstant.dart';
 import 'package:salon/constant/color_constant.dart';
+import 'package:salon/page/stylist/manage_stylist_page.dart';
 import '../../../project_specific/text_theme.dart';
-import '../../stylist/stylist_page.dart';
 import 'add_new_service_page.dart';
 
 
@@ -75,7 +75,7 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                   child: GestureDetector(
                     onTap: (){
                       Get.back();
-                      Get.to(()=>const StylistPage());
+                      Get.to(()=>const ManageStylistPage());
                     },
                     child: Container(
                       width: 170,

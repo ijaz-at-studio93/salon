@@ -29,6 +29,7 @@ class _ContentPageState extends State<ContentPage> {
 
   final Rx<File?> _pickedFile = Rx<File?>(null);
   final RxBool _isVideo = false.obs;
+  final RxBool _showUploadMediaError = false.obs;
 
   @override
   void initState() {
@@ -93,6 +94,7 @@ class _ContentPageState extends State<ContentPage> {
           onSelectVideo: (File file) {
             _pickedFile.value = file;
             _isVideo.value = true;
+            _showUploadMediaError.value = false;
           },
         );
       } else {
@@ -100,6 +102,7 @@ class _ContentPageState extends State<ContentPage> {
           onSelectImage: (File file) {
             _pickedFile.value = file;
             _isVideo.value = false;
+            _showUploadMediaError.value = false;
           },
         );
       }
@@ -116,8 +119,15 @@ class _ContentPageState extends State<ContentPage> {
 
   // ── Upload ───────────────────────────────────────────────────────────────
 
-  bool _doUpload({required BuildContext sheetContext}) {
+  bool _doUpload({
+    required BuildContext sheetContext,
+    bool showInlineMediaError = false,
+  }) {
     if (_pickedFile.value == null) {
+      if (showInlineMediaError) {
+        _showUploadMediaError.value = true;
+        return false;
+      }
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Please select a picture or video first',
             style:
@@ -133,6 +143,7 @@ class _ContentPageState extends State<ContentPage> {
       callback: () {
         _pickedFile.value = null;
         _isVideo.value = false;
+        _showUploadMediaError.value = false;
         _descriptionController.clear();
         _homeController.doGetSalonContentList();
       },
@@ -236,6 +247,35 @@ class _ContentPageState extends State<ContentPage> {
                 ),
                 const SizedBox(height: 20),
                 Obx(
+                  () => _showUploadMediaError.value
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: ColorConstant.redColor2
+                                  .withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: ColorConstant.redColor2,
+                              ),
+                            ),
+                            child: Text(
+                              'Please select a picture or video first',
+                              style: AppTextTheme.medium.copyWith(
+                                color: ColorConstant.redColor2,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+                Obx(
                   () => SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -243,7 +283,10 @@ class _ContentPageState extends State<ContentPage> {
                           ? null
                           : () {
                               final didStartUpload =
-                                  _doUpload(sheetContext: sheetCtx);
+                                  _doUpload(
+                                sheetContext: sheetCtx,
+                                showInlineMediaError: true,
+                              );
                               if (didStartUpload &&
                                   Navigator.canPop(sheetCtx)) {
                                 Navigator.pop(sheetCtx);
