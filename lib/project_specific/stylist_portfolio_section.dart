@@ -151,9 +151,6 @@ class StylistPortfolioSection extends StatelessWidget {
       builder: (sheetCtx) {
         return StatefulBuilder(
           builder: (context, setModalState) {
-            // Reset state when sheet opens
-            showUploadMediaError.value = false;
-            showPortfolioLimitError.value = false;
             void pick(File file, bool video) {
               pickedFile = file;
               isVideo = video;
@@ -308,22 +305,21 @@ class StylistPortfolioSection extends StatelessWidget {
                                     });
                                     return;
                                   }
-                                  
-                                  // Check portfolio limit locally
-                                  final currentPortfolioItems = stylistController.getArtistPortfolioModel.data?.portfolio?.length ?? 0;
-                                  if (currentPortfolioItems >= _maxItems) {
+
+                                  // Align with displayed grid count (same source as `items`)
+                                  if (items.length >= _maxItems) {
                                     setModalState(() {
                                       showUploadMediaError.value = false;
                                       showPortfolioLimitError.value = true;
                                     });
                                     return;
                                   }
-                                  
+
                                   setModalState(() {
                                     showUploadMediaError.value = false;
                                     showPortfolioLimitError.value = false;
                                   });
-                                  
+
                                   stylistController.doUploadPortfolioMedia(
                                     file: pickedFile!,
                                     isImage: !isVideo,
@@ -406,7 +402,22 @@ class StylistPortfolioSection extends StatelessWidget {
           itemBuilder: (context, i) {
             if (i == 0) {
               return GestureDetector(
-                onTap: () => _showUploadSheet(context),
+                onTap: () {
+                  if (items.length >= _maxItems) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        content: Text(
+                          'Maximum $_maxItems portfolio items allowed.',
+                          style: AppTextTheme.regular
+                              .copyWith(color: ColorConstant.whiteColor),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  _showUploadSheet(context);
+                },
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
