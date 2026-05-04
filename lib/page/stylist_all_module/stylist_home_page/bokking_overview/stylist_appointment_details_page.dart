@@ -67,28 +67,24 @@ class _StylistAppointmentDetailsPageState
   }
 
   bool _shouldShowTakePicturesButton() {
-    // Check if portfolio upload is allowed AND there are no existing images
-    final allowPortfolioUpload = _stylistController
-            .getAllowPortfolioUploadModel.data?.allowPortfolioUpload ??
-        false;
-    final existingPortfolio =
-        _stylistController.getArtistPortfolioModel.data?.portfolio ?? [];
-    final hasExistingImages = existingPortfolio.any(
-        (portfolio) => portfolio.image != null && portfolio.image!.isNotEmpty);
-
-    // Only show the button if both conditions are met: permission granted AND no existing images
-    return allowPortfolioUpload && !hasExistingImages;
+    final data = _stylistController.getAppointmentsDetailsModel.data;
+    return (data?.allowPortfolioUpload ?? false) &&
+        !(data?.isPortfolioUploaded ?? false);
   }
 
   Future<void> _onTakePicturesPressed() async {
     try {
       await FileUtils.openPlatformImagePicker(
-        onSelectImage: (File file) {
-          _stylistController.doUploadImage(
+        onSelectImage: (File file) async {
+          await _stylistController.doUploadImage(
             appointmentId: widget.appointmentId,
             multiplePath: [file.path],
             multiplePathVideo: const [],
             callback: widget.callback,
+          );
+          //get the appointment details again
+          _stylistController.doAppointmentsDetailsModel(
+            appointmentId: widget.appointmentId,
           );
         },
       );
@@ -125,7 +121,7 @@ class _StylistAppointmentDetailsPageState
         title: Obx(() {
           final details = _stylistController.getAppointmentsDetailsModel;
           if (_stylistController.showProgress) {
-            return const ProgressBarView();
+            return const SizedBox.shrink();
           }
           final data = details.data;
           return Text.rich(
@@ -267,45 +263,49 @@ class _StylistAppointmentDetailsPageState
               },
             ),
           ),
-          SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-              child: Material(
-                color: _shouldShowTakePicturesButton()
-                    ? ColorConstant.primaryColor2
-                    : ColorConstant.lightGreyColor,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: _shouldShowTakePicturesButton()
-                      ? _onTakePicturesPressed
-                      : null,
+          Obx(() {
+            if (_stylistController.showProgress) {
+              return const SizedBox.shrink();
+            }
+            final enabled = _shouldShowTakePicturesButton();
+            return SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+                child: Material(
+                  color: enabled
+                      ? ColorConstant.primaryColor2
+                      : ColorConstant.lightGreyColor,
                   borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.camera_alt_rounded,
-                          color: ColorConstant.whiteColor,
-                          size: 22,
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          'Take Pictures',
-                          style: AppTextTheme.bold.copyWith(
+                  child: InkWell(
+                    onTap: enabled ? _onTakePicturesPressed : null,
+                    borderRadius: BorderRadius.circular(12),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.camera_alt_rounded,
                             color: ColorConstant.whiteColor,
-                            fontSize: 16,
+                            size: 22,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 10),
+                          Text(
+                            'Take Pictures',
+                            style: AppTextTheme.bold.copyWith(
+                              color: ColorConstant.whiteColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
+            );
+          }),
         ],
       ),
     );

@@ -78,7 +78,7 @@ void main() async {
 
   // 🔥 STEP 1 — Initialize local notifications plugin
   const AndroidInitializationSettings androidInit =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+      AndroidInitializationSettings('@mipmap/ic_launcher_monochrome');
   const DarwinInitializationSettings iosInit = DarwinInitializationSettings();
   const InitializationSettings initSettings =
       InitializationSettings(android: androidInit, iOS: iosInit);

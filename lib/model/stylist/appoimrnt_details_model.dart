@@ -34,6 +34,7 @@ class Data {
   String? appointmentId;
   String? orderStatus;
   bool? allowPortfolioUpload;
+  bool? isPortfolioUploaded;
   bool? isHomeService;
   TaxDetails? taxDetails;
   Address? address;
@@ -50,6 +51,7 @@ class Data {
       this.appointmentId,
       this.orderStatus,
       this.allowPortfolioUpload,
+      this.isPortfolioUploaded,
       this.isHomeService,
       this.taxDetails,
       this.address,
@@ -66,6 +68,7 @@ class Data {
     appointmentId = json['appointmentId'];
     orderStatus = json['orderStatus'];
     allowPortfolioUpload = json['allowPortfolioUpload'];
+    isPortfolioUploaded = json['isPortfolioUploaded'];
     isHomeService = json['isHomeService'];
     taxDetails = json['taxDetails'] != null
         ? TaxDetails.fromJson(json['taxDetails'])
@@ -94,6 +97,7 @@ class Data {
     data['appointmentId'] = appointmentId;
     data['orderStatus'] = orderStatus;
     data['allowPortfolioUpload'] = allowPortfolioUpload;
+    data['isPortfolioUploaded'] = isPortfolioUploaded;
     data['isHomeService'] = isHomeService;
     if (address != null) {
       data['address'] = address!.toJson();
