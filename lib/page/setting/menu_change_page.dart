@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -21,13 +23,13 @@ class _MenuChangePageState extends State<MenuChangePage> {
 
   /// After submit succeeds, UI switches to the design’s centered-only screen.
   /// Read from cache first so reopening the screen does not flash the upload UI.
-  bool _uploadComplete =
-      SharedPrefs.readBoolValue(PrefConstants.menuChangeRequestSubmitted);
+  bool _uploadComplete = false;
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    _uploadComplete = false;
     _checkExistingRequest();
   }
 
@@ -35,17 +37,20 @@ class _MenuChangePageState extends State<MenuChangePage> {
     try {
       final exists = await HomeAPI.getMenuChangeRequest();
       if (!mounted) return;
-      if (exists) {
-        await SharedPrefs.writeValue(
-            PrefConstants.menuChangeRequestSubmitted, true);
-        if (!_uploadComplete) setState(() => _uploadComplete = true);
-      } else {
-        await SharedPrefs.writeValue(
-            PrefConstants.menuChangeRequestSubmitted, false);
-        if (_uploadComplete) setState(() => _uploadComplete = false);
-      }
+
+      // await SharedPrefs.writeValue(
+      //     PrefConstants.menuChangeRequestSubmitted, exists);
+
+      print('))))))))))))))))))))');
+      print(exists);
+
+      // ✅ ALWAYS update UI
+      setState(() => _uploadComplete = exists);
     } catch (_) {
-      // Network error — keep showing cached state (avoids flashing to upload).
+      if (!mounted) return;
+
+      // ✅ safe fallback
+      setState(() => _uploadComplete = false);
     }
   }
 
@@ -81,8 +86,8 @@ class _MenuChangePageState extends State<MenuChangePage> {
     try {
       await HomeAPI.submitMenuChangeRequest(filePath: _selectedFilePath!);
       if (!mounted) return;
-      await SharedPrefs.writeValue(
-          PrefConstants.menuChangeRequestSubmitted, true);
+      // await SharedPrefs.writeValue(
+      //     PrefConstants.menuChangeRequestSubmitted, true);
       if (!mounted) return;
       setState(() => _uploadComplete = true);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -148,6 +153,88 @@ class _MenuChangePageState extends State<MenuChangePage> {
     );
   }
 
+  Widget _filePreview() {
+    final isImage = _selectedFileName!
+        .toLowerCase()
+        .endsWith('.jpg') ||
+        _selectedFileName!.toLowerCase().endsWith('.jpeg');
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Stack(
+          alignment: Alignment.topRight,
+          children: [
+            Container(
+              height: 260,
+              width: double.infinity,
+              constraints: const BoxConstraints(maxWidth: 320),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: isImage
+                  ? ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.file(
+                  File(_selectedFilePath!),
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.picture_as_pdf,
+                        size: 60, color: Colors.red),
+                    const SizedBox(height: 8),
+                    Text(
+                      'PDF File',
+                      style: AppTextTheme.medium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            /// ❌ REMOVE BUTTON
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedFilePath = null;
+                  _selectedFileName = null;
+                });
+              },
+              child: Container(
+                margin: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  color: Colors.black54,
+                  shape: BoxShape.circle,
+                ),
+                padding: const EdgeInsets.all(6),
+                child: const Icon(Icons.close,
+                    color: Colors.white, size: 18),
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 12),
+
+        Text(
+          _selectedFileName!,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: AppTextTheme.medium.copyWith(
+            color: ColorConstant.bookingCardBorderPurple,
+            fontSize: 14,
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_uploadComplete) {
@@ -200,26 +287,28 @@ class _MenuChangePageState extends State<MenuChangePage> {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: _pickMenuFile,
-                child: _menuChangeCenteredView(),
+                child: _selectedFilePath != null
+                    ? _filePreview()
+                    : _menuChangeCenteredView(),
               ),
             ),
           ),
-          if (_selectedFileName != null) ...[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                _selectedFileName!,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextTheme.medium.copyWith(
-                  color: ColorConstant.bookingCardBorderPurple,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-          ],
+          // if (_selectedFileName != null) ...[
+          //   Padding(
+          //     padding: const EdgeInsets.symmetric(horizontal: 32),
+          //     child: Text(
+          //       _selectedFileName!,
+          //       textAlign: TextAlign.center,
+          //       maxLines: 2,
+          //       overflow: TextOverflow.ellipsis,
+          //       style: AppTextTheme.medium.copyWith(
+          //         color: ColorConstant.bookingCardBorderPurple,
+          //         fontSize: 14,
+          //       ),
+          //     ),
+          //   ),
+          //   const SizedBox(height: 12),
+          // ],
           Padding(
             padding: EdgeInsets.fromLTRB(
               20,

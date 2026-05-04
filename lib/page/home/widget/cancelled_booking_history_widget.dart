@@ -123,7 +123,7 @@ class _CancelledBookingHistoryWidgetState
                     o.orderStatus == 'salon_rejected' ? 'Rejected' : 'Cancelled',
                     style: AppTextTheme.bold.copyWith(
                       fontSize: 13,
-                      color: ColorConstant.bookingStatusCancelled,
+                      color: Colors.red,//ColorConstant.bookingStatusCancelled,
                     ),
                   ),
                 ],

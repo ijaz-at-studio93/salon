@@ -30,5 +30,6 @@ class APIEndPoint {
   static const String salonArtiestLoginPassword = "auth/artist/login/password";
 
   /*------------- Menu Change API ---------*/
-  static const String menuChangeRequest = "salon/account/menu/change-request";
+static const String menuChangeRequest = "salon/account/menu/change-request"
+    "";
 }
