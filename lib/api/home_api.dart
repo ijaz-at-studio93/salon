@@ -519,7 +519,12 @@ class HomeAPI {
 
   static Future<bool> getMenuChangeRequest() async {
     final response = await DioClient.client.get(APIEndPoint.menuChangeRequest);
-    return response.isSuccess;
+
+    if (response.isSuccess) {
+      return response.data['data'] == true;
+    }
+
+    return false;
   }
 
   /*---------------  Salon Content Update  -------------*/
@@ -1027,10 +1032,49 @@ class HomeAPI {
   }
 
   /*----------------  Transaction  history API --------------*/
-  static Future<SalonTransactionsHistoryModel> getSalonWalletTransactionHistory(
-      {required String distribution}) async {
-    final response = await DioClient.client.get("salon/transactions/wallet-transactions",
-        queryParameters: {"distribution": distribution});
+  // static Future<SalonTransactionsHistoryModel> getSalonWalletTransactionHistory(
+  //     {required String distribution}) async {
+  //   final response = await DioClient.client.get("salon/transactions/wallet-transactions",
+  //       queryParameters: {"distribution": distribution});
+  //   if (response.isSuccess) {
+  //     return SalonTransactionsHistoryModel.fromJson(response.data);
+  //   } else {
+  //     throw response.data;
+  //   }
+  // }
+
+  static Future<SalonTransactionsHistoryModel>
+  getSalonWalletTransactionHistory({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+  }) async {
+    final useDateRange =
+        fromDate != null && fromDate.isNotEmpty &&
+            toDate != null && toDate.isNotEmpty;
+
+    final Map<String, dynamic> queryParameters;
+
+    if (useDateRange) {
+      queryParameters = {
+        "fromDate": fromDate,
+        "toDate": toDate,
+      };
+    } else {
+      final d = distribution;
+      if (d == null || d.isEmpty) {
+        throw ArgumentError(
+          'Provide distribution OR both fromDate & toDate',
+        );
+      }
+      queryParameters = {"distribution": d};
+    }
+
+    final response = await DioClient.client.get(
+      "salon/transactions/wallet-ledger",
+      queryParameters: queryParameters,
+    );
+
     if (response.isSuccess) {
       return SalonTransactionsHistoryModel.fromJson(response.data);
     } else {

@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   /*----------- Tab Bar variable  ----------- */
-  String? selectedStylistOrSalon = "0";
+  String? selectedStylistOrSalon = "1";
 
   /*----------- Switch Tab Stylist & Salon -------------------*/
   _stylistAndSalon() {
