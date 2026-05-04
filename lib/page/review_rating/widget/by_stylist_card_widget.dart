@@ -119,9 +119,11 @@ class _ByStylistCardWidgetState extends State<ByStylistCardWidget> {
                 const SizedBox(width: 8),
                 Text(
                   rating.toStringAsFixed(1),
-                  style: AppTextTheme.medium.copyWith(
+                  style: AppTextTheme.bold.copyWith(
                     color: ColorConstant.blackColor,
-                    fontSize: 14,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Outfit'
                   ),
                 ),
               ],

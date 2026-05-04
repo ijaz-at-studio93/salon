@@ -196,15 +196,29 @@ class _AddStylistPageState extends State<AddStylistPage> {
                     ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: ButtonWidget(
-                buttonTitleText: widget.isBasicInfoUpdate ? "Update" : "Add",
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          //   child: ButtonWidget(
+          //       buttonTitleText: widget.isBasicInfoUpdate ? "Update" : "Add",
+          //       onPress: () {
+          //         widget.isBasicInfoUpdate
+          //             ? _doUpdateStylist()
+          //             : _doAddStylist();
+          //       }),
+          // )
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              child: ButtonWidget(
+                buttonTitleText:
+                widget.isBasicInfoUpdate ? "Update" : "Add",
                 onPress: () {
                   widget.isBasicInfoUpdate
                       ? _doUpdateStylist()
                       : _doAddStylist();
-                }),
+                },
+              ),
+            ),
           )
         ],
       ),

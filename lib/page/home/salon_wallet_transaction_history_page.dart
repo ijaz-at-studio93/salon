@@ -27,6 +27,9 @@ class _SalonWalletTransactionPageState
   String _selectedFilter = 'All';
   bool _showDepositsOnly = false;
   bool _includeGST = true; // default checked
+  DateTime? _customStart;
+  DateTime? _customEnd;
+  static const String _filterCustom = 'Custom';
 
   @override
   void initState() {
@@ -62,73 +65,214 @@ class _SalonWalletTransactionPageState
     );
   }
 
+  // Widget _filterBar() {
+  //   final dashboardData = _homeController.getSalonDashboardModel.data;
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         /// LEFT → dropdown
+  //         _dropDownButtonForFilter(),
+  //
+  //         /// RIGHT → checkboxes
+  //         Row(
+  //           children: [
+  //             Row(
+  //               children: [
+  //                 Checkbox(
+  //                   value: _showDepositsOnly,
+  //                   visualDensity: VisualDensity.compact, // 👈 important
+  //                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  //                   activeColor: ColorConstant.primaryColor2,
+  //                   checkColor: ColorConstant.whiteColor,
+  //                   side: const BorderSide(
+  //                     color: ColorConstant.primaryColor2,
+  //                     style: BorderStyle.solid,
+  //                     width: 2,
+  //                   ),
+  //                   shape: RoundedRectangleBorder(
+  //                     borderRadius: BorderRadius.circular(5),
+  //                   ),
+  //                   onChanged: (val) {
+  //                     setState(() {
+  //                       _showDepositsOnly = val ?? false;
+  //                     });
+  //                   },
+  //                 ),
+  //                 Text(
+  //                   "Deposits",
+  //                   style: AppTextTheme.bold.copyWith(
+  //                     color: ColorConstant.blackColor,
+  //                     fontSize: 19,
+  //                     fontFamily: 'Outfit',
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             const SizedBox(
+  //               width: 2,
+  //             ),
+  //             if (dashboardData?.isGSTRegistered == true) ...[
+  //               Row(
+  //                 children: [
+  //                   Checkbox(
+  //                     value: _includeGST,
+  //                     visualDensity: VisualDensity.compact, // ✅ same as deposits
+  //                     materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  //                     activeColor: ColorConstant.primaryColor2,
+  //                     checkColor: ColorConstant.whiteColor,
+  //                     side: const BorderSide(
+  //                       color: ColorConstant.primaryColor2,
+  //                       width: 2,
+  //                     ),
+  //                     shape: RoundedRectangleBorder(
+  //                       borderRadius: BorderRadius.circular(5),
+  //                     ),
+  //                     onChanged: (val) {
+  //                       setState(() {
+  //                         _includeGST = val ?? true;
+  //                       });
+  //                     },
+  //                   ),
+  //                   Text(
+  //                     "GST",
+  //                     style: AppTextTheme.bold.copyWith(
+  //                       color: ColorConstant.blackColor,
+  //                       fontSize: 19,
+  //                       fontFamily: 'Outfit',
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ]
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _filterBar() {
     final dashboardData = _homeController.getSalonDashboardModel.data;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column( // 👈 ONLY CHANGE: wrap in Column
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// LEFT → dropdown
-          _dropDownButtonForFilter(),
 
-          /// RIGHT → checkboxes
+          /// 🔥 YOUR ORIGINAL ROW (UNCHANGED)
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              /// LEFT → dropdown
+              _dropDownButtonForFilter(),
+
+              /// RIGHT → checkboxes
               Row(
                 children: [
-                  Checkbox(
-                    value: _showDepositsOnly,
-                    visualDensity: VisualDensity.compact, // 👈 important
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    activeColor: ColorConstant.primaryColor2,
-                    checkColor: ColorConstant.whiteColor,
-                    side: const BorderSide(
-                      color: ColorConstant.primaryColor2,
-                      style: BorderStyle.solid,
-                      width: 2,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    onChanged: (val) {
-                      setState(() {
-                        _showDepositsOnly = val ?? false;
-                      });
-                    },
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: _showDepositsOnly,
+                        visualDensity: VisualDensity.compact,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        activeColor: ColorConstant.primaryColor2,
+                        checkColor: ColorConstant.whiteColor,
+                        side: const BorderSide(
+                          color: ColorConstant.primaryColor2,
+                          style: BorderStyle.solid,
+                          width: 2,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        onChanged: (val) {
+                          setState(() {
+                            _showDepositsOnly = val ?? false;
+                          });
+                        },
+                      ),
+                      Text(
+                        "Deposits",
+                        style: AppTextTheme.bold.copyWith(
+                          color: ColorConstant.blackColor,
+                          fontSize: 19,
+                          fontFamily: 'Outfit',
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Deposits",
-                    style: AppTextTheme.bold.copyWith(
-                      color: ColorConstant.blackColor,
-                      fontSize: 20,
-                      fontFamily: 'Outfit',
+                  const SizedBox(width: 2),
+
+                  if (dashboardData?.isGSTRegistered == true) ...[
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: _includeGST,
+                          visualDensity: VisualDensity.compact,
+                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          activeColor: ColorConstant.primaryColor2,
+                          checkColor: ColorConstant.whiteColor,
+                          side: const BorderSide(
+                            color: ColorConstant.primaryColor2,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          onChanged: (val) {
+                            setState(() {
+                              _includeGST = val ?? true;
+                            });
+                          },
+                        ),
+                        Text(
+                          "GST",
+                          style: AppTextTheme.bold.copyWith(
+                            color: ColorConstant.blackColor,
+                            fontSize: 19,
+                            fontFamily: 'Outfit',
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
+                  ]
                 ],
               ),
-              const SizedBox(
-                width: 8,
-              ),
-              if (dashboardData?.isGSTRegistered == true) ...[
-                Row(
-                  children: [
-                    Checkbox(
-                      value: _includeGST,
-                      visualDensity: VisualDensity.compact, // 👈 important
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      onChanged: (val) {
-                        setState(() {
-                          _includeGST = val ?? true;
-                        });
-                      },
-                    ),
-                    const Text("GST"),
-                  ],
-                ),
-              ]
             ],
           ),
+
+          /// 🔥 NEW: CUSTOM DATE FILTER (only shows when selected)
+          if (_selectedFilter == _filterCustom) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _pickStartDate,
+                    child: Text(
+                      _customStart == null
+                          ? 'Start'
+                          : DateFormat.yMMMd().format(_customStart!),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _pickEndDate,
+                    child: Text(
+                      _customEnd == null
+                          ? 'End'
+                          : DateFormat.yMMMd().format(_customEnd!),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
     );
@@ -177,37 +321,44 @@ class _SalonWalletTransactionPageState
       return const NoItemsWidget(text: "No Transactions Found");
     }
 
-    /// 🔥 STEP 1: reverse → oldest → latest
-    final ascList = List<SalonTransactionData>.from(transactions.reversed);
-
-    /// 🔥 STEP 2: find first credit
-    final firstCreditIndex = ascList.indexWhere((tx) => tx.isCredit);
-
-    if (firstCreditIndex == -1) {
-      return const NoItemsWidget(text: "No valid transactions");
-    }
-
-    /// 🔥 STEP 3: take from first credit → forward
-    final filtered = ascList.sublist(firstCreditIndex);
-
-    /// 🔥 STEP 4: forward calculation
-    final dashboardData = _homeController.getSalonDashboardModel.data;
-    double runningBalance = (dashboardData?.walletBalance ?? 0).toDouble();
+    // /// 🔥 STEP 1: reverse → oldest → latest
+    // final ascList = List<SalonTransactionData>.from(transactions.reversed);
+    //
+    // /// 🔥 STEP 2: find first credit
+    // final firstCreditIndex = ascList.indexWhere((tx) => tx.isCredit);
+    //
+    // if (firstCreditIndex == -1) {
+    //   return const NoItemsWidget(text: "No valid transactions");
+    // }
+    //
+    // /// 🔥 STEP 3: take from first credit → forward
+    // final filtered = ascList.sublist(firstCreditIndex);
+    //
+    // /// 🔥 STEP 4: forward calculation
+    // final dashboardData = _homeController.getSalonDashboardModel.data;
+    // double runningBalance = (dashboardData?.walletBalance ?? 0).toDouble();
+    //
+    // List<Widget> widgets = [];
+    //
+    // /// 🔥 IMPORTANT: iterate from latest → oldest
+    // for (int i = filtered.length - 1; i >= 0; i--) {
+    //   final tx = filtered[i];
+    //   final amount = (tx.amount ?? 0).toDouble();
+    //
+    //   final balanceForRow = runningBalance;
+    //
+    //   /// 🔥 safe signed logic
+    //   final signedAmount = tx.isCredit ? amount.abs() : -amount.abs();
+    //
+    //   runningBalance -= signedAmount;
+    //
+    //   widgets.add(_transactionCard(tx, balanceForRow));
+    // }
 
     List<Widget> widgets = [];
 
-    /// 🔥 IMPORTANT: iterate from latest → oldest
-    for (int i = filtered.length - 1; i >= 0; i--) {
-      final tx = filtered[i];
-      final amount = (tx.amount ?? 0).toDouble();
-
-      final balanceForRow = runningBalance;
-
-      /// 🔥 safe signed logic
-      final signedAmount = tx.isCredit ? amount.abs() : -amount.abs();
-
-      runningBalance -= signedAmount;
-
+    for (final tx in transactions) {
+      final balanceForRow = tx.balanceAfter ?? 0;
       widgets.add(_transactionCard(tx, balanceForRow));
     }
 
@@ -235,12 +386,12 @@ class _SalonWalletTransactionPageState
     }
 
     final amountStr = tx.isCredit
-        ? '+${displayAmount.toStringAsFixed(0)}'
-        : '-${displayAmount.toStringAsFixed(0)}';
+        ? '+${displayAmount.toStringAsFixed(2)}'
+        : '-${displayAmount.toStringAsFixed(2)}';
     final amountColor = isCredit
         ? const Color(0xFF8454E5) //
         : Colors.red; //const Color(0xFF01AB4D);
-    final userName = tx.user?.name ?? '-';
+    final userName = tx.userName ?? '-';
     final date = _formatDate(tx.createdAt ?? '');
 
     return Padding(
@@ -279,29 +430,79 @@ class _SalonWalletTransactionPageState
                       ),
                     ),
                     const SizedBox(height: 4),
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Date : ',
-                            style: AppTextTheme.regular.copyWith(
-                              color: Colors.black,
-                              fontSize: 14,
-                              fontFamily: 'Outfit',
-                              fontWeight: FontWeight.w400,
-                            ),
+                    // RichText(
+                    //   text: TextSpan(
+                    //     children: [
+                    //       TextSpan(
+                    //         text: 'Date : ',
+                    //         style: AppTextTheme.regular.copyWith(
+                    //           color: Colors.black,
+                    //           fontSize: 14,
+                    //           fontFamily: 'Outfit',
+                    //           fontWeight: FontWeight.w400,
+                    //         ),
+                    //       ),
+                    //       TextSpan(
+                    //         text: date,
+                    //         style: AppTextTheme.semibold.copyWith(
+                    //           color: const Color(0xFF8454E5),
+                    //           fontSize: 14,
+                    //           fontFamily: 'Outfit',
+                    //           fontWeight: FontWeight.w600,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // )
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        /// DATE
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Date : ',
+                                style: AppTextTheme.regular.copyWith(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextSpan(
+                                text: date,
+                                style: AppTextTheme.semibold.copyWith(
+                                  color: const Color(0xFF8454E5),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                          TextSpan(
-                            text: date,
-                            style: AppTextTheme.semibold.copyWith(
-                              color: const Color(0xFF8454E5),
-                              fontSize: 14,
-                              fontFamily: 'Outfit',
-                              fontWeight: FontWeight.w600,
-                            ),
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        /// TIME (same style structure)
+                        RichText(
+                          text: TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Time : ',
+                                style: AppTextTheme.regular.copyWith(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              TextSpan(
+                                text: _formatTime(tx.createdAt ?? ''),
+                                style: AppTextTheme.semibold.copyWith(
+                                  color: const Color(0xFF8454E5),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -451,6 +652,16 @@ class _SalonWalletTransactionPageState
     }
   }
 
+  String _formatTime(String date) {
+    if (date.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(date).toLocal(); // 👈 IMPORTANT
+      return DateFormat('HH:mm').format(dt); // 👈 hours + minutes only (24hr)
+    } catch (_) {
+      return '-';
+    }
+  }
+
   /*--------------- Filter Dropdown ---------*/
   final List<String> dataList = [
     'All',
@@ -459,6 +670,7 @@ class _SalonWalletTransactionPageState
     'This Week',
     'This Month',
     'This Year',
+    'Custom',
   ];
 
   final Map<String, String> _filterMap = {
@@ -505,14 +717,98 @@ class _SalonWalletTransactionPageState
                 ),
               )
               .toList(),
+          // onChanged: (value) {
+          //   if (value == null) return;
+          //   setState(() => _selectedFilter = value);
+          //   final key = _filterMap[value] ?? 'all_time';
+          //   _homeController.doGetSalonWalletTransactions(distribution: key);
+          // },
           onChanged: (value) {
             if (value == null) return;
-            setState(() => _selectedFilter = value);
+
+            setState(() {
+              _selectedFilter = value;
+              _customStart = null;
+              _customEnd = null;
+            });
+
+            if (value == _filterCustom) return;
+
             final key = _filterMap[value] ?? 'all_time';
-            _homeController.doGetSalonWalletTransactions(distribution: key);
+
+            _homeController.doGetSalonWalletTransactions(
+              distribution: key,
+            );
           },
         ),
       ),
+    );
+  }
+
+  Future<void> _pickStartDate() async {
+    final now = DateTime.now();
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _customStart ?? now,
+      firstDate: DateTime(now.year - 5),
+      lastDate: _customEnd ?? now.add(const Duration(days: 365)),
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      _customStart = picked;
+      if (_customEnd != null && _customEnd!.isBefore(picked)) {
+        _customEnd = picked;
+      }
+    });
+
+    _applyCustomFilter();
+  }
+
+  Future<void> _pickEndDate() async {
+    final now = DateTime.now();
+
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _customEnd ?? _customStart ?? now,
+      firstDate: _customStart ?? DateTime(now.year - 5),
+      lastDate: now.add(const Duration(days: 365)),
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      _customEnd = picked;
+      if (_customStart != null && picked.isBefore(_customStart!)) {
+        _customStart = picked;
+      }
+    });
+
+    _applyCustomFilter();
+  }
+
+  void _applyCustomFilter() {
+    if (_customStart == null || _customEnd == null) return;
+
+    final from = DateTime(
+      _customStart!.year,
+      _customStart!.month,
+      _customStart!.day,
+      0, 0, 0,
+    ).toIso8601String();
+
+    final to = DateTime(
+      _customEnd!.year,
+      _customEnd!.month,
+      _customEnd!.day,
+      23, 59, 59,
+    ).toIso8601String();
+
+    _homeController.doGetSalonWalletTransactions(
+      fromDate: from,
+      toDate: to,
     );
   }
 }
