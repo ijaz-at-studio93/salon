@@ -16,6 +16,7 @@ import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/simple_text_field.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
+import 'package:salon/util/screen_bottom_insets.dart';
 import '../../../constant/api_constant.dart';
 
 class AddStylistPage extends StatefulWidget {
@@ -206,12 +207,11 @@ class _AddStylistPageState extends State<AddStylistPage> {
           //             : _doAddStylist();
           //       }),
           // )
-          SafeArea(
+          ScreenBottomActionArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: ButtonWidget(
-                buttonTitleText:
-                widget.isBasicInfoUpdate ? "Update" : "Add",
+                buttonTitleText: widget.isBasicInfoUpdate ? "Update" : "Add",
                 onPress: () {
                   widget.isBasicInfoUpdate
                       ? _doUpdateStylist()
