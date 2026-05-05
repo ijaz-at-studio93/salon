@@ -192,12 +192,13 @@ class _ContentPageState extends State<ContentPage> {
                 // illustration / preview — tappable with remove option
                 GestureDetector(
                   onTap: _showPickOptions,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Center(
-                        child: Obx(
-                          () => _pickedFile.value == null
+                  child: Obx(
+                    () => SizedBox(
+                      width: double.infinity,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          _pickedFile.value == null
                               ? Image.asset(
                                   AssetsConstant.contentUploadIllustration,
                                   width: 140,
@@ -210,47 +211,49 @@ class _ContentPageState extends State<ContentPage> {
                                     width: 140,
                                     child: _isVideo.value
                                         ? OfflineVideoWidget(
-                                            videoString: _pickedFile.value!.path)
-                                        : Image.file(_pickedFile.value!,
-                                            fit: BoxFit.cover),
+                                            videoString:
+                                                _pickedFile.value!.path,
+                                          )
+                                        : Image.file(
+                                            _pickedFile.value!,
+                                            fit: BoxFit.cover,
+                                          ),
                                   ),
                                 ),
-                        ),
-                      ),
-                      // Remove button for selected media
-                      Obx(
-                        () => _pickedFile.value != null
-                            ? Positioned(
-                                top: 0,
-                                right: 0,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    _pickedFile.value = null;
-                                    _isVideo.value = false;
-                                    _showUploadMediaError.value = false;
-                                  },
-                                  child: Container(
-                                    width: 28,
-                                    height: 28,
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: Colors.white,
-                                        width: 2,
-                                      ),
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
+
+                          // Remove button
+                          if (_pickedFile.value != null)
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () {
+                                  _pickedFile.value = null;
+                                  _isVideo.value = false;
+                                  _showUploadMediaError.value = false;
+                                },
+                                child: Container(
+                                  width: 30,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
                                       color: Colors.white,
-                                      size: 16,
+                                      width: 2,
                                     ),
                                   ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
                                 ),
-                              )
-                            : const SizedBox.shrink(),
+                              ),
+                            ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -364,13 +367,13 @@ class _ContentPageState extends State<ContentPage> {
                   () => SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: (_homeController.showContentProgress || _pickedFile.value == null)
+                      onPressed: (_homeController.showContentProgress ||
+                              _pickedFile.value == null)
                           ? null
                           : () {
                               _showUploadMediaError.value = false;
                               _showUploadDescriptionError.value = false;
-                              final didStartUpload =
-                                  _doUpload(
+                              final didStartUpload = _doUpload(
                                 sheetContext: sheetCtx,
                                 showInlineMediaError: true,
                               );
@@ -439,65 +442,67 @@ class _ContentPageState extends State<ContentPage> {
         children: [
           GestureDetector(
             onTap: _showPickOptions,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Center(
-                  child: Obx(
-                    () => _pickedFile.value == null
+            child: Obx(
+              () => SizedBox(
+                width: double.infinity,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    _pickedFile.value == null
                         ? Image.asset(
                             AssetsConstant.contentUploadIllustration,
-                            width: 160,
+                            width: 140,
                             fit: BoxFit.contain,
                           )
                         : ClipRRect(
                             borderRadius: BorderRadius.circular(12),
                             child: SizedBox(
-                              height: 160,
-                              width: 160,
+                              height: 140,
+                              width: 140,
                               child: _isVideo.value
                                   ? OfflineVideoWidget(
-                                      videoString: _pickedFile.value!.path)
-                                  : Image.file(_pickedFile.value!,
-                                      fit: BoxFit.cover),
+                                      videoString: _pickedFile.value!.path,
+                                    )
+                                  : Image.file(
+                                      _pickedFile.value!,
+                                      fit: BoxFit.cover,
+                                    ),
                             ),
                           ),
-                  ),
-                ),
-                // Remove button for selected media
-                Obx(
-                  () => _pickedFile.value != null
-                      ? Positioned(
-                          top: 0,
-                          right: 0,
-                          child: GestureDetector(
-                            onTap: () {
-                              _pickedFile.value = null;
-                              _isVideo.value = false;
-                              _showUploadMediaError.value = false;
-                            },
-                            child: Container(
-                              width: 28,
-                              height: 28,
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2,
-                                ),
-                              ),
-                              child: const Icon(
-                                Icons.close,
+
+                    // Remove button
+                    if (_pickedFile.value != null)
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: GestureDetector(
+                          onTap: () {
+                            _pickedFile.value = null;
+                            _isVideo.value = false;
+                            _showUploadMediaError.value = false;
+                          },
+                          child: Container(
+                            width: 30,
+                            height: 30,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                              border: Border.all(
                                 color: Colors.white,
-                                size: 16,
+                                width: 2,
                               ),
                             ),
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 18,
+                            ),
                           ),
-                        )
-                      : const SizedBox.shrink(),
+                        ),
+                      ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -560,7 +565,8 @@ class _ContentPageState extends State<ContentPage> {
         () => SizedBox(
           width: Get.width,
           child: ElevatedButton(
-            onPressed: (_homeController.showContentProgress || _pickedFile.value == null)
+            onPressed: (_homeController.showContentProgress ||
+                    _pickedFile.value == null)
                 ? null
                 : () {
                     _showUploadMediaError.value = false;
@@ -625,7 +631,7 @@ class _ContentPageState extends State<ContentPage> {
               NetworkVideoViewWidget(
                 videoString: '${APIConstants.image}${item.video}',
                 showThumbnail: true,
-                autoplay: false,
+                onTap: () => Get.to(() => ContentViewPage(item: item)),
               )
             else
               CachedNetworkImage(

@@ -5,14 +5,14 @@ import '../../../../project_specific/progressbar_view.dart';
 
 class NetworkVideoViewWidget extends StatefulWidget {
   final String videoString;
-  final bool autoplay;
   final bool showThumbnail;
+  final VoidCallback? onTap;
 
   const NetworkVideoViewWidget({
     super.key, 
     required this.videoString,
-    this.autoplay = false,
     this.showThumbnail = true,
+    this.onTap,
   });
 
   @override
@@ -21,7 +21,6 @@ class NetworkVideoViewWidget extends StatefulWidget {
 
 class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
   late VideoPlayerController _controller;
-  bool _isPlaying = false;
   bool _isInitialized = false;
 
   @override
@@ -38,9 +37,8 @@ class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
           _isInitialized = true;
           _controller.setLooping(true);
           _controller.setVolume(1.0);
-          if (widget.autoplay) {
+          if (!widget.showThumbnail) {
             _controller.play();
-            _isPlaying = true;
           }
         });
       });
@@ -52,26 +50,16 @@ class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
     super.dispose();
   }
 
-  void _togglePlayPause() {
-    if (_isPlaying) {
-      _controller.pause();
-      setState(() => _isPlaying = false);
-    } else {
-      _controller.play();
-      setState(() => _isPlaying = true);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     if (!_isInitialized) {
       return const ProgressBarView();
     }
 
-    if (widget.showThumbnail && !widget.autoplay) {
+    if (widget.showThumbnail) {
       // Show thumbnail with play button for list view
       return GestureDetector(
-        onTap: _togglePlayPause,
+        onTap: widget.onTap ?? () {},
         child: Stack(
           children: [
             Container(
@@ -92,7 +80,7 @@ class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
               height: double.infinity,
               color: Colors.black.withValues(alpha: 0.3),
             ),
-            // Play button
+            // Play button (visual only)
             const Center(
               child: Icon(
                 Icons.play_circle_filled,
@@ -108,22 +96,7 @@ class _NetworkVideoViewWidgetState extends State<NetworkVideoViewWidget> {
     // Full video player for content view
     return AspectRatio(
       aspectRatio: _controller.value.aspectRatio,
-      child: GestureDetector(
-        onTap: _togglePlayPause,
-        child: Stack(
-          children: [
-            VideoPlayer(_controller),
-            if (!_isPlaying)
-              const Center(
-                child: Icon(
-                  Icons.play_circle_filled,
-                  color: Colors.white,
-                  size: 50,
-                ),
-              ),
-          ],
-        ),
-      ),
+      child: VideoPlayer(_controller),
     );
   }
 }
