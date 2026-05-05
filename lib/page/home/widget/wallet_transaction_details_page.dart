@@ -256,8 +256,6 @@ class WalletTransactionDetailsPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // _row("Transaction ID", data.idx ?? "-"),
-                        // const SizedBox(height: 10),
                         _row("User", data.userName ?? "-"),
                         const SizedBox(height: 10),
                         _row("Type", data.isCredit ? "Credit" : "Debit"),
