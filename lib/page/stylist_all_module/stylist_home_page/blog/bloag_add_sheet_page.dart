@@ -213,7 +213,7 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
     // Reset state when sheet opens
     _showUploadMediaError.value = false;
     _showUploadDescriptionError.value = false;
-    
+
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -224,32 +224,72 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: _showPickOptions,
-              child: Center(
-                child: Obx(
-                  () => _pickedFile.value == null
-                      ? Image.asset(
-                          AssetsConstant.contentUploadIllustration,
-                          width: 140,
-                          fit: BoxFit.contain,
-                        )
-                      : ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: SizedBox(
-                            height: 140,
-                            width: 140,
-                            child: _isVideo.value
-                                ? OfflineVideoWidget(
-                                    videoString: _pickedFile.value!.path,
-                                  )
-                                : Image.file(
-                                    _pickedFile.value!,
-                                    fit: BoxFit.cover,
-                                  ),
+            Center(
+              child: Obx(
+                () {
+                  final picked = _pickedFile.value;
+                  if (picked == null) {
+                    return GestureDetector(
+                      onTap: _showPickOptions,
+                      child: Image.asset(
+                        AssetsConstant.contentUploadIllustration,
+                        width: 140,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  }
+                  return SizedBox(
+                    width: 140,
+                    height: 140,
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        GestureDetector(
+                          onTap: _showPickOptions,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              height: 140,
+                              width: 140,
+                              child: _isVideo.value
+                                  ? OfflineVideoWidget(
+                                      videoString: picked.path,
+                                    )
+                                  : Image.file(
+                                      picked,
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
                           ),
                         ),
-                ),
+                        Positioned(
+                          top: 4,
+                          right: 4,
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTap: () {
+                              _pickedFile.value = null;
+                              _isVideo.value = false;
+                              _showUploadMediaError.value = false;
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
             const SizedBox(height: 12),
@@ -313,8 +353,8 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: ColorConstant.redColor2
-                              .withValues(alpha: 0.12),
+                          color:
+                              ColorConstant.redColor2.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: ColorConstant.redColor2,
@@ -342,8 +382,8 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: ColorConstant.redColor2
-                              .withValues(alpha: 0.12),
+                          color:
+                              ColorConstant.redColor2.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
                             color: ColorConstant.redColor2,
@@ -364,17 +404,19 @@ class _BlogAddSheetPageState extends State<BlogAddSheetPage> {
               () => SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _stylistController.showProgress ? null : () {
-                    _showUploadMediaError.value = false;
-                    _showUploadDescriptionError.value = false;
-                    final didStartUpload = _doUpload(
-                      sheetContext: context,
-                      showInlineMediaError: true,
-                    );
-                    if (didStartUpload && Navigator.canPop(context)) {
-                      Navigator.pop(context);
-                    }
-                  },
+                  onPressed: _stylistController.showProgress
+                      ? null
+                      : () {
+                          _showUploadMediaError.value = false;
+                          _showUploadDescriptionError.value = false;
+                          final didStartUpload = _doUpload(
+                            sheetContext: context,
+                            showInlineMediaError: true,
+                          );
+                          if (didStartUpload && Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          }
+                        },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: ColorConstant.primaryColor2,
