@@ -459,7 +459,9 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                           color: _isSelected ? Colors.green : Colors.white,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: _isSelected ? Colors.green : Colors.grey.shade400,
+                            color: _isSelected
+                                ? Colors.green
+                                : Colors.grey.shade400,
                             width: 2,
                           ),
                         ),
@@ -477,14 +479,6 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              "Selected Stylist",
-                              style: AppTextTheme.regular.copyWith(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
                             Row(
                               children: [
                                 ClipOval(
@@ -493,11 +487,13 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                                       ? CachedNetworkImage(
                                           imageUrl:
                                               "${APIConstants.image}${_preview!.profileImage}",
-                                          width: 40,
-                                          height: 40,
+                                          width: 50,
+                                          height: 50,
                                           fit: BoxFit.cover,
-                                          placeholder: (_, __) => _placeholder(),
-                                          errorWidget: (_, __, ___) => _placeholder(),
+                                          placeholder: (_, __) =>
+                                              _placeholder(),
+                                          errorWidget: (_, __, ___) =>
+                                              _placeholder(),
                                         )
                                       : _placeholder(),
                                 ),

@@ -268,7 +268,8 @@ class _StylistAppointmentDetailsPageState
             ),
           ),
           Obx(() {
-            if (_stylistController.showProgress) {
+            if (_stylistController.showProgress ||
+                !_stylistController.shouldShowTakePicturesButton) {
               return const SizedBox.shrink();
             }
             final enabled = _shouldShowTakePicturesButton();

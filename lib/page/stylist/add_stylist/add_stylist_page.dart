@@ -782,18 +782,47 @@ class _AddStylistPageState extends State<AddStylistPage> {
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: file.path.isNotEmpty
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(file, fit: BoxFit.cover),
-                          )
-                        : const Center(
-                            child: Icon(
-                              Icons.add,
-                              color: ColorConstant.grayTextColor,
-                              size: 32,
+                    clipBehavior: Clip.hardEdge,
+                    child: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        file.path.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(file, fit: BoxFit.cover),
+                              )
+                            : const Center(
+                                child: Icon(
+                                  Icons.add,
+                                  color: ColorConstant.grayTextColor,
+                                  size: 32,
+                                ),
+                              ),
+                        if (file.path.isNotEmpty)
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTap: () =>
+                                  setState(() => _dropImages[index] = File("")),
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
                             ),
                           ),
+                      ],
+                    ),
                   ),
                 ),
               );
