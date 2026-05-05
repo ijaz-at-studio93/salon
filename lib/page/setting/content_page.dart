@@ -189,30 +189,68 @@ class _ContentPageState extends State<ContentPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // illustration / preview — tappable
+                // illustration / preview — tappable with remove option
                 GestureDetector(
                   onTap: _showPickOptions,
-                  child: Center(
-                    child: Obx(
-                      () => _pickedFile.value == null
-                          ? Image.asset(
-                              AssetsConstant.contentUploadIllustration,
-                              width: 140,
-                              fit: BoxFit.contain,
-                            )
-                          : ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: SizedBox(
-                                height: 140,
-                                width: 140,
-                                child: _isVideo.value
-                                    ? OfflineVideoWidget(
-                                        videoString: _pickedFile.value!.path)
-                                    : Image.file(_pickedFile.value!,
-                                        fit: BoxFit.cover),
-                              ),
-                            ),
-                    ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Center(
+                        child: Obx(
+                          () => _pickedFile.value == null
+                              ? Image.asset(
+                                  AssetsConstant.contentUploadIllustration,
+                                  width: 140,
+                                  fit: BoxFit.contain,
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: SizedBox(
+                                    height: 140,
+                                    width: 140,
+                                    child: _isVideo.value
+                                        ? OfflineVideoWidget(
+                                            videoString: _pickedFile.value!.path)
+                                        : Image.file(_pickedFile.value!,
+                                            fit: BoxFit.cover),
+                                  ),
+                                ),
+                        ),
+                      ),
+                      // Remove button for selected media
+                      Obx(
+                        () => _pickedFile.value != null
+                            ? Positioned(
+                                top: 0,
+                                right: 0,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _pickedFile.value = null;
+                                    _isVideo.value = false;
+                                    _showUploadMediaError.value = false;
+                                  },
+                                  child: Container(
+                                    width: 28,
+                                    height: 28,
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(
+                                        color: Colors.white,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.white,
+                                      size: 16,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            : const SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -326,7 +364,7 @@ class _ContentPageState extends State<ContentPage> {
                   () => SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: _homeController.showContentProgress
+                      onPressed: (_homeController.showContentProgress || _pickedFile.value == null)
                           ? null
                           : () {
                               _showUploadMediaError.value = false;
@@ -351,13 +389,26 @@ class _ContentPageState extends State<ContentPage> {
                         ),
                       ),
                       child: _homeController.showContentProgress
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: ColorConstant.whiteColor,
-                              ),
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: ColorConstant.whiteColor,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Uploading...',
+                                  style: AppTextTheme.extraBold.copyWith(
+                                    color: ColorConstant.whiteColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
                             )
                           : Text(
                               'Upload',
@@ -388,27 +439,65 @@ class _ContentPageState extends State<ContentPage> {
         children: [
           GestureDetector(
             onTap: _showPickOptions,
-            child: Center(
-              child: Obx(
-                () => _pickedFile.value == null
-                    ? Image.asset(
-                        AssetsConstant.contentUploadIllustration,
-                        width: 160,
-                        fit: BoxFit.contain,
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: SizedBox(
-                          height: 160,
-                          width: 160,
-                          child: _isVideo.value
-                              ? OfflineVideoWidget(
-                                  videoString: _pickedFile.value!.path)
-                              : Image.file(_pickedFile.value!,
-                                  fit: BoxFit.cover),
-                        ),
-                      ),
-              ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Center(
+                  child: Obx(
+                    () => _pickedFile.value == null
+                        ? Image.asset(
+                            AssetsConstant.contentUploadIllustration,
+                            width: 160,
+                            fit: BoxFit.contain,
+                          )
+                        : ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: SizedBox(
+                              height: 160,
+                              width: 160,
+                              child: _isVideo.value
+                                  ? OfflineVideoWidget(
+                                      videoString: _pickedFile.value!.path)
+                                  : Image.file(_pickedFile.value!,
+                                      fit: BoxFit.cover),
+                            ),
+                          ),
+                  ),
+                ),
+                // Remove button for selected media
+                Obx(
+                  () => _pickedFile.value != null
+                      ? Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              _pickedFile.value = null;
+                              _isVideo.value = false;
+                              _showUploadMediaError.value = false;
+                            },
+                            child: Container(
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 12),
@@ -471,7 +560,7 @@ class _ContentPageState extends State<ContentPage> {
         () => SizedBox(
           width: Get.width,
           child: ElevatedButton(
-            onPressed: _homeController.showContentProgress
+            onPressed: (_homeController.showContentProgress || _pickedFile.value == null)
                 ? null
                 : () {
                     _showUploadMediaError.value = false;
@@ -488,13 +577,26 @@ class _ContentPageState extends State<ContentPage> {
               ),
             ),
             child: _homeController.showContentProgress
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: ColorConstant.whiteColor,
-                    ),
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: ColorConstant.whiteColor,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Uploading...',
+                        style: AppTextTheme.extraBold.copyWith(
+                          color: ColorConstant.whiteColor,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   )
                 : Text(
                     'Upload',
@@ -522,6 +624,8 @@ class _ContentPageState extends State<ContentPage> {
             if (isVideo)
               NetworkVideoViewWidget(
                 videoString: '${APIConstants.image}${item.video}',
+                showThumbnail: true,
+                autoplay: false,
               )
             else
               CachedNetworkImage(

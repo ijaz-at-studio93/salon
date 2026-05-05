@@ -294,6 +294,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
   StaffData? _preview;
   bool _isFetching = false;
   String? _errorMsg;
+  bool _isSelected = false;
   Timer? _debounce;
 
   @override
@@ -310,6 +311,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
       setState(() {
         _preview = null;
         _errorMsg = null;
+        _isSelected = false;
       });
       return;
     }
@@ -321,6 +323,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
       _isFetching = true;
       _preview = null;
       _errorMsg = null;
+      _isSelected = false;
     });
     try {
       final result = await _homeController.doLookupArtistBySId(sId: sId);
@@ -356,6 +359,14 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
               style: AppTextTheme.bold.copyWith(
                 fontSize: 20,
                 color: ColorConstant.blackColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              "Enter stylist ID to search and select",
+              style: AppTextTheme.regular.copyWith(
+                fontSize: 14,
+                color: ColorConstant.grayTextColor,
               ),
             ),
             const SizedBox(height: 20),
@@ -424,33 +435,90 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                 ),
               ),
             ] else if (_preview != null) ...[
-              Row(
-                children: [
-                  ClipOval(
-                    child: _preview!.profileImage != null &&
-                            _preview!.profileImage!.isNotEmpty
-                        ? CachedNetworkImage(
-                            imageUrl:
-                                "${APIConstants.image}${_preview!.profileImage}",
-                            width: 54,
-                            height: 54,
-                            fit: BoxFit.cover,
-                            placeholder: (_, __) => _placeholder(),
-                            errorWidget: (_, __, ___) => _placeholder(),
-                          )
-                        : _placeholder(),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Text(
-                      _preview!.name ?? "",
-                      style: AppTextTheme.semibold.copyWith(
-                        fontSize: 16,
-                        color: ColorConstant.blackColor,
-                      ),
+              GestureDetector(
+                onTap: () {
+                  setState(() => _isSelected = !_isSelected);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade50,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: _isSelected ? Colors.green : Colors.grey.shade300,
+                      width: _isSelected ? 2 : 1,
                     ),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      // Selection checkbox with green tick
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: _isSelected ? Colors.green : Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: _isSelected ? Colors.green : Colors.grey.shade400,
+                            width: 2,
+                          ),
+                        ),
+                        child: _isSelected
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 16,
+                              )
+                            : null,
+                      ),
+                      const SizedBox(width: 14),
+                      // Stylist info
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Selected Stylist",
+                              style: AppTextTheme.regular.copyWith(
+                                fontSize: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                ClipOval(
+                                  child: _preview!.profileImage != null &&
+                                          _preview!.profileImage!.isNotEmpty
+                                      ? CachedNetworkImage(
+                                          imageUrl:
+                                              "${APIConstants.image}${_preview!.profileImage}",
+                                          width: 40,
+                                          height: 40,
+                                          fit: BoxFit.cover,
+                                          placeholder: (_, __) => _placeholder(),
+                                          errorWidget: (_, __, ___) => _placeholder(),
+                                        )
+                                      : _placeholder(),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    _preview!.name ?? "",
+                                    style: AppTextTheme.semibold.copyWith(
+                                      fontSize: 16,
+                                      color: ColorConstant.blackColor,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 22),
             ],
@@ -459,7 +527,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: _preview == null
+                onPressed: (_preview == null || !_isSelected)
                     ? null
                     : () {
                         Get.back();
@@ -477,10 +545,20 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                   ),
                   elevation: 0,
                 ),
-                child: Text(
-                  "Add Stylist",
-                  style: AppTextTheme.bold
-                      .copyWith(fontSize: 16, color: Colors.white),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.person_add,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Add Stylist",
+                      style: AppTextTheme.bold
+                          .copyWith(fontSize: 16, color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
             ),

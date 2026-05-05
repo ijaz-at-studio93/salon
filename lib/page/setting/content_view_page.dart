@@ -375,6 +375,8 @@ class _ContentViewPageState extends State<ContentViewPage> {
             if (isVideo)
               NetworkVideoViewWidget(
                 videoString: '${APIConstants.image}${item.video}',
+                showThumbnail: false,
+                autoplay: false,
               )
             else
               CachedNetworkImage(
