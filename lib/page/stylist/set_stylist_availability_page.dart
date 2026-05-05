@@ -59,39 +59,150 @@ class _SetStylistAvailabilityPageState
     }
   }
 
-  /// True if any blocked slot / exception overlaps today's local calendar day.
-  bool _hasExceptionToday(Availability? a) {
-    final slots = a?.blockedSlots;
-    if (slots == null || slots.isEmpty) return false;
+  /// Parses [hm] as `H:mm` / `HH:mm` on the calendar day of [anchor].
+  DateTime? _timeOnDay(DateTime anchor, String? hm) {
+    if (hm == null || hm.trim().isEmpty) return null;
+    final parts = hm.trim().split(':');
+    if (parts.length < 2) return null;
+    final h = int.tryParse(parts[0]);
+    final m = int.tryParse(parts[1]);
+    if (h == null || m == null) return null;
+    return DateTime(anchor.year, anchor.month, anchor.day, h, m);
+  }
+
+  /// True if [slot] overlaps today's local calendar day.
+  bool _slotTouchesToday(
+      ArtistBlockedSlot slot, DateTime dayStart, DateTime nextDay) {
+    final s = slot.start;
+    final e = slot.end;
+    if (s == null || e == null) return false;
+    return s.isBefore(nextDay) && e.isAfter(dayStart);
+  }
+
+  List<(DateTime, DateTime)> _mergeIntervals(List<(DateTime, DateTime)> raw) {
+    if (raw.isEmpty) return [];
+    final sorted = [...raw]..sort((a, b) => a.$1.compareTo(b.$1));
+    final out = <(DateTime, DateTime)>[];
+    var cs = sorted.first.$1;
+    var ce = sorted.first.$2;
+    for (var i = 1; i < sorted.length; i++) {
+      final (s, e) = sorted[i];
+      if (!s.isAfter(ce)) {
+        ce = e.isAfter(ce) ? e : ce;
+      } else {
+        out.add((cs, ce));
+        cs = s;
+        ce = e;
+      }
+    }
+    out.add((cs, ce));
+    return out;
+  }
+
+  /// True if merged intervals fully cover [rangeStart, rangeEnd] (working span).
+  bool _intervalsCoverRange(
+    DateTime rangeStart,
+    DateTime rangeEnd,
+    List<(DateTime, DateTime)> merged,
+  ) {
+    var need = rangeStart;
+    for (final (s, e) in merged) {
+      if (!e.isAfter(need)) continue;
+      if (s.isAfter(need)) return false;
+      need = e.isAfter(need) ? e : need;
+      if (!need.isBefore(rangeEnd)) return true;
+    }
+    return false;
+  }
+
+  /// Uses blocked-slot start/end vs today's working hours: full cover → off,
+  /// partial overlap → partial; if hours can't be parsed, falls back to any
+  /// block touching today → off.
+  _StylistTodayStatus _statusFromBlockedSlots(
+    Availability? availability,
+    DayData day,
+  ) {
+    final slots = availability?.blockedSlots;
+    if (slots == null || slots.isEmpty) return _StylistTodayStatus.available;
+
     final now = DateTime.now();
     final dayStart = DateTime(now.year, now.month, now.day);
     final nextDay = dayStart.add(const Duration(days: 1));
-    for (final b in slots) {
-      final s = b.start;
-      final e = b.end;
-      if (s == null || e == null) continue;
-      if (s.isBefore(nextDay) && e.isAfter(dayStart)) return true;
+
+    final workStart = _timeOnDay(dayStart, day.start);
+    final workEnd = _timeOnDay(dayStart, day.end);
+
+    if (workStart == null || workEnd == null || !workStart.isBefore(workEnd)) {
+      for (final b in slots) {
+        if (_slotTouchesToday(b, dayStart, nextDay)) {
+          return _StylistTodayStatus.off;
+        }
+      }
+      return _StylistTodayStatus.available;
     }
-    return false;
+
+    final clipped = <(DateTime, DateTime)>[];
+    for (final b in slots) {
+      if (!_slotTouchesToday(b, dayStart, nextDay)) continue;
+      final bs = b.start!;
+      final be = b.end!;
+      final clipS = bs.isAfter(workStart) ? bs : workStart;
+      final clipE = be.isBefore(workEnd) ? be : workEnd;
+      if (clipS.isBefore(clipE)) clipped.add((clipS, clipE));
+    }
+
+    if (clipped.isEmpty) return _StylistTodayStatus.available;
+
+    final merged = _mergeIntervals(clipped);
+    if (_intervalsCoverRange(workStart, workEnd, merged)) {
+      return _StylistTodayStatus.off;
+    }
+    return _StylistTodayStatus.partial;
   }
 
   _StylistTodayStatus _classifyAvailability(Availability? availability) {
     final day = _todayData(availability);
     if (day == null) return _StylistTodayStatus.off;
+    if (day.isSwitchOn == false) return _StylistTodayStatus.off;
     final s = day.start?.trim() ?? '';
     final e = day.end?.trim() ?? '';
     if (s.isEmpty || e.isEmpty) return _StylistTodayStatus.off;
-    if (_hasExceptionToday(availability)) {
-      return _StylistTodayStatus.partial;
-    }
+
+    final blockedStatus = _statusFromBlockedSlots(availability, day);
+    if (blockedStatus != _StylistTodayStatus.available) return blockedStatus;
+
     return _StylistTodayStatus.available;
+  }
+
+  /// Loads weekly availability and merges blocked slots from the dedicated
+  /// endpoint when present (GET availability may omit them).
+  Future<Availability?> _loadAvailabilityWithBlockedSlots(
+      String artistId) async {
+    final availFuture = HomeAPI.getArtiestAvailability(artistId: artistId);
+    final slotsFuture = HomeAPI.getBlockedSlotsForArtist(artistId: artistId);
+    final availModel = await availFuture;
+    final availability = availModel.data;
+    List<ArtistBlockedSlot> slots = availability?.blockedSlots ?? [];
+    try {
+      slots = await slotsFuture;
+    } catch (_) {
+      // Keep slots from availability response
+    }
+    if (availability != null) {
+      availability.blockedSlots = slots;
+      return availability;
+    }
+    if (slots.isNotEmpty) {
+      return Availability(blockedSlots: slots);
+    }
+    return null;
   }
 
   Future<void> _refreshSingleArtistStatus(String id) async {
     setState(() => _statusByArtistId[id] = _StylistTodayStatus.loading);
     try {
-      final model = await HomeAPI.getArtiestAvailability(artistId: id);
-      final status = _classifyAvailability(model.data);
+      final availability = await _loadAvailabilityWithBlockedSlots(id);
+      final status = _classifyAvailability(availability);
       if (!mounted) return;
       setState(() => _statusByArtistId[id] = status);
     } catch (_) {
@@ -111,8 +222,8 @@ class _SetStylistAvailabilityPageState
       final id = a.id;
       if (id == null || id.isEmpty) return;
       try {
-        final model = await HomeAPI.getArtiestAvailability(artistId: id);
-        final status = _classifyAvailability(model.data);
+        final availability = await _loadAvailabilityWithBlockedSlots(id);
+        final status = _classifyAvailability(availability);
         if (!mounted) return;
         setState(() => _statusByArtistId[id] = status);
       } catch (_) {

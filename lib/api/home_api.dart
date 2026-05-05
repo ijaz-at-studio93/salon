@@ -1044,14 +1044,15 @@ class HomeAPI {
   // }
 
   static Future<SalonTransactionsHistoryModel>
-  getSalonWalletTransactionHistory({
+      getSalonWalletTransactionHistory({
     String? distribution,
     String? fromDate,
     String? toDate,
   }) async {
-    final useDateRange =
-        fromDate != null && fromDate.isNotEmpty &&
-            toDate != null && toDate.isNotEmpty;
+    final useDateRange = fromDate != null &&
+        fromDate.isNotEmpty &&
+        toDate != null &&
+        toDate.isNotEmpty;
 
     final Map<String, dynamic> queryParameters;
 
