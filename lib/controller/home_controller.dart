@@ -1258,13 +1258,35 @@ class HomeController extends GetxController {
   }
 
   /* -------------------- Salon Transaction History -------------------- */
-  doGetSalonWalletTransactions(
-      {required String distribution, bool silent = false}) async {
+  // doGetSalonWalletTransactions(
+  //     {required String distribution, bool silent = false}) async {
+  //   try {
+  //     if (!silent) _showProgress.value = true;
+  //     _salonTransactionsHistoryModel.value =
+  //         await HomeAPI.getSalonWalletTransactionHistory(
+  //             distribution: distribution);
+  //   } catch (e) {
+  //     if (!silent) showError(e);
+  //   } finally {
+  //     if (!silent) _showProgress.value = false;
+  //   }
+  // }
+
+  doGetSalonWalletTransactions({
+    String? distribution,
+    String? fromDate,
+    String? toDate,
+    bool silent = false,
+  }) async {
     try {
       if (!silent) _showProgress.value = true;
+
       _salonTransactionsHistoryModel.value =
-          await HomeAPI.getSalonWalletTransactionHistory(
-              distribution: distribution);
+      await HomeAPI.getSalonWalletTransactionHistory(
+        distribution: distribution,
+        fromDate: fromDate,
+        toDate: toDate,
+      );
     } catch (e) {
       if (!silent) showError(e);
     } finally {

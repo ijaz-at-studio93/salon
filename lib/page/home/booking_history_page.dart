@@ -202,13 +202,13 @@ class _BookingHistoryPageState extends State<BookingHistoryPage> {
                                             Get.to(() => BookingHistoryViewpage(
                                                   appointmentId: appt?.id ?? "",
                                                   status: "Cancel",
-                                                  listStylistName:
-                                                      firstStylist?.name ??
-                                                          appt?.artist?.name,
-                                                  listStylistId:
-                                                      firstStylist?.id ??
-                                                          appt?.stylistIds
-                                                              ?.firstOrNull,
+                                                  // listStylistName:
+                                                  //     firstStylist?.name ??
+                                                  //         appt?.artist?.name,
+                                                  // listStylistId:
+                                                  //     firstStylist?.id ??
+                                                  //         appt?.stylistIds
+                                                  //             ?.firstOrNull,
                                                 ));
                                           },
                                         ),

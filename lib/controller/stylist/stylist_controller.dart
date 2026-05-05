@@ -204,11 +204,12 @@ class StylistController extends GetxController {
   }
 
   /*-------------------- do Upload Image ------------------*/
-  doUploadImage(
-      {required String appointmentId,
-      required List<String> multiplePath,
-      required List<String> multiplePathVideo,
-      required VoidCallback callback}) async {
+  Future<void> doUploadImage({
+    required String appointmentId,
+    required List<String> multiplePath,
+    required List<String> multiplePathVideo,
+    required VoidCallback callback,
+  }) async {
     try {
       _showProgress.value = true;
       String result = await StylistAPI.uploadImage(

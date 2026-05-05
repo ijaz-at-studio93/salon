@@ -12,6 +12,7 @@ import 'package:salon/project_specific/progressbar_view.dart';
 import 'package:salon/project_specific/project_appbar.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'package:salon/util/pick_image.dart';
+import 'package:salon/util/screen_bottom_insets.dart';
 
 /// Stylist-facing appointment details: ID, date/time, customer, service cards, Take Pictures.
 class StylistAppointmentDetailsPage extends StatefulWidget {
@@ -66,16 +67,25 @@ class _StylistAppointmentDetailsPageState
     }
   }
 
-  
+  bool _shouldShowTakePicturesButton() {
+    final data = _stylistController.getAppointmentsDetailsModel.data;
+    return (data?.allowPortfolioUpload ?? false) &&
+        !(data?.isPortfolioUploaded ?? false);
+  }
+
   Future<void> _onTakePicturesPressed() async {
     try {
       await FileUtils.openPlatformImagePicker(
-        onSelectImage: (File file) {
-          _stylistController.doUploadImage(
+        onSelectImage: (File file) async {
+          await _stylistController.doUploadImage(
             appointmentId: widget.appointmentId,
             multiplePath: [file.path],
             multiplePathVideo: const [],
             callback: widget.callback,
+          );
+          //get the appointment details again
+          _stylistController.doAppointmentsDetailsModel(
+            appointmentId: widget.appointmentId,
           );
         },
       );
@@ -112,7 +122,7 @@ class _StylistAppointmentDetailsPageState
         title: Obx(() {
           final details = _stylistController.getAppointmentsDetailsModel;
           if (_stylistController.showProgress) {
-            return const ProgressBarView();
+            return const SizedBox.shrink();
           }
           final data = details.data;
           return Text.rich(
@@ -247,22 +257,29 @@ class _StylistAppointmentDetailsPageState
                                 ),
                               ),
                             ),
-                      const SizedBox(height: 88),
+                      SizedBox(
+                        height: ScreenBottomInsets
+                            .scrollEndPaddingForStackedBottomAction(),
+                      ),
                     ],
                   ),
                 );
               },
             ),
           ),
-          Obx(() => _stylistController.shouldShowTakePicturesButton ? SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          Obx(() {
+            if (_stylistController.showProgress) {
+              return const SizedBox.shrink();
+            }
+            final enabled = _shouldShowTakePicturesButton();
+            return ScreenBottomActionArea(
               child: Material(
-                color: ColorConstant.primaryColor2,
+                color: enabled
+                    ? ColorConstant.primaryColor2
+                    : ColorConstant.lightGreyColor,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
-                  onTap: _onTakePicturesPressed,
+                  onTap: enabled ? _onTakePicturesPressed : null,
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -287,8 +304,8 @@ class _StylistAppointmentDetailsPageState
                   ),
                 ),
               ),
-            ),
-          ) : const SizedBox.shrink())
+            );
+          }),
         ],
       ),
     );
