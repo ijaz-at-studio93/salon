@@ -58,6 +58,11 @@ class StylistController extends GetxController {
   set setAllowPortfolioUploadModel(val) =>
       _allowPortfolioUploadModel.value = val;
 
+  /*------------------------- Take Pictures Button Visibility ---------------------*/
+  final RxBool _shouldShowTakePicturesButton = false.obs;
+  bool get shouldShowTakePicturesButton => _shouldShowTakePicturesButton.value;
+  set setShouldShowTakePicturesButton(bool val) => _shouldShowTakePicturesButton.value = val;
+
   /*--------------- Artiest blog Add ------------------ */
   final Rx<BlogDataGetModel> _blogDataGetModelModel = BlogDataGetModel().obs;
   BlogDataGetModel get getBlogDataGetModelModel => _blogDataGetModelModel.value;
@@ -120,12 +125,31 @@ class StylistController extends GetxController {
       _showProgress.value = true;
       _appointmentsDetailsModel.value =
           await StylistAPI.appointmentsDetails(appointmentId: appointmentId);
+      
+      // Update button visibility based on appointment details
+      _updateTakePicturesButtonVisibility();
     } catch (e) {
       showError(e);
       debugPrint("Stylist Appointment ===> ${e.toString()}");
     } finally {
       _showProgress.value = false;
     }
+  }
+
+  void _updateTakePicturesButtonVisibility() {
+    final data = _appointmentsDetailsModel.value.data;
+    
+    // Don't show for completed bookings
+    if (data?.orderStatus?.toLowerCase() == 'completed') {
+      _shouldShowTakePicturesButton.value = false;
+      return;
+    }
+    
+    // Check if portfolio upload is allowed
+    final allowPortfolioUpload = data?.allowPortfolioUpload ?? false;
+    
+    // Update reactive variable
+    _shouldShowTakePicturesButton.value = allowPortfolioUpload;
   }
 
   /*------------------------ Approve Booking  ------------------------*/
@@ -382,5 +406,12 @@ class StylistController extends GetxController {
     } finally {
       _showProgress.value = false;
     }
+  }
+
+  @override
+  void onClose() {
+    // Dispose of reactive variables
+    _shouldShowTakePicturesButton.close();
+    super.onClose();
   }
 }

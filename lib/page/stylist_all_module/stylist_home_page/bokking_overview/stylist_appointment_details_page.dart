@@ -66,20 +66,7 @@ class _StylistAppointmentDetailsPageState
     }
   }
 
-  bool _shouldShowTakePicturesButton() {
-    // Check if portfolio upload is allowed AND there are no existing images
-    final allowPortfolioUpload = _stylistController
-            .getAllowPortfolioUploadModel.data?.allowPortfolioUpload ??
-        false;
-    final existingPortfolio =
-        _stylistController.getArtistPortfolioModel.data?.portfolio ?? [];
-    final hasExistingImages = existingPortfolio.any(
-        (portfolio) => portfolio.image != null && portfolio.image!.isNotEmpty);
-
-    // Only show the button if both conditions are met: permission granted AND no existing images
-    return allowPortfolioUpload && !hasExistingImages;
-  }
-
+  
   Future<void> _onTakePicturesPressed() async {
     try {
       await FileUtils.openPlatformImagePicker(
@@ -267,19 +254,15 @@ class _StylistAppointmentDetailsPageState
               },
             ),
           ),
-          SafeArea(
+          Obx(() => _stylistController.shouldShowTakePicturesButton ? SafeArea(
             top: false,
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
               child: Material(
-                color: _shouldShowTakePicturesButton()
-                    ? ColorConstant.primaryColor2
-                    : ColorConstant.lightGreyColor,
+                color: ColorConstant.primaryColor2,
                 borderRadius: BorderRadius.circular(12),
                 child: InkWell(
-                  onTap: _shouldShowTakePicturesButton()
-                      ? _onTakePicturesPressed
-                      : null,
+                  onTap: _onTakePicturesPressed,
                   borderRadius: BorderRadius.circular(12),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
@@ -305,7 +288,7 @@ class _StylistAppointmentDetailsPageState
                 ),
               ),
             ),
-          ),
+          ) : const SizedBox.shrink())
         ],
       ),
     );
