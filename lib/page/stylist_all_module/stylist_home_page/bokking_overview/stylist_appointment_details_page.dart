@@ -75,19 +75,57 @@ class _StylistAppointmentDetailsPageState
 
   Future<void> _onTakePicturesPressed() async {
     try {
-      await FileUtils.openPlatformImagePicker(
-        onSelectImage: (File file) async {
-          await _stylistController.doUploadImage(
-            appointmentId: widget.appointmentId,
-            multiplePath: [file.path],
-            multiplePathVideo: const [],
-            callback: widget.callback,
-          );
-          //get the appointment details again
-          _stylistController.doAppointmentsDetailsModel(
-            appointmentId: widget.appointmentId,
-          );
-        },
+      Get.dialog(
+        Center(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(20)),
+            ),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    final file = await FileUtils.openCameraForImage();
+                    await _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: [file.path],
+                      multiplePathVideo: const [],
+                      callback: widget.callback,
+                    );
+                    //get the appointment details again
+                    _stylistController.doAppointmentsDetailsModel(
+                      appointmentId: widget.appointmentId,
+                    );
+                  },
+                  child: const Text("Photo (Camera)"),
+                ),
+                const SizedBox(height: 12),
+                ElevatedButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    final file = await FileUtils.openCameraForVideo();
+                    await _stylistController.doUploadImage(
+                      appointmentId: widget.appointmentId,
+                      multiplePath: const [],
+                      multiplePathVideo: [file.path],
+                      callback: widget.callback,
+                    );
+                    //get the appointment details again
+                    _stylistController.doAppointmentsDetailsModel(
+                      appointmentId: widget.appointmentId,
+                    );
+                  },
+                  child: const Text("Video (Camera)"),
+                ),
+              ],
+            ),
+          ),
+        ),
+        barrierDismissible: true,
       );
     } catch (_) {
       // Cancelled picker or no image selected.

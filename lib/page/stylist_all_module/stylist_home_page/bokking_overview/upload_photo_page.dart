@@ -208,25 +208,21 @@ class _UploadPhotoPageState extends State<UploadPhotoPage> {
                         child: Column(
                           children: [
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.pop(context);
-                                FileUtils.openPlatformImagePicker(
-                                    onSelectImage: (file) {
-                                  setState(() {
-                                    gridImages.add(file.path);
-                                  });
+                                final file = await FileUtils.openCameraForImage();
+                                setState(() {
+                                  gridImages.add(file.path);
                                 });
                               },
                               child: const Text("Photo"),
                             ),
                             ElevatedButton(
-                              onPressed: () {
+                              onPressed: () async {
                                 Navigator.pop(context);
-                                FileUtils.openPlatformVideoPicker(
-                                    onSelectVideo: (file) {
-                                  setState(() {
-                                    gridVideo.add(file.path);
-                                  });
+                                final file = await FileUtils.openCameraForVideo();
+                                setState(() {
+                                  gridVideo.add(file.path);
                                 });
                               },
                               child: const Text("Video"),
