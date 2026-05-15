@@ -590,6 +590,8 @@ class HomeController extends GetxController {
     required String whatsapp,
     required String homeService,
     required String gender,
+    required String profession,
+    required List<String> languagesKnown,
     required File image,
     required VoidCallback callback,
   }) async {
@@ -604,6 +606,8 @@ class HomeController extends GetxController {
           whatsapp: whatsapp,
           homeService: homeService,
           gender: gender,
+          profession: profession,
+          languagesKnown: languagesKnown,
           image: image);
       if (result) {
         callback.call();

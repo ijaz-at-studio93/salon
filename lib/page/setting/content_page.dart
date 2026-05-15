@@ -736,7 +736,7 @@ class _ContentPageState extends State<ContentPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorConstant.bgColor,
+      backgroundColor: ColorConstant.blackColor,
       appBar: const AppBarWidget(
         nameOfScreen: 'Content',
         isBackIcon: true,

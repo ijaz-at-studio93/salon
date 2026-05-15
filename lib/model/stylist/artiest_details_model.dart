@@ -43,6 +43,10 @@ class Data {
   String? panCard;
   String? whatsapp;
   String? salonId;
+  String? sId;
+  String? profession;
+  List<String>? languagesKnown;
+  List<String>? portfolioImages;
   List<Services>? services;
 
   Data(
@@ -63,6 +67,10 @@ class Data {
       this.panCard,
       this.whatsapp,
       this.salonId,
+      this.sId,
+      this.profession,
+      this.languagesKnown,
+      this.portfolioImages,
       this.services});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -83,6 +91,14 @@ class Data {
     panCard = json['panCard'];
     whatsapp = json['whatsapp'];
     salonId = json['salonId'];
+    sId = json['sId'];
+    profession = json['profession'];
+    languagesKnown = (json['languagesKnown'] as List?)
+        ?.map((e) => e.toString())
+        .toList();
+    portfolioImages = (json['portfolioImages'] as List?)
+        ?.map((e) => e.toString())
+        .toList();
     if (json['services'] != null) {
       services = <Services>[];
       json['services'].forEach((v) {
@@ -110,6 +126,10 @@ class Data {
     data['panCard'] = panCard;
     data['whatsapp'] = whatsapp;
     data['salonId'] = salonId;
+    data['sId'] = sId;
+    data['profession'] = profession;
+    data['languagesKnown'] = languagesKnown;
+    data['portfolioImages'] = portfolioImages;
     if (services != null) {
       data['services'] = services!.map((v) => v.toJson()).toList();
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:get/get.dart' hide MultipartFile, FormData;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 import 'package:salon/api/api_end_point.dart';
@@ -309,24 +310,6 @@ class HomeAPI {
     required String profession,
     required List<String> languagesKnown,
   }) async {
-    final List<MultipartFile> files = [];
-
-    if (image.path.isNotEmpty) {
-      final mimeTypeData =
-          lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
-      files.add(await MultipartFile.fromFile(image.path,
-          contentType: MediaType(mimeTypeData![0], mimeTypeData[1])));
-    }
-
-    for (final file in portfolioFiles) {
-      if (file.path.isEmpty) continue;
-      final mimeTypeData =
-          lookupMimeType(file.path, headerBytes: [0xFF, 0xD8])?.split('/');
-      if (mimeTypeData == null || mimeTypeData.length < 2) continue;
-      files.add(await MultipartFile.fromFile(file.path,
-          contentType: MediaType(mimeTypeData[0], mimeTypeData[1])));
-    }
-
     final formData = FormData.fromMap({
       "name": name,
       "sId": sId,
@@ -336,8 +319,26 @@ class HomeAPI {
       "gender": gender,
       "profession": profession,
       "homeService": homeService,
-      "files": files,
     });
+
+    if (image.path.isNotEmpty) {
+      final mimeTypeData =
+          lookupMimeType(image.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      final multipartFile = await MultipartFile.fromFile(image.path,
+          contentType: MediaType(mimeTypeData![0], mimeTypeData[1]));
+      formData.files.add(MapEntry('files', multipartFile));
+    }
+
+    for (final file in portfolioFiles) {
+      if (file.path.isEmpty) continue;
+      final mimeTypeData =
+          lookupMimeType(file.path, headerBytes: [0xFF, 0xD8])?.split('/');
+      if (mimeTypeData == null || mimeTypeData.length < 2) continue;
+      formData.files.add(MapEntry(
+          'files',
+          await MultipartFile.fromFile(file.path,
+              contentType: MediaType(mimeTypeData[0], mimeTypeData[1]))));
+    }
 
     for (int i = 0; i < languagesKnown.length; i++) {
       formData.fields.add(MapEntry("languagesKnown[$i]", languagesKnown[i]));
@@ -404,17 +405,24 @@ class HomeAPI {
     required String whatsapp,
     required String homeService,
     required String gender,
+    required String profession,
+    required List<String> languagesKnown,
     required File image,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
       "mobile": mobile,
       "countryCode": countryCode,
-      "experience": experience,
+      "experience": int.tryParse(experience) ?? 0,
       "whatsapp": whatsapp,
       "homeService": homeService,
       "gender": gender,
+      "profession": profession,
     });
+
+    for (int i = 0; i < languagesKnown.length; i++) {
+      formData.fields.add(MapEntry("languagesKnown[$i]", languagesKnown[i]));
+    }
 
     if (image.path.isNotEmpty) {
       final mimeTypeData =
@@ -428,6 +436,11 @@ class HomeAPI {
       "salon/artist/$artistId/update",
       data: formData,
     );
+
+    Get.log('── updateBasicInfoStylist RAW ──────────────');
+    Get.log('statusCode: ${response.statusCode}');
+    Get.log('data: ${response.data}');
+    Get.log('────────────────────────────────────────────');
 
     if (response.statusCode == 409) {
       showMessage(response.data['message']);
@@ -983,6 +996,9 @@ class HomeAPI {
     final response =
         await DioClient.client.get("salon/artist/$artistId/details");
     if (response.isSuccess) {
+      Get.log('── getSalonArtiest RAW ─────────────────────');
+      Get.log(response.data.toString());
+      Get.log('────────────────────────────────────────────');
       return ArtiestDetailsModel.fromJson(response.data);
     } else {
       throw response.data;

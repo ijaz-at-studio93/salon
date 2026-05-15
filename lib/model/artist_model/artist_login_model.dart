@@ -107,6 +107,8 @@ class SalonArtistData {
   String? salonId;
   /// Public stylist code (SId) — same as `StaffData.sId` / add-stylist flow.
   String? sId;
+  String? profession;
+  List<String>? languagesKnown;
   WorkingPlan? workingPlan;
 
   SalonArtistData({
@@ -129,6 +131,8 @@ class SalonArtistData {
     this.panCard,
     this.whatsapp,
     this.salonId,
+    this.profession,
+    this.languagesKnown,
     this.workingPlan,
   });
 
@@ -152,6 +156,10 @@ class SalonArtistData {
     whatsapp = json['whatsapp'];
     salonId = json['salonId'];
     sId = json['sId'];
+    profession = json['profession'];
+    languagesKnown = (json['languagesKnown'] as List?)
+        ?.map((e) => e.toString())
+        .toList();
     workingPlan = json['workingPlan'] != null
         ? WorkingPlan.fromJson(json['workingPlan'])
         : null;
@@ -178,6 +186,8 @@ class SalonArtistData {
     data['whatsapp'] = whatsapp;
     data['salonId'] = salonId;
     data['sId'] = sId;
+    data['profession'] = profession;
+    data['languagesKnown'] = languagesKnown;
     if (workingPlan != null) {
       data['workingPlan'] = workingPlan!.toJson();
     }

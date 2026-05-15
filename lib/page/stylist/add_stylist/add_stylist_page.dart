@@ -83,19 +83,24 @@ class _AddStylistPageState extends State<AddStylistPage> {
         _homeController.doGetArtiestDetails(
             artistId: widget.artistId,
             callback: () {
-              _name.text =
-                  _homeController.getArtiestDetailsModel.data?.name ?? "";
-              _mobile.text =
-                  _homeController.getArtiestDetailsModel.data?.mobile ?? "";
-              _experience.text = _homeController
-                      .getArtiestDetailsModel.data?.experience
-                      .toString() ??
-                  "";
-              gender =
-                  _homeController.getArtiestDetailsModel.data?.gender ?? "";
-              isHomeServiceEnable =
-                  _homeController.getArtiestDetailsModel.data?.homeService ??
-                      false;
+              final data = _homeController.getArtiestDetailsModel.data;
+              Get.log('── Edit Stylist Raw Response ──────────────────');
+              Get.log(_homeController.getArtiestDetailsModel.toJson().toString());
+              Get.log('───────────────────────────────────────────────');
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                setState(() {
+                  _name.text = data?.name ?? "";
+                  _mobile.text = data?.mobile ?? "";
+                  _experience.text = data?.experience?.toString() ?? "";
+                  gender = data?.gender ?? "";
+                  isHomeServiceEnable = data?.homeService ?? false;
+                  profession = data?.profession ?? "";
+                  _selectedLanguages
+                    ..clear()
+                    ..addAll(data?.languagesKnown ?? []);
+                });
+              });
             });
       });
     } else {
@@ -284,9 +289,6 @@ class _AddStylistPageState extends State<AddStylistPage> {
     if (_selectedLanguages.isEmpty) {
       return showMessage("Please select at least one language");
     }
-    if (imagePath.path.isEmpty)
-      return showMessage("Please choose a profile image");
-
     _homeController.doAddArtiest(
         name: _name.text.trim(),
         mobile: _mobile.text.trim(),
@@ -318,6 +320,14 @@ class _AddStylistPageState extends State<AddStylistPage> {
     }
     if (gender.isEmpty) return showMessage("Please select gender");
 
+    final data = _homeController.getArtiestDetailsModel.data;
+    Get.log('── Image Debug ─────────────────────────────');
+    Get.log('existing profileImage : ${data?.profileImage ?? "none"}');
+    Get.log('existing portfolioImages: ${data?.portfolioImages ?? "none"}');
+    Get.log('new imagePath (picked)  : ${imagePath.path.isEmpty ? "not picked" : imagePath.path}');
+    Get.log('new dropImages          : ${_dropImages.map((f) => f.path.isEmpty ? "empty" : f.path).toList()}');
+    Get.log('────────────────────────────────────────────');
+
     _homeController.doUpdateStylistBasicInfo(
         artistId: widget.artistId,
         name: _name.text,
@@ -327,10 +337,12 @@ class _AddStylistPageState extends State<AddStylistPage> {
         whatsapp: "9999999999",
         homeService: isHomeServiceEnable.toString(),
         gender: gender,
+        profession: profession,
+        languagesKnown: _selectedLanguages.toList(),
         image: imagePath,
         callback: () {
-          Get.back();
           _homeController.doSalonArtistList();
+          Get.until((route) => route.settings.name != '/AddStylistPage');
         });
   }
 
@@ -656,7 +668,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
   /*---------------- Profession (radio buttons) ----------------*/
   final List<Map<String, String>> _professionOptions = const [
     {'value': 'HAIR', 'label': 'Hair Stylist'},
-    {'value': 'BEAUTICIAN', 'label': 'Beautician'},
+    {'value': 'BEAUTY', 'label': 'Beautician'},
     {'value': 'BOTH', 'label': 'Both'},
   ];
 
@@ -865,6 +877,11 @@ class _AddStylistPageState extends State<AddStylistPage> {
                       decoration: BoxDecoration(
                           color: ColorConstant.grayTextColor.withOpacity(0.3),
                           shape: BoxShape.circle),
+                      child: const Icon(
+                        Icons.person,
+                        size: 50,
+                        color: ColorConstant.whiteColor,
+                      ),
                     )
               : ClipRRect(
                   borderRadius: BorderRadius.circular(100),

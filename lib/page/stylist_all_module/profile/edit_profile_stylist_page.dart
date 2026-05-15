@@ -468,6 +468,8 @@ class _UpdateMobileNumberDialogState extends State<_UpdateMobileNumberDialog> {
         whatsapp: raw,
         homeService: homeSvc,
         gender: gender,
+        profession: artist?.profession ?? "",
+        languagesKnown: artist?.languagesKnown ?? [],
         image: File(""),
         callback: () {
           savedOk = true;
