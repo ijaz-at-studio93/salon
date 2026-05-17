@@ -28,14 +28,13 @@ class _CancelledBookingHistoryWidgetState
   Widget build(BuildContext context) {
     final o = widget.orderData;
     final idx = o.idx?.trim() ?? '';
-    final dateSource = (o.finalizedAt != null && o.finalizedAt!.isNotEmpty)
-        ? o.finalizedAt!
-        : (o.appointment?.startsAt ?? '');
-    final dateStr = _convertBookingDate(dateSource);
-    final timeStr = _formatTimeLabel(
-        o.appointment?.selectedSlots?.isNotEmpty == true
+    final scheduleSource = (o.appointment?.startsAt?.isNotEmpty == true)
+        ? o.appointment!.startsAt!
+        : (o.appointment?.selectedSlots?.isNotEmpty == true
             ? o.appointment!.selectedSlots!.first
-            : o.appointment?.startsAt ?? '');
+            : '');
+    final dateStr = _convertBookingDate(scheduleSource);
+    final timeStr = _formatTimeLabel(scheduleSource);
     final stylistDetails = o.appointment?.stylistDetails;
     final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
         ? stylistDetails
@@ -244,6 +243,6 @@ class _CancelledBookingHistoryWidgetState
   String _convertBookingDate(String dateTime) {
     if (dateTime.isEmpty) return '';
     final date = DateTime.parse(dateTime);
-    return DateFormat('MM/dd/yyyy').format(date);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }

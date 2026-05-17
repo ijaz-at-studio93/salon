@@ -26,11 +26,7 @@ class BookingHistoryPendingWidget extends StatelessWidget {
             ? orderData.appointment!.selectedSlots!.first
             : '')
         : (orderData.appointment?.startsAt ?? '');
-    final dateSource =
-        (orderData.finalizedAt != null && orderData.finalizedAt!.isNotEmpty)
-            ? orderData.finalizedAt!
-            : timeSource;
-    final dateStr = convertBooingDateFormat(dateTime: dateSource);
+    final dateStr = convertBooingDateFormat(dateTime: timeSource);
     final timeStr = _formatTimeLabel(timeSource);
     final stylistDetails = orderData.appointment?.stylistDetails;
     final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
@@ -268,6 +264,6 @@ class BookingHistoryPendingWidget extends StatelessWidget {
   String convertBooingDateFormat({required String dateTime}) {
     if (dateTime == '') return '';
     final date = DateTime.parse(dateTime);
-    return DateFormat('MM/dd/yyyy').format(date);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }

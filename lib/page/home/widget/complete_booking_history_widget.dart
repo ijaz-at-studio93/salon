@@ -20,11 +20,7 @@ class CompleteHistoryWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final idx = orderData.idx?.trim() ?? '';
-    final dateSource =
-        (orderData.finalizedAt != null && orderData.finalizedAt!.isNotEmpty)
-            ? orderData.finalizedAt!
-            : (orderData.appointment?.startsAt ?? '');
-    final dateStr = _convertBookingDate(dateSource);
+    final dateStr = _convertBookingDate(orderData.appointment?.startsAt ?? '');
     final timeStr = _formatTimeLabel(orderData.appointment?.startsAt ?? '');
     final stylistDetails = orderData.appointment?.stylistDetails;
     final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
@@ -236,6 +232,6 @@ class CompleteHistoryWidget extends StatelessWidget {
   String _convertBookingDate(String dateTime) {
     if (dateTime.isEmpty) return '';
     final date = DateTime.parse(dateTime);
-    return DateFormat('MM/dd/yyyy').format(date);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 }
