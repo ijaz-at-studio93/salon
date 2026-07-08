@@ -28,15 +28,12 @@ class BookingHistoryPendingWidget extends StatelessWidget {
         : (orderData.appointment?.startsAt ?? '');
     final dateStr = convertBooingDateFormat(dateTime: timeSource);
     final timeStr = _formatTimeLabel(timeSource);
-    final stylistDetails = orderData.appointment?.stylistDetails;
-    final stylistName = (stylistDetails != null && stylistDetails.isNotEmpty)
-        ? stylistDetails
-            .map((s) => s.name ?? '')
-            .where((n) => n.isNotEmpty)
-            .join(', ')
-        : (orderData.appointment?.artist?.name?.isNotEmpty == true
-            ? orderData.appointment!.artist!.name!
-            : 'No stylist preference');
+    final customerName =
+        (orderData.user?.name?.isNotEmpty == true)
+            ? orderData.user!.name!
+            : (orderData.appointment?.user?.name?.isNotEmpty == true
+                ? orderData.appointment!.user!.name!
+                : 'No customer name');
     final priceStr = (orderData.items ?? [])
         .fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0))
         .toStringAsFixed(0);
@@ -77,8 +74,8 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 _inlineLabelValue(
-                  label: 'Stylist : ',
-                  value: stylistName,
+                  label: 'Customer : ',
+                  value: customerName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
                 const SizedBox(height: 6),

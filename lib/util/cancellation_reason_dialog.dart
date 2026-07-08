@@ -12,7 +12,7 @@ class CancellationReasonDialog extends StatefulWidget {
 
 class _CancellationReasonDialogState extends State<CancellationReasonDialog> {
   static const List<String> _predefinedReasons = [
-    'Stylist Not Available',
+    'Staff Not Available',
     'Slot Not Available',
     'Salon is Completely Occupied',
   ];

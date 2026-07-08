@@ -731,7 +731,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
     }
     if (_selectedStylistIds.length >= _maxStylistSelection) {
       showSnackBar(
-        message: 'Max $_maxStylistSelection stylist(s) allowed.',
+        message: 'Max $_maxStylistSelection staff allowed.',
       );
       return;
     }
@@ -883,7 +883,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
         _staffNameHeader(),
         const SizedBox(height: 6),
         if (crossProfession) ...[
-          _professionSubheading('Stylist :'),
+          _professionSubheading('Staff :'),
           _stylistChipWrap(hairList, (id) {
             setState(() => _replaceStylistSelectionWithinGroup(hairList, id));
           }),
@@ -894,7 +894,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
           }),
         ] else if (hasHair) ...[
           ..._sameProfessionStaffBlocks(
-            sectionTitle: 'Stylist',
+            sectionTitle: 'Staff',
             users: hairList,
           ),
         ] else if (hasBeauty) ...[
@@ -912,7 +912,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
   Widget _buildFlatStylistFallbackBody() {
     if (_maxStylistSelection == 0) {
       return Text(
-        'No stylist preference',
+        'No staff preference',
         style: AppTextTheme.medium.copyWith(
           color: ColorConstant.grayTextColor,
           fontSize: 14,
@@ -941,7 +941,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                     } else {
                       showSnackBar(
                         message:
-                            'Max $_maxStylistSelection stylist(s) allowed.',
+                            'Max $_maxStylistSelection staff allowed.',
                       );
                     }
                   });
@@ -1523,7 +1523,7 @@ class _BookingHistoryViewpageState extends State<BookingHistoryViewpage> {
                         _selectedStylistIds.length < _maxStylistSelection) {
                       showSnackBar(
                         message:
-                            'Please select $_maxStylistSelection stylist(s).',
+                            'Please select $_maxStylistSelection staff.',
                       );
                       return;
                     }

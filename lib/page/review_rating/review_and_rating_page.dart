@@ -144,7 +144,7 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
                                         ),
                                         const NoItemsWidget(
                                             text:
-                                                "No Any Stylist Review Found"),
+                                                "No Any Staff Review Found"),
                                       ],
                                     )
                                   : ListView.separated(
@@ -223,7 +223,7 @@ class _ReviewAndRatingPageState extends State<ReviewAndRatingPage> {
               ),
             ),
             "1": Text(
-              "By Stylist",
+              "By Staff",
               style: AppTextTheme.medium.copyWith(
                   fontSize: 16,
                   color: overall == "1"

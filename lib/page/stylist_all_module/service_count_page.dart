@@ -22,7 +22,7 @@ class _ServiceCountPageState extends State<ServiceCountPage> {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
       appBar: const AppBarWidget(
-        nameOfScreen: "Add Stylist",
+        nameOfScreen: "Add Staff",
         isBackIcon: true,
       ),
       body: ListView(

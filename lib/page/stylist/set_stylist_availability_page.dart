@@ -238,7 +238,7 @@ class _SetStylistAvailabilityPageState
     return Scaffold(
       backgroundColor: ColorConstant.stylistAvailabilityScreenBg,
       appBar: const AppBarWidget(
-        nameOfScreen: "Set Stylist Availability",
+        nameOfScreen: "Set Staff Availability",
         isBackIcon: true,
       ),
       body: Obx(
@@ -254,7 +254,7 @@ class _SetStylistAvailabilityPageState
     if (artists.isEmpty) {
       return Center(
         child: Text(
-          "No stylists yet",
+          "No staff yet",
           style: AppTextTheme.regular.copyWith(
             color: ColorConstant.grayTextColor,
             fontSize: 15,

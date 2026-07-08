@@ -30,7 +30,7 @@ class CompleteHistoryWidget extends StatelessWidget {
             .join(', ')
         : (orderData.appointment?.artist?.name?.isNotEmpty == true
             ? orderData.appointment!.artist!.name!
-            : 'No stylist preference');
+            : 'No staff preference');
     final priceStr = orderData.items!
         .fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0))
         .toStringAsFixed(0);
@@ -70,7 +70,7 @@ class CompleteHistoryWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 _inlineLabelValue(
-                  label: 'Stylist : ',
+                  label: 'Staff : ',
                   value: stylistName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),

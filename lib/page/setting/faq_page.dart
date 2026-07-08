@@ -58,7 +58,7 @@ class _FaqPageState extends State<FaqPage> {
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
               Text(
-                ". - Detailed stylist profiles to choose your preferred professional.",
+                ". - Detailed staff profiles to choose your preferred professional.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
@@ -68,7 +68,7 @@ class _FaqPageState extends State<FaqPage> {
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
               Text(
-                ". - Appointment booking with specific stylists.",
+                ". - Appointment booking with specific staff.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
@@ -79,12 +79,12 @@ class _FaqPageState extends State<FaqPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "2. What is Stylist Profile and How it helps?",
+                "2. What is Staff Profile and How it helps?",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor),
               ),
               Text(
-                "Stylist profile shows all the previous work and ratings of that stylist which helps in choosing him/her for your service",
+                "Staff profile shows all the previous work and ratings of that staff which helps in choosing him/her for your service",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
@@ -123,12 +123,12 @@ class _FaqPageState extends State<FaqPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "6. Can I choose my stylist?",
+                "6. Can I choose my staff?",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor),
               ),
               Text(
-                "Absolutely! Scuts provides detailed stylist profiles, allowing you to select the stylist that best suits your needs.",
+                "Absolutely! Scuts provides detailed staff profiles, allowing you to select the staff that best suits your needs.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
@@ -145,12 +145,12 @@ class _FaqPageState extends State<FaqPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "8. How average stylist rating of salon is calculated?",
+                "8. How average staff rating of salon is calculated?",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor),
               ),
               Text(
-                " Average stylist rating of salon is average of ratings of all stylists working in salon.",
+                " Average staff rating of salon is average of ratings of all staff working in salon.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),
@@ -172,7 +172,7 @@ class _FaqPageState extends State<FaqPage> {
                     .copyWith(color: ColorConstant.blackColor),
               ),
               Text(
-                "This helps in evaluating the service of the stylist without any manipulation, solely not depending only on ratings.",
+                "This helps in evaluating the service of the staff without any manipulation, solely not depending only on ratings.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor.withOpacity(0.5)),
               ),

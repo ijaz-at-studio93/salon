@@ -92,7 +92,7 @@ class _AddServiceBottomSheetPageState extends State<AddServiceBottomSheetPage> {
                           ),
                           const SizedBox(height: 15),
                           Text(
-                            "Stylist",
+                            "Staff",
                             style: AppTextTheme.regular.copyWith(
                                 color: ColorConstant.blackColor, fontSize: 14),
                           )

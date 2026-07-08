@@ -134,7 +134,7 @@ class StylistListTileWidget extends StatelessWidget {
                                 .copyWith(color: ColorConstant.blackColor),
                           ),
                           content: Text(
-                            "Are you sure you want to delete stylist",
+                            "Are you sure you want to delete staff",
                             style: AppTextTheme.medium.copyWith(
                                 color: ColorConstant.blueGrayColor,
                                 fontSize: 14),

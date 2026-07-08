@@ -91,7 +91,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
           _homeController.doAddExistingArtistBySId(
             sId: sId,
             callback: () {
-              showMessage("Stylist added successfully");
+              showMessage("Staff added successfully");
               _homeController.doSalonArtistList();
             },
           );
@@ -111,7 +111,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                 AppTextTheme.medium.copyWith(color: ColorConstant.blackColor),
           ),
           content: Text(
-            "Are you sure you want to delete stylist",
+            "Are you sure you want to delete staff",
             style: AppTextTheme.medium.copyWith(
               color: ColorConstant.blueGrayColor,
               fontSize: 14,
@@ -157,7 +157,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
     return Scaffold(
       backgroundColor: ColorConstant.manageStylistScreenBg,
       appBar: const AppBarWidget(
-        nameOfScreen: "Manage Stylists",
+        nameOfScreen: "Manage Staff",
         isBackIcon: true,
       ),
       body: Obx(
@@ -176,7 +176,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      "$count Stylist${count == 1 ? '' : '\'s'} found",
+                      "$count Staff found",
                       style: AppTextTheme.regular.copyWith(
                         color: ColorConstant.blackColor,
                         fontSize: 15,
@@ -211,7 +211,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                "Add Stylist",
+                                "Add Staff",
                                 style: AppTextTheme.semibold.copyWith(
                                   color: ColorConstant.primaryColor2,
                                   fontSize: 14,
@@ -229,7 +229,7 @@ class _ManageStylistPageState extends State<ManageStylistPage> {
                 child: artists.isEmpty
                     ? Center(
                         child: Text(
-                          "No stylists yet",
+                          "No staff yet",
                           style: AppTextTheme.regular.copyWith(
                             color: ColorConstant.grayTextColor,
                             fontSize: 15,
@@ -331,11 +331,11 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
       if (result != null) {
         setState(() => _preview = result);
       } else {
-        setState(() => _errorMsg = "No stylist found with this ID");
+        setState(() => _errorMsg = "No staff found with this ID");
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _errorMsg = "No stylist found with this ID");
+        setState(() => _errorMsg = "No staff found with this ID");
       }
     } finally {
       if (mounted) setState(() => _isFetching = false);
@@ -363,7 +363,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Enter stylist ID to search and select",
+              "Enter staff ID to search and select",
               style: AppTextTheme.regular.copyWith(
                 fontSize: 14,
                 color: ColorConstant.grayTextColor,
@@ -550,7 +550,7 @@ class _AddExistingStylistDialogState extends State<_AddExistingStylistDialog> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      "Add Stylist",
+                      "Add Staff",
                       style: AppTextTheme.bold
                           .copyWith(fontSize: 16, color: Colors.white),
                     ),

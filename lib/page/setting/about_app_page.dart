@@ -58,7 +58,7 @@ class _AboutAppPageState extends State<AboutAppPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "We understand that choosing the right salon or stylist can be overwhelming. That’s why we created Scuts – a platform designed to connect you with trusted salons and expert stylists in your area. Whether you’re looking for a quick haircut, a relaxing spa day, or specialized hair and skin treatments, Scuts makes it simple to find and book the services you need.",
+                "We understand that choosing the right salon or staff can be overwhelming. That’s why we created Scuts – a platform designed to connect you with trusted salons and expert staff in your area. Whether you’re looking for a quick haircut, a relaxing spa day, or specialized hair and skin treatments, Scuts makes it simple to find and book the services you need.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor, fontSize: 16),
               ),
@@ -70,7 +70,7 @@ class _AboutAppPageState extends State<AboutAppPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "-Stylist Profiles: Get to know your stylist before booking.",
+                "-Staff Profiles: Get to know your staff before booking.",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor, fontSize: 16),
               ),
@@ -100,7 +100,7 @@ class _AboutAppPageState extends State<AboutAppPage> {
               ),
               const SizedBox(height: 10),
               Text(
-                "Discover your next favorite stylist with Scuts!",
+                "Discover your next favorite staff with Scuts!",
                 style: AppTextTheme.medium
                     .copyWith(color: ColorConstant.blackColor, fontSize: 16),
               ),

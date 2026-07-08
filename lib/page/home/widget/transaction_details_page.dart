@@ -52,7 +52,7 @@ class TransactionDetailsPage extends StatelessWidget {
                 children: [
                   _row("Order ID", data.idx ?? "N/A"),
                   const SizedBox(height: 10),
-                  _row("Stylist Name", data.appointment?.artist?.name ?? "N/A"),
+                  _row("Staff Name", data.appointment?.artist?.name ?? "N/A"),
                   const SizedBox(height: 10),
                   _row("Date & Time", data.createdAt ?? "N/A"),
                 ],

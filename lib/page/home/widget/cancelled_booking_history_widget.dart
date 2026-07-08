@@ -43,7 +43,7 @@ class _CancelledBookingHistoryWidgetState
             .join(', ')
         : (o.appointment?.artist?.name?.isNotEmpty == true
             ? o.appointment!.artist!.name!
-            : 'No stylist preference');
+            : 'No staff preference');
     final priceStr = o.orderAmount?.toStringAsFixed(0) ?? '0';
 
     return Container(
@@ -81,7 +81,7 @@ class _CancelledBookingHistoryWidgetState
                 ),
                 const SizedBox(height: 6),
                 _inlineLabelValue(
-                  label: 'Stylist : ',
+                  label: 'Staff : ',
                   value: stylistName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),

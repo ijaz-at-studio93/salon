@@ -161,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
               height: Get.height * 0.06,
               child: Center(
                 child: Text(
-                  "Stylist",
+                  "Staff",
                   style: AppTextTheme.medium.copyWith(
                       fontSize: 16,
                       color: selectedStylistOrSalon == "0"

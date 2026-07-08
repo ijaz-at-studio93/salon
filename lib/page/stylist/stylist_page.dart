@@ -34,7 +34,7 @@ class _StylistPageState extends State<StylistPage> {
     return Scaffold(
       backgroundColor: ColorConstant.bgColor,
       appBar: const AppBarWidget(
-        nameOfScreen: "Stylist",
+        nameOfScreen: "Staff",
         isBackIcon: true,
       ),
       body: Obx(
@@ -47,7 +47,7 @@ class _StylistPageState extends State<StylistPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "${_homeController.getSalonArtistListModel.data?.length ?? 0} Stylist Found:",
+                    "${_homeController.getSalonArtistListModel.data?.length ?? 0} Staff Found:",
                     style: AppTextTheme.regular.copyWith(
                         color: ColorConstant.grayTextColor, fontSize: 15),
                   ),

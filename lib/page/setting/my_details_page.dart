@@ -51,13 +51,13 @@ class _MyDetailsPageState extends State<MyDetailsPage> {
               children: [
                 _imageRowWidget(),
                 _customRowWidget(
-                    titleName: "Set Stylist Availability",
+                    titleName: "Set Staff Availability",
                     image: AssetsConstant.stylishAvailability,
                     onTap: () {
                       Get.to(() => const SetStylistAvailabilityPage());
                     }),
                 _customRowWidget(
-                    titleName: "Manage Stylists",
+                    titleName: "Manage Staff",
                     image: AssetsConstant.manageStylishIcon,
                     onTap: () {
                       Get.to(() => const ManageStylistPage());

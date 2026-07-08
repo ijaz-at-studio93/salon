@@ -142,6 +142,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
       setState(() {
         _sId.text = sidCandidate;
         _mobile.text = phoneCandidate;
+        // Pre-fill a default password; the salon can change it if they want.
+        _password.text = "12345678";
       });
     }
   }
@@ -151,7 +153,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
       appBar: AppBarWidget(
-        nameOfScreen: widget.isBasicInfoUpdate ? "Edit Stylist" : "Add Stylist",
+        nameOfScreen: widget.isBasicInfoUpdate ? "Edit Staff" : "Add Staff",
         isBackIcon: true,
       ),
       body: Column(
@@ -168,8 +170,8 @@ class _AddStylistPageState extends State<AddStylistPage> {
                         const SizedBox(height: 20),
                         _styledField(
                             controller: _name,
-                            hint: "Enter the Name of Stylist",
-                            label: "Stylist Name",
+                            hint: "Enter the Name of Staff",
+                            label: "Staff Name",
                             inputType: TextInputType.text),
                         const SizedBox(height: 20),
                         if (!widget.isBasicInfoUpdate) _sIdField(),
@@ -185,7 +187,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                         if (!widget.isBasicInfoUpdate)
                           _styledPasswordField(
                               controller: _password,
-                              hint: "Enter the Password for stylist profile",
+                              hint: "Enter the Password for staff profile",
                               label: "Password"),
                         if (!widget.isBasicInfoUpdate)
                           const SizedBox(height: 20),
@@ -273,9 +275,9 @@ class _AddStylistPageState extends State<AddStylistPage> {
 
   /*---------------- Add Stylist Logic ----------------*/
   _doAddStylist() {
-    if (_name.text.isEmpty) return showMessage("Please enter stylist name");
+    if (_name.text.isEmpty) return showMessage("Please enter staff name");
     if (_sId.text.isEmpty)
-      return showMessage("Stylist ID is being generated, please wait");
+      return showMessage("Staff ID is being generated, please wait");
     if (_mobile.text.isEmpty) return showMessage("Please enter phone number");
     if (_mobile.text.length != 10) {
       return showMessage("Please enter valid 10 digit phone number");
@@ -313,7 +315,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
 
   /*---------------- Update Stylist Logic ----------------*/
   _doUpdateStylist() {
-    if (_name.text.isEmpty) return showMessage("Please enter stylist name");
+    if (_name.text.isEmpty) return showMessage("Please enter staff name");
     if (_mobile.text.isEmpty) return showMessage("Please enter phone number");
     if (_mobile.text.length != 10) {
       return showMessage("Please enter valid 10 digit phone number");
@@ -369,7 +371,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
                 ),
                 if (!widget.isBasicInfoUpdate)
                   TextSpan(
-                    text: "  (Give Stylist Number If you are okay with it)",
+                    text: "  (Give Staff Number If you are okay with it)",
                     style: AppTextTheme.regular.copyWith(
                         fontSize: 11, color: ColorConstant.grayTextColor),
                   ),
@@ -667,7 +669,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
 
   /*---------------- Profession (radio buttons) ----------------*/
   final List<Map<String, String>> _professionOptions = const [
-    {'value': 'HAIR', 'label': 'Hair Stylist'},
+    {'value': 'HAIR', 'label': 'Hair Staff'},
     {'value': 'BEAUTY', 'label': 'Beautician'},
     {'value': 'BOTH', 'label': 'Both'},
   ];
