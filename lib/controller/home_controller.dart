@@ -549,6 +549,7 @@ class HomeController extends GetxController {
     required String sId,
     required String profession,
     required List<String> languagesKnown,
+    String? instagramLink,
     required VoidCallback callback,
   }) async {
     try {
@@ -568,7 +569,8 @@ class HomeController extends GetxController {
           genderDataList: genderDataList,
           sId: sId,
           profession: profession,
-          languagesKnown: languagesKnown);
+          languagesKnown: languagesKnown,
+          instagramLink: instagramLink);
       if (result) {
         callback.call();
       }

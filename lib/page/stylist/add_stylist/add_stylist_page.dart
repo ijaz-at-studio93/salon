@@ -35,6 +35,11 @@ class _AddStylistPageState extends State<AddStylistPage> {
   final _password = TextEditingController();
   final _verificationCode = TextEditingController();
   final _sId = TextEditingController();
+  final _instagram = TextEditingController();
+
+  // Mirrors the backend addSalonArtist schema's instagramLink validation.
+  static final _instagramRegex =
+      RegExp(r'^https?:\/\/(www\.)?instagram\.com\/.+', caseSensitive: false);
 
   final List<String> _languageOptions = [
     "english",
@@ -197,6 +202,12 @@ class _AddStylistPageState extends State<AddStylistPage> {
                         const SizedBox(height: 20),
                         _languagesKnown(),
                         const SizedBox(height: 20),
+                        _styledField(
+                            controller: _instagram,
+                            hint: "Enter Instagram profile link",
+                            label: "Instagram Link (Optional)",
+                            inputType: TextInputType.url),
+                        const SizedBox(height: 20),
                         _dropImagesSection(),
                         const SizedBox(height: 25),
                       ],
@@ -291,6 +302,10 @@ class _AddStylistPageState extends State<AddStylistPage> {
     if (_selectedLanguages.isEmpty) {
       return showMessage("Please select at least one language");
     }
+    final instagram = _instagram.text.trim();
+    if (instagram.isNotEmpty && !_instagramRegex.hasMatch(instagram)) {
+      return showMessage("Please enter a valid Instagram link");
+    }
     _homeController.doAddArtiest(
         name: _name.text.trim(),
         mobile: _mobile.text.trim(),
@@ -307,6 +322,7 @@ class _AddStylistPageState extends State<AddStylistPage> {
         sId: _sId.text,
         profession: profession,
         languagesKnown: _selectedLanguages.toList(),
+        instagramLink: instagram.isEmpty ? null : instagram,
         callback: () {
           Get.back();
           _homeController.doSalonArtistList();

@@ -309,6 +309,7 @@ class HomeAPI {
     required String sId,
     required String profession,
     required List<String> languagesKnown,
+    String? instagramLink,
   }) async {
     final formData = FormData.fromMap({
       "name": name,
@@ -320,6 +321,10 @@ class HomeAPI {
       "profession": profession,
       "homeService": homeService,
     });
+
+    if (instagramLink != null && instagramLink.isNotEmpty) {
+      formData.fields.add(MapEntry("instagramLink", instagramLink));
+    }
 
     if (image.path.isNotEmpty) {
       final mimeTypeData =
