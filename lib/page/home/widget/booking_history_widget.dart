@@ -18,8 +18,6 @@ class BookingHistoryPendingWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final idx = orderData.idx?.trim() ?? '';
-
     final status = (orderData.orderStatus ?? '').toLowerCase().trim();
     final timeSource = (status == 'pending')
         ? (orderData.appointment?.selectedSlots?.isNotEmpty == true
@@ -34,6 +32,15 @@ class BookingHistoryPendingWidget extends StatelessWidget {
             : (orderData.appointment?.user?.name?.isNotEmpty == true
                 ? orderData.appointment!.user!.name!
                 : 'No customer name');
+    final staffNames = (orderData.appointment?.stylistDetails ?? [])
+        .map((s) => s.name?.trim() ?? '')
+        .where((n) => n.isNotEmpty)
+        .toList();
+    final staffName = staffNames.isNotEmpty
+        ? staffNames.join(', ')
+        : (orderData.appointment?.artist?.name?.isNotEmpty == true
+            ? orderData.appointment!.artist!.name!
+            : 'No staff assigned');
     final priceStr = (orderData.items ?? [])
         .fold<double>(0.0, (sum, item) => sum + (item.service?.price ?? 0))
         .toStringAsFixed(0);
@@ -59,14 +66,12 @@ class BookingHistoryPendingWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (idx.isNotEmpty) ...[
-                  _inlineLabelValue(
-                    label: 'ID :',
-                    value: idx,
-                    valueColor: ColorConstant.bookingValuePurple,
-                  ),
-                  const SizedBox(height: 6),
-                ],
+                _inlineLabelValue(
+                  label: 'Customer : ',
+                  value: customerName,
+                  valueColor: ColorConstant.bookingValuePurple,
+                ),
+                const SizedBox(height: 6),
                 _inlineLabelValue(
                   label: 'Date : ',
                   value: dateStr,
@@ -74,8 +79,8 @@ class BookingHistoryPendingWidget extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 _inlineLabelValue(
-                  label: 'Customer : ',
-                  value: customerName,
+                  label: 'Staff : ',
+                  value: staffName,
                   valueColor: ColorConstant.bookingValuePurple,
                 ),
                 const SizedBox(height: 6),
