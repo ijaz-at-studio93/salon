@@ -7,6 +7,7 @@ import 'package:salon/page/home/home_page.dart';
 import 'package:salon/page/setting/adding_service/add_service_bottm_sheet_page.dart';
 import 'package:salon/page/setting/content_page.dart';
 import 'package:salon/page/setting/my_details_page.dart';
+import 'package:salon/util/notification_service.dart';
 import '../api/dio_client.dart';
 import '../constant/assetsconstant.dart';
 import '../constant/color_constant.dart';
@@ -24,6 +25,14 @@ class BottomBarPage extends StatefulWidget {
 class _BottomBarPageState extends State<BottomBarPage> {
   int _selectedIndex = 0;
   final _homeController = Get.find<HomeController>();
+
+  @override
+  void initState() {
+    super.initState();
+    // Reaching here means there is a home screen to push onto, so any deep link
+    // or notification held during launch or sign-in can now open.
+    AppLaunchGate.markRouted();
+  }
 
   @override
   Widget build(BuildContext context) {

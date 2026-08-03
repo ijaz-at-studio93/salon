@@ -44,6 +44,22 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- AppsFlyer OneLink: https://scutssaloon.onelink.me/iM7Y/...
+                 AppsFlyer serves the assetlinks.json for this host, so
+                 autoVerify has something to verify against with nothing to
+                 publish on our side. pathPrefix keeps the claim to this app's
+                 own template. Mirrors AppsFlyerService.oneLinkHost and
+                 oneLinkPathPrefix. -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="scutssaloon.onelink.me"
+                    android:pathPrefix="/iM7Y" />
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

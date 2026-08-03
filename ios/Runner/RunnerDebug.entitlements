@@ -4,5 +4,14 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<!-- AppsFlyer OneLink. AppsFlyer serves the apple-app-site-association for
+	     this host, so nothing needs publishing on a Scuts server. The
+	     ?mode=developer entry makes iOS fetch that file directly instead of via
+	     Apple's CDN, so template changes show up immediately while testing. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:scutssaloon.onelink.me</string>
+		<string>applinks:scutssaloon.onelink.me?mode=developer</string>
+	</array>
 </dict>
 </plist>

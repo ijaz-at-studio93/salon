@@ -4,5 +4,11 @@
 <dict>
 	<key>aps-environment</key>
 	<string>production</string>
+	<!-- AppsFlyer OneLink. AppsFlyer serves the apple-app-site-association for
+	     this host, so nothing needs publishing on a Scuts server. -->
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:scutssaloon.onelink.me</string>
+	</array>
 </dict>
 </plist>

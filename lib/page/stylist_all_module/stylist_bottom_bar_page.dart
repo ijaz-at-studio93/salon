@@ -7,6 +7,7 @@ import 'package:salon/page/stylist_all_module/profile/stylist_profile_page.dart'
 import 'package:salon/page/stylist_all_module/stylist_home_page/blog/bloag_add_sheet_page.dart';
 import 'package:salon/page/stylist_all_module/stylist_home_page/bokking_overview/stylist_booking_over_view_page.dart';
 import 'package:salon/project_specific/status_bar_color_appbar.dart';
+import 'package:salon/util/notification_service.dart';
 import 'package:salon/project_specific/text_theme.dart';
 import 'stylist_home_page/stylist_home_page_2.dart';
 
@@ -19,6 +20,15 @@ class StylistBottomBarPage extends StatefulWidget {
 
 class _StylistBottomBarPageState extends State<StylistBottomBarPage> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Reaching here means there is a home screen to push onto, so any deep link
+    // or notification held during launch or sign-in can now open.
+    AppLaunchGate.markRouted();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(

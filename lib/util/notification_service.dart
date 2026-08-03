@@ -124,14 +124,23 @@ void _openAppointmentDetails(
   String appointmentId, [
   Map<String, dynamic>? data,
 ]) {
-  if (!SharedPrefs.readBoolValue(PrefConstants.isUserLogin)) return;
+  if (!AppLaunchGate.isReady) {
+    AppLaunchGate.hold({
+      ...?data,
+      'appointmentId': appointmentId,
+    });
+    return;
+  }
 
   if (SharedPrefs.readBoolValue(PrefConstants.isSalon)) {
-    final status = data != null
-        ? data['status'] == 'cancelled'
+    // `status` is a non-nullable String on the page, and a payload is not
+    // obliged to carry one — deep links usually don't.
+    final rawStatus = _firstNonEmptyString(data ?? const {}, const ['status']);
+    final status = rawStatus.isEmpty
+        ? 'pending'
+        : rawStatus == 'cancelled'
             ? 'Cancel'
-            : data['status']
-        : 'pending';
+            : rawStatus;
     Get.to(
       () => BookingHistoryViewpage(
         appointmentId: appointmentId,
@@ -147,6 +156,56 @@ void _openAppointmentDetails(
     );
   }
   Get.to(() => ViewAcceptPage(appointmentId: appointmentId));
+}
+
+/* ====================== Deferred destinations ======================= */
+
+/// Holds a destination that arrived before the app could show it.
+///
+/// A deep link or a notification tap can land during the splash screen's
+/// version check, or while the user is signed out. Navigating straight away is
+/// lost in both cases: the splash finishes with a `pushAndRemoveUntil` that
+/// clears the stack, and a signed-out user has no home screen to push onto.
+/// This matters most for deferred OneLinks, which fire moments after a fresh
+/// install when the user has certainly not signed in yet.
+///
+/// The two bottom bar pages call [markRouted] once they are on screen, which
+/// releases whatever is held — covering the cold-start path (splash to bottom
+/// bar) and the sign-in path (login to bottom bar) with one hook.
+///
+/// Only the most recent destination is kept; if two links arrive before the
+/// app is ready, opening the last one tapped is the better guess.
+class AppLaunchGate {
+  AppLaunchGate._();
+
+  static bool _routed = false;
+  static Map<String, dynamic>? _held;
+
+  static bool get isReady =>
+      _routed && SharedPrefs.readBoolValue(PrefConstants.isUserLogin);
+
+  static void hold(Map<String, dynamic> data) => _held = data;
+
+  static void markRouted() {
+    _routed = true;
+    _release();
+  }
+
+  /// Called on sign-out so a link held under one account cannot open under the
+  /// next one.
+  static void reset() {
+    _routed = false;
+    _held = null;
+  }
+
+  static void _release() {
+    final held = _held;
+    if (held == null || !isReady) return;
+    _held = null;
+    // The bottom bar is still building when this runs, so let its Navigator
+    // settle before pushing on top of it.
+    handleNotification(held, delay: true);
+  }
 }
 
 /* =========================== Service ================================ */

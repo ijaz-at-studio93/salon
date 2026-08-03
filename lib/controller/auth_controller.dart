@@ -11,6 +11,7 @@ import 'package:salon/model/auth/salon_auth_model.dart';
 import 'package:salon/model/auth/salon_profile_model.dart';
 import 'package:salon/page/auth/login_page.dart';
 import 'package:salon/controller/home_controller.dart';
+import 'package:salon/util/notification_service.dart';
 
 import '../util/shared_prefs.dart';
 
@@ -366,6 +367,8 @@ class AuthController extends GetxController {
     await SharedPrefs.writeValue(PrefConstants.isFirstTime, true);
     await SharedPrefs.writeValue(PrefConstants.isSalon, false);
     await SharedPrefs.writeValue(PrefConstants.isStylist, false);
+    // Drop any held deep link so it cannot open under the next account.
+    AppLaunchGate.reset();
     Get.offAll(() => const LoginPage());
   }
 

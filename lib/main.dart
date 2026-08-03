@@ -13,6 +13,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:salon/controller/home_controller.dart';
 import 'package:salon/controller/stylist/stylist_controller.dart';
 import 'package:salon/page/splash_page.dart';
+import 'package:salon/service/appsflyer_service.dart';
 import 'package:salon/util/NotificationUtils.dart';
 import 'package:salon/util/notification_service.dart';
 import 'package:salon/util/shared_prefs.dart';
@@ -126,6 +127,12 @@ void main() async {
   await FirebaseMessaging.instance.setAutoInitEnabled(true);
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await PushNotificationService().setupInteractedMessage();
+
+  // Before runApp so the link that cold-started the app, and any deferred one
+  // replayed after install, are not missed. Both are held until a bottom bar
+  // is on screen.
+  await AppsFlyerService.instance.init();
+
   if (Platform.isAndroid) {
     final status = await Permission.notification.status;
     if (!status.isGranted) {
