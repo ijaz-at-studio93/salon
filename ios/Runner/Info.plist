@@ -57,6 +57,13 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Flutter's own deep link handling is off: an incoming OneLink would
+	     otherwise be pushed at the Navigator as an initial route ("/iM7Y/...")
+	     which is not a GetX route. AppsFlyerService handles the link instead,
+	     via the AppsFlyer SDK. Mirrors flutter_deeplinking_enabled in
+	     AndroidManifest.xml. -->
+	<key>FlutterDeepLinkingEnabled</key>
+	<false/>
 	<!-- Allow HTTP media URLs from staging (video_player uses AVFoundation; ATS blocks cleartext by default). -->
 	<key>NSAppTransportSecurity</key>
 	<dict>

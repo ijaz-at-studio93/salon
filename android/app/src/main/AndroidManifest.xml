@@ -39,6 +39,13 @@
             <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
                 android:value="booking" />
+            <!-- Flutter's own deep link handling is off: an incoming OneLink
+                 would otherwise be pushed at the Navigator as an initial route
+                 ("/iM7Y/...") which is not a GetX route. AppsFlyerService
+                 handles the link instead, via the AppsFlyer SDK. -->
+            <meta-data
+                android:name="flutter_deeplinking_enabled"
+                android:value="false" />
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
